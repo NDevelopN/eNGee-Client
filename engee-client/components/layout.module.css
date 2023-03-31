@@ -6,8 +6,8 @@
 
 .header {
     display: flex;
-    flex-direction: coulumn;
-    align-items: centet;;
+    flex-direction: column;
+    align-items: center;
 }
 
 .backToHome {
