@@ -11,7 +11,7 @@ export default function Post({postData}) {
         <Head>
             <title>{postData.title}</title>
         </Head>
-
+        // TODO: This can be reused for output of Consequences text 
         <article>
             <h1 className={utilStyles.headingXl}>{postData.title}</h1>
             <div className={utilStyles.lightText}/>
