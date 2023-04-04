@@ -1,59 +1,53 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import styles from './layout.module.css';
-import utilStyles from '../styles/utils.module.css';
 import Link from 'next/link';
 
-const name = "[Name Here]";
-export const siteTitle = 'eNGee Server';
+import styles from '../styles/layout.module.css';
+import utilStyles from '../styles/utils.module.css';
 
+let name = "[Name Here]";
+export const siteTitle = "eNGee Server";
 
-//TODO Define own layout and styles
-//TODO keep 'header' element -- some dynamic adjustments for individuals
+// This creates the default layout for all pages of the app.
+// For now, it only includes a header which links back to the homepage.
+// TODO: change header to include player icon as well as their name.
 export default function Layout({ children, home }) {
-  return (
-    <div className={styles.container}>
-      <Head>
-      </Head>
-      <header className={styles.header}>
-        {home ? (
-          <>
-            <Image
-              priority
-              src="/images/profile.jpg"
-              className={utilStyles.borderCircle}
-              height={144}
-              width={144}
-              alt=""
-            />
-            <h1 className={utilStyles.heading2Xl}>{name}</h1>
-          </>
-        ) : (
-          <>
+    return (
+        <>
+        <Head>{siteTitle}</Head>
+        <header className={styles.header}>
+            <>
+            {/* This is the player icon, links back to homepage */}
             <Link href="/">
-              <Image
+                <Image
                 priority
-                src="/images/profile.jpg"
-                className={utilStyles.borderCircle}
+                src="/images/logo.png"
                 height={108}
                 width={108}
-                alt=""
-              />
+                alt="Logo"
+                />
             </Link>
-            <h2 className={utilStyles.headingLg}>
-              <Link href="/" className={utilStyles.colorInherit}>
-                {name}
-              </Link>
+            {/* This is the player name, links back to homepage */}
+            <h2 className={utilStyles.headingLg }>
+                <Link href="/" className={utilStyles.colorInherit}>
+                    {name}
+                </Link>
             </h2>
-          </>
+            </>
+
+        </header>
+        {/* Renders all children components */}
+        <main>{children}</main>
+        {/* Adds another link back to home */}
+        {!home && (
+            <div className={styles.backToHome}>
+                <Link href="/">Backt to Home</Link>
+            </div>
         )}
-      </header>
-      <main>{children}</main>
-      {!home && (
-        <div className={styles.backToHome}>
-          <Link href="/">← Back to home</Link>
-        </div>
-      )}
-    </div>
-  );
+        </>
+    );
+}
+
+export function updateName(newName) {
+    name = newName;
 }

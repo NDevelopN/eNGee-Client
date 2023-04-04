@@ -1,29 +1,26 @@
 import Head from 'next/head';
 import Link from 'next/link';
 
-import Layout, { siteTitle } from '../components/layout';
-import utilStyles from '../styles/utils.module.css';
-import { getSortedPostsData } from '../lib/posts';
-import Date from '../components/date';
+import Layout, { siteTitle } from '../components/layout'
+import Date from '../components/date'
 
-export async function getStaticProps() {
-  //Get all posts sorted
-  const allPostsData = getSortedPostsData();
-  return {
-    props: {
-      allPostsData,
-    },
-  };
-}
+import styles from '../styles/Home.module.css'
+import utilStyles from '../styles/utils.module.css'
 
-//TODO create layout for landing page
-export default function Home({allPostsData}) {
-  return (
-    <Layout home>
-      <Head>
-        <title>{siteTitle}</title>
-      </Head>
-      
-    </Layout>
-  );
+export default function Home({}) {
+    return (
+        <Layout home>
+        <Head>
+            <title>
+                {siteTitle}
+                <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+            </title>
+        </Head>
+
+        <section className={utilStyles.headingMd}>
+            <p>This is the sample text</p>
+        </section>
+        
+        </Layout>
+    );
 }
