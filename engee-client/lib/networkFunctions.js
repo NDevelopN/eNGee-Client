@@ -51,3 +51,35 @@ export async function GET(endpoint, callback) {
         }
     })
 }
+
+//TODO: Change default functions to use callbacks
+/** SOCK
+ * Accepts an endpoint and creates a websocket connection
+ */
+export async function SOCK(endpoint, callback) {
+    let socket = new WebSocket(endpoint);
+
+    socket.onopen = (e) => {
+        alert("[open] Connection established");
+        alert("Sending to server");
+        socket.send("Test message");
+    };
+
+    socket.onmessage = (e) => {
+        alert("[message] Received: " + e.data);
+    };
+
+    socket.onclose = (e) => {
+        if (e.wasClean) {
+            alert("[close] Connection closed cleanly, code=" + e.code + " reason=" + e.reason);
+        } else {
+            alert("[close] Connection died");
+        }
+    };
+
+    socket.onerror = (e) => {
+        alert("[error] " + e.data);
+    };
+
+
+}
