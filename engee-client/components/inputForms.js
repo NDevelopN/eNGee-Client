@@ -1,11 +1,12 @@
 import {useState} from 'react';
+import {POST} from '../lib/networkFunctions'
+import parseJSON from 'date-fns/parseJSON';
 
 export function SingleTextForm({promptText, outputHandler}) {
     const [input, setInput] = useState("");
     const [name, setName] = useState("");
 
     function HandleChange(e) {
-       console.log(e.target.value);
        setInput(e.target.value);
     }
     
@@ -14,13 +15,12 @@ export function SingleTextForm({promptText, outputHandler}) {
 
         e.preventDefault();
         if (input.length > 0) {  
-            console.log(input);
             outputHandler(input);
             setName(input);
             setInput("");
         }
         else {
-            console.log("Empty string");
+            console.debug("Empty string");
         }
     }
 
