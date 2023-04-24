@@ -10,13 +10,13 @@ export function PlayerList({playerList}) {
         <div className={utilStyles.list}>
             <div className={utilStyles.listItem}>
                     <div className={utilStyles.listItemElement}><b>Name</b></div>
-                    <div className={utilStyles.listItemElement}><b>Ready Status</b></div>
-
+                    <div className={utilStyles.listItemElement}><b>Status</b></div>
             </div>
-            {playerList.map(player => (
+
+            {playerList.map(player=> (
                 <div key={player.id} className={utilStyles.listItem}>
                     <div className={utilStyles.listItemElement}>{player.name}</div>
-                    <div className={utilStyles.listItemElement}>{player.ready ? "Ready" : "Not Ready"}</div>
+                    <div className={utilStyles.listItemElement}>{player.status}</div>
                 </div>
             ))}
         </div>
