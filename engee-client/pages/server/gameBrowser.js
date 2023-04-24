@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import { GameList } from '@/components/listView';
 import { POST }  from '@/lib/networkFunctions';
 
-export default function GameBrowser({pid, UserName, callback}) {
+export default function GameBrowser({pid, UserName, callback, joinFunc}) {
     let [gameList, setGameList] = useState([])
 
     useEffect(() => {
@@ -11,6 +11,7 @@ export default function GameBrowser({pid, UserName, callback}) {
        // let timer = setInterval(() => getGames(), 5000);
     },[]);
 
+    //TODO: change this to a simple GET
     function getGames() {
         let endpoint = "http://localhost:8080/server/browser";
         let message = {
@@ -27,30 +28,13 @@ export default function GameBrowser({pid, UserName, callback}) {
         });
     }
 
-    function join(gameid) {
-        let message = {
-            pid: pid,
-            gid: gameid,
-        };
-
-        let endpoint = "http://localhost:8080/game/join";
-
-        POST(JSON.stringify(message), endpoint, (e) => {
-            console.log("Joined");
-            console.log(e);
-        });
-
-        // TODO: confirm joined
-        callback(gameid);
-    }
-
     function createGame() {
-        callback();
+        callback("Creating");
     }
 
     return (
         <>
-        <GameList gameList={gameList} joinFunc={join}/>
+        <GameList gameList={gameList} joinFunc={joinFunc}/>
         <button onClick={createGame}>Create new Game</button>
         </>
     );

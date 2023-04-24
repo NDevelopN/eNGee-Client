@@ -3,6 +3,7 @@ import Head from 'next/head';
 
 import ContentSwitch from '@/pages/server/contentSwitch';
 import Layout, {siteTitle} from '@/components/layout';
+import { POST } from '@/lib/networkFunctions';
 
 export default function Home() {
     let [UUID, setUUID] = useState("");
@@ -21,9 +22,26 @@ export default function Home() {
         setGID(id);
         setStatus("InGame");
     }
-    
-    function setCreating() {
-        setStatus("Creating")
+
+    function join(gameID) {
+        let message = {
+            pid: UUID,
+            gid: gameID,
+        };
+
+        let endpoint = "http://localhost:8080/game/join";
+
+        POST(JSON.stringify(message), endpoint, (e) => {
+            console.log("Joined");
+            console.log(e);
+            if (e.id === gameID) {
+                setGID(gameID);
+                setStatus("InGame");
+            }
+            else {
+                console.log("ERROR: gameID not matching");
+            }
+        });
     }
 
     return (
@@ -37,7 +55,8 @@ export default function Home() {
                 <main>
                     <ContentSwitch
                         UUID={UUID} GID={GID} UserName={UserName} status={status} 
-                        setUser={setUser} setGame={setGame} setCreating={setCreating}
+                        setUser={setUser} setGame={setGame} statusChange={setStatus}
+                        joinFunc={join}
                     />
                 </main>
         </Layout>

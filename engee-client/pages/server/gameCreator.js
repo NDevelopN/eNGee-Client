@@ -2,7 +2,7 @@ import {useState} from 'react';
 
 import {POST} from '@/lib/networkFunctions.js';
 
-export default function GameCreator({pid}) {
+export default function GameCreator({joinFunc}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
     let [minPlrs, setMinPlrs] = useState(0);
@@ -53,10 +53,8 @@ export default function GameCreator({pid}) {
 
         POST(JSON.stringify(message), endpoint, (e) => {
             console.log(e);
+            joinFunc(e.id);
         })
-
-        event.preventDefault();
-        console.log(gameName, gameType, minPlrs, maxPlrs)
     }
 
     //TODO: get list of potential game types and make input select type for gametype

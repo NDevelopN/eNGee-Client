@@ -2,46 +2,39 @@ import {useState} from 'react';
 
 import {POST} from '@/lib/networkFunctions';
 
-export default function UserCreate({id, callback}) {
+export default function UserCreate({id, name, callback}) {
 
-    let [UUID, setUUID] = useState(id);
     let [UserName, setUserName] = useState("");
-    let curName = id;
+    let curName = name;
 
     function joinServer() {
         let endpoint = "http://localhost:8080/server/";
 
         let message = {
-            pid: UUID,
+            pid: id, 
             name: UserName,
         };
 
-        POST(JSON.stringify(message), endpoint, callback);
+        POST(JSON.stringify(message), endpoint, onResponse);
     }
 
     function handleChange (event){
         setUserName(event.target.value); 
     }
 
-    function handleSubmit() {
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        console.log(UserName)
         if (UserName !== "") {
             //No need to post new update if name isn't changing
             if (UserName === curName) {
                 return;
             }
 
-            joinServer(onResponse);
+            joinServer();
         }
         //TODO: Error saying it can't be empty
-
-        callback(UUID, UserName);
-    }
-
-    function onResponse(response) {
-        //Error handling
-        console.log("Registered");
-        console.log(e);
-        setUUID(e.id);
     }
 
     return (
