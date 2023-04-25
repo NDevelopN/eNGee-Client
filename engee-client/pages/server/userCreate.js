@@ -15,7 +15,9 @@ export default function UserCreate({id, name, callback}) {
             name: UserName,
         };
 
-        POST(JSON.stringify(message), endpoint, onResponse);
+        POST(JSON.stringify(message), endpoint, (e) => {
+            callback(e.id)
+        });
     }
 
     function handleChange (event){
@@ -25,7 +27,6 @@ export default function UserCreate({id, name, callback}) {
     function handleSubmit(e) {
         e.preventDefault();
 
-        console.log(UserName)
         if (UserName !== "") {
             //No need to post new update if name isn't changing
             if (UserName === curName) {
