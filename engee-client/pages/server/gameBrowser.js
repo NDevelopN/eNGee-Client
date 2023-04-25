@@ -8,7 +8,11 @@ export default function GameBrowser({pid, UserName, callback, joinFunc}) {
 
     useEffect(() => {
         getGames();
-       // let timer = setInterval(() => getGames(), 5000);
+        const timer = setInterval(() => getGames(), 5000);
+
+        return () => {
+            clearInterval(timer);
+        }
     },[]);
 
     //TODO: change this to a simple GET
@@ -20,7 +24,6 @@ export default function GameBrowser({pid, UserName, callback, joinFunc}) {
         };
 
         POST(JSON.stringify(message), endpoint, (e) => {
-            console.log("Got list");
             console.log(e);
             if (e.games) {
                 setGameList(e.games)
