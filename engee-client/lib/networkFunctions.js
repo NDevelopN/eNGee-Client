@@ -20,11 +20,11 @@ export async function POST(message, endpoint, callback) {
             console.log(response.body);
             response.json().then((data) => {
                 if (callback) {
-                    callback(data.message);
+                    callback(data);
                 }
             })
         } else {
-            throw new Error ("Somethign went wrong on API server " + response.status);
+            throw new Error ("Something went wrong on API server " + response.status);
         }
     }).catch((error) => {
         console.error(error);
@@ -34,7 +34,9 @@ export async function POST(message, endpoint, callback) {
 /** GET
  * Accepts an endpoint and a callback function to be called when the server responds
  */
-export async function GET(endpoint, callback) {
+export function GET(endpoint, callback) {
+    let retval = null;
+
     const request = new Request(endpoint, {
         method: "GET",
         headers: {
@@ -46,10 +48,10 @@ export async function GET(endpoint, callback) {
     fetch(endpoint).then((response) => {
         if (response.status === 200) {
             response.json().then((data) => {
-                callback(data.message);
+                callback(data);
             })
         }
-    })
+    });
 }
 
 //TODO: Change default functions to use callbacks
@@ -63,6 +65,7 @@ export async function SOCK(endpoint, callback) {
         alert("[open] Connection established");
         alert("Sending to server");
         socket.send("Test message");
+        callback(socket);
     };
 
     socket.onmessage = (e) => {
@@ -80,6 +83,4 @@ export async function SOCK(endpoint, callback) {
     socket.onerror = (e) => {
         alert("[error] " + e.data);
     };
-
-
 }
