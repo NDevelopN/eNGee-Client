@@ -1,9 +1,9 @@
 import {useState, useEffect} from 'react';
 
 import { GameList } from '@/components/listView';
-import { POST }  from '@/lib/networkFunctions';
+import { GET }  from '@/lib/networkFunctions';
 
-export default function GameBrowser({pid, UserName, callback, joinFunc}) {
+export default function GameBrowser({callback, joinFunc}) {
     let [gameList, setGameList] = useState([])
 
     useEffect(() => {
@@ -15,16 +15,11 @@ export default function GameBrowser({pid, UserName, callback, joinFunc}) {
         }
     },[]);
 
-    //TODO: change this to a simple GET
     function getGames() {
         let endpoint = "http://localhost:8080/server/browser";
-        let message = {
-            pid: pid,
-            name: UserName,
-        };
-
-        POST(JSON.stringify(message), endpoint, (e) => {
-            console.log(e);
+        
+        GET(endpoint, (e) => {
+           // console.log(e);
             if (e.games) {
                 setGameList(e.games)
             }

@@ -1,12 +1,10 @@
 import UserCreate from '@/pages/server/userCreate';
 import GameBrowser from '@/pages/server/gameBrowser';
 import GameCreator from '@/pages/server/gameCreator';
-import InGame from '@/pages/game/inGame';
+import GameScreen from '@/pages/game/gameScreen';
 
 
-export default function DisplayContent({UUID, GID, UserName, status, setUser, setGame, statusChange, joinFunc}) {
-
-    console.log("Status: " + status);
+export default function DisplayContent({UUID, GID, UserName, status, setUser, statusChange, joinFunc}) {
 
     switch(status) {
         case "Naming":
@@ -15,11 +13,11 @@ export default function DisplayContent({UUID, GID, UserName, status, setUser, se
             );
         case "Browsing":
             return (
-                <GameBrowser id={UUID} UserName={UserName} callback={statusChange} joinFunc={joinFunc}/>
+                <GameBrowser callback={statusChange} joinFunc={joinFunc}/>
             );
         case "InGame":
             return (
-                <InGame pid={UUID} gid={GID} callback={statusChange}/>
+                <GameScreen pid={UUID} gid={GID} callback={statusChange}/>
             );
         case "Creating":
             return (

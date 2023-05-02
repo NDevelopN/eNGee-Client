@@ -5,7 +5,6 @@
  * Can also accept a callback function to be called when the server responds
  */
 export async function POST(message, endpoint, callback) {
-
     const request = new Request(endpoint, {
         method: 'POST',
         body: message,
@@ -17,7 +16,6 @@ export async function POST(message, endpoint, callback) {
 
     fetch(request).then((response) => {
         if (response.status === 200) {
-            console.log(response.body);
             response.json().then((data) => {
                 if (callback) {
                     callback(data);
@@ -31,9 +29,6 @@ export async function POST(message, endpoint, callback) {
     });
 }
 
-/** GET
- * Accepts an endpoint and a callback function to be called when the server responds
- */
 export function GET(endpoint, callback) {
     let retval = null;
 
@@ -45,42 +40,42 @@ export function GET(endpoint, callback) {
         }
     });
 
-    fetch(endpoint).then((response) => {
+    //TODO: Which other statuses are acceptable?
+
+    fetch(request).then((response) => {
         if (response.status === 200) {
             response.json().then((data) => {
                 callback(data);
             })
+        } else {
+            throw new Error ("Something went wrong on API server " + response.status);
         }
+    }).catch((error) => {
+        console.error(error);
     });
 }
 
-//TODO: Change default functions to use callbacks
 /** SOCK
  * Accepts an endpoint and creates a websocket connection
+ * Callback allows the client function to manage connection 
  */
 export async function SOCK(endpoint, callback) {
     let socket = new WebSocket(endpoint);
 
     socket.onopen = (e) => {
-        alert("[open] Connection established");
-        alert("Sending to server");
-        socket.send("Test message");
+        console.log("[open] Connection established");
         callback(socket);
-    };
-
-    socket.onmessage = (e) => {
-        alert("[message] Received: " + e.data);
     };
 
     socket.onclose = (e) => {
         if (e.wasClean) {
-            alert("[close] Connection closed cleanly, code=" + e.code + " reason=" + e.reason);
+            console.log("[close] Connection closed cleanly, code=" + e.code + " reason=" + e.reason);
         } else {
-            alert("[close] Connection died");
+            console.log("[close] Connection died");
         }
     };
 
     socket.onerror = (e) => {
-        alert("[error] " + e.data);
+        console.log("[error] " + e.data);
     };
 }

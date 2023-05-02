@@ -1,76 +1,36 @@
 import {useState} from 'react'
 
-import Lobby from '@/pages/game/lobby'
 import GameUpdate from '@/pages/game/leader/gameUpdate'
 
-import {POST} from '@/lib/networkFunctions'
+export default function LeaderView({e, gid, status, send}) {
 
-export default function LeaderView({pid, gid, gStatus}) {
-
-    let [status, setStatus] = useState(gStatus);
-
-    function sendPause(stat) {
-        let message = {
-            pid: pid,
-            gid: gid,
-        };
-
-        let endpoint = "http://localhost:8080/game/pause";
-
-        POST(JSON.stringify(message), endpoint, () => {
-            setStatus(stat);
-        });
-    }
-    
-    function unpause() {
-        sendPause("Ready");
-    }
+    let [inRules, setInRules] = useState(false)
 
     function pause() {
-        sendPause("Pause");
+        send("Pause", "");
     }
 
     function start() {
-        let message = {
-            pid: pid,
-            gid: gid,
-        };
-
-        let endpoint = "http://localhost:8080/game/start";
-
-        POST(JSON.stringify(message), endpoint, () => {
-
-        });
+        send("Start", "");
     }
 
     function rulesUpdate() {
-        
-        setStatus("Rules");
+        setInRules(!inRules)
     }
 
     function endGame() {
-        let message = {
-            pid: pid,
-            gid: gid,
-        };
-
-        let endpoint = "http://localhost:8080/game/end";
-
-        POST(JSON.stringify(message), endpoint, () => {
-        });
+        send("End", "");
     }
 
     function restart () {
-        let message = {
-            pid: pid,
-            gid: gid,
-        };
+        send("Restart", "");
+    }
 
-        let endpoint = "http://localhost:8080/game/restart";
-
-        POST(JSON.stringify(message), endpoint, () => {
-            setStatus("Restarting");
-        });
+    //Override current status until exited rules
+    if (inRules) {
+        return (
+            <GameUpdate gid={gid} e={e} send={send} exit={rulesUpdate}/>
+        );
     }
 
     switch (status) {
@@ -91,15 +51,14 @@ export default function LeaderView({pid, gid, gStatus}) {
             return (
                 <div>
                     <button onClick={rulesUpdate}>Edit Rules</button>
-                    <button onClick={unpause}>Unpause</button>
+                    <button onClick={pause}>Unpause</button>
                     <button onClick={endGame}>End Game</button>
                     <button onClick={restart}>Restart</button>
                     
                 </div>
             );
-        case "Rules":
-            return (
-                <GameUpdate gid={gid} pid={pid} restart={restart}/>
-            );
+        default:
+            console.log("Invalid Leader status: " + status);
+            return (<></>);
     }
 }

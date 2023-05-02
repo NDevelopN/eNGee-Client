@@ -17,7 +17,6 @@ export default function Home() {
         setStatus("Browsing");
     }
 
-    //TODO include multiple games
     function setGame(id) {
         setGID(id);
         setStatus("InGame");
@@ -29,15 +28,16 @@ export default function Home() {
             gid: gameID,
         };
 
-        let endpoint = "http://localhost:8080/game/join";
+        //TODO remove endpoint harcoding
+        let endpoint = "http://localhost:8080/server/join";
 
         POST(JSON.stringify(message), endpoint, (e) => {
             console.log("Joined");
-            console.log(e);
-            if (e.id === gameID) {
+            if (e.message === "ACK") {
                 setGID(gameID);
                 setStatus("InGame");
             }
+            //TODO this should be a http error
             else {
                 console.log("ERROR: gameID not matching");
             }
