@@ -107,13 +107,13 @@ export default function GameUpdater({gid, e, send, exit}) {
 
         <label>
             Name:
-            <input type="text" name="name" value={gameName} onChange={handleChange} contentEditable={false}/>
+            <input type="text" name="name" value={gameName} autocomplete='off' onChange={handleChange} contentEditable={false}/>
         </label>
         <br/>
 
         <label>
             Type:
-            <input type="text" name="type" value={gameType} onChange={handleChange}/>
+            <input type="text" name="type" value={gameType} autocomplete='off' onChange={handleChange}/>
         </label>
         <br/>
         

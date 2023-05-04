@@ -74,12 +74,12 @@ export default function GameCreator({joinFunc, endpoint}) {
     <form onSubmit={handleSubmit}>
         <label>
             Name:
-            <input type="text" name="name" value={gameName} onChange={handleChange}/>
+            <input type="text" name="name" value={gameName} autocomplete='off' onChange={handleChange}/>
         </label>
         <br/>
         <label>
             Type:
-            <input type="text" name="type" value={gameType} onChange={handleChange}/>
+            <input type="text" name="type" value={gameType} autocomplete='off' onChange={handleChange}/>
         </label>
         <br/>
         <label>

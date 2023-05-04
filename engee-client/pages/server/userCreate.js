@@ -41,7 +41,7 @@ export default function UserCreate({id, name, callback, endpoint}) {
         <form onSubmit={handleSubmit}>
             <label>
                 Change your name:
-                <input type="text" name="name" value={UserName} onChange={handleChange}/>
+                <input type="text" name="name" value={UserName} autoComplete='off' onChange={handleChange}/>
                 <input type="submit" value="submit"/>
             </label>
         </form>

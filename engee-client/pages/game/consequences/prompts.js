@@ -43,7 +43,7 @@ export default function Prompts({prompts, reply}) {
             {prompts.map((prompt, index) => (
                 <div key={index} className={utilStyles.listItem}>
                     <label>{prompt}
-                        <input type="text" name={prompt} value={replies[index]} onChange={(e) => handleChange(e, index)}/>
+                        <input type="text" name={prompt} value={replies[index]} autocomplete='off' onChange={(e) => handleChange(e, index)}/>
                     </label>
                 </div>
             ))}
