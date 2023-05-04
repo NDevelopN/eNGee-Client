@@ -28,7 +28,7 @@ export default function GameScreen({pid, gid, callback}) {
     function connect() {
         console.log("Connecting");
         //TODO change this hardcoding
-        endpoint = "ws://localhost:8090/game/consequences";
+        let endpoint = "ws://localhost:8090/game/consequences";
         SOCK(endpoint, (sock) => {
             sock.addEventListener("message", Receive);
             setSocket(sock)
