@@ -2,11 +2,13 @@ import {useState} from 'react';
 
 import {POST} from '@/lib/networkFunctions.js';
 
-export default function GameCreator({joinFunc}) {
+export default function GameCreator({joinFunc, endpoint}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
+    let [rounds, setRounds] = useState(1);
     let [minPlrs, setMinPlrs] = useState(0);
     let [maxPlrs, setMaxPlrs] = useState(1);
+    let [timeout, setTimeout] = useState(-1)
     //Allow for extensability
     let [additional, setAdditional] = useState("");
 
@@ -19,11 +21,17 @@ export default function GameCreator({joinFunc}) {
             case  "type":
                 setGameType(event.target.value);
                 break;
+            case "rounds":
+                setRounds(parseInt(event.target.value, 10));
+                break;
             case "minPlrs":
                 setMinPlrs(parseInt(event.target.value, 10));
                 break;
             case "maxPlrs":
                 setMaxPlrs(parseInt(event.target.value, 10));
+                break;
+            case "timeout":
+                setRounds(parseInt(event.target.value, 10));
                 break;
             default:
                 console.error("Unknown event " + event);
@@ -34,18 +42,21 @@ export default function GameCreator({joinFunc}) {
     function handleSubmit(event) {
         event.preventDefault();
         
-        let endpoint = "http://localhost:8080/server/create"
         if (gameName === "" | gameType === "") return;
 
-        console.log("min: " + minPlrs +", max: " + maxPlrs)
+        endpoint += "/server/create"
 
         let message = {
             id: "",
             name: gameName,
-            gameType: gameType,
-            minPlayers: minPlrs,
-            maxPlayers: maxPlrs,
-            additional: "",        
+            type: gameType,
+            rules: {
+                rounds: rounds,
+                minPlayers: minPlrs,
+                maxPlayers: maxPlrs,
+                timeout: timeout,
+                additional: "",        
+            },
         }
         
         let str = JSON.stringify(message)
@@ -72,14 +83,25 @@ export default function GameCreator({joinFunc}) {
         </label>
         <br/>
         <label>
-            minPlrs:
+            Rounds:
+            <input type="number" name="rounds" value={rounds} min={1} onChange={handleChange}/>
+        </label>
+        <br/>
+        <label>
+            Minimum Players:
             <input type="number" name="minPlrs" value={minPlrs} min={0} onChange={handleChange}/>
         </label>
         <br/>
         <label>
-            maxPlrs:
+            Maximum Players:
             <input type="number" name="maxPlrs" value={maxPlrs} min={1} onChange={handleChange}/>
         </label>
+        <br/>
+        <label>
+            Inactivity Timeout:
+            <input type="number" name="timeout" value={timeout} min={-1} onChange={handleChange}/>
+        </label>
+        <br/>
         <input type="submit" value="submit"/>
     </form>
     );

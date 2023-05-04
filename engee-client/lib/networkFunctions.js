@@ -66,7 +66,7 @@ export async function SOCK(endpoint, callback) {
         console.log("[open] Connection established");
         callback(socket);
     };
-
+    
     socket.onclose = (e) => {
         if (e.wasClean) {
             console.log("[close] Connection closed cleanly, code=" + e.code + " reason=" + e.reason);

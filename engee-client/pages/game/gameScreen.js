@@ -13,12 +13,10 @@ export default function GameScreen({pid, gid, callback}) {
     let [plrList, setPlrList] = useState([]);
     let [socket, setSocket] = useState();
     let [rules, setRules] = useState();
-    let [gameSpec, setGameSpec] = useState();
+    let [type, setType] = useState("");
+    let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
 
     let message = {}
-
-    const typeMap = new Map();
-    typeMap.set("Consequences", Consequences);
 
     useEffect(() => {
         connect()
@@ -29,7 +27,8 @@ export default function GameScreen({pid, gid, callback}) {
 
     function connect() {
         console.log("Connecting");
-        let endpoint = "ws://localhost:8080/game/connect";
+        //TODO change this hardcoding
+        endpoint = "ws://localhost:8090/game/consequences";
         SOCK(endpoint, (sock) => {
             sock.addEventListener("message", Receive);
             setSocket(sock)
@@ -61,45 +60,57 @@ export default function GameScreen({pid, gid, callback}) {
         //TODO inform the server? 
         socket.close();
     }
+
+    function GameRender() {
+        //IF the server has not replied yet, tell user game is Loading
+        if (gameMessage.type === "") {
+            return (<h2>Loading...</h2>)
+        }
+        
+        switch (type.toLowerCase()) {
+            case "con":
+                return (<Consequences msg={gameMessage} send={send} quit={leaveGame}/>)
+        }
+    }
     
     function Receive(event) {
         let data = JSON.parse(event.data);
-        let content = JSON.parse(data.content);
+        let content;
 
         switch(data.type){
-            //Should be the reply for first connection
+            //Should be the reply for first connection, same as a full update
+            //TODO is there any reason for difrentiating these?
             case "Info":
-                setIsLeader(content.leader === pid);
-                setRules(content.rules);
-                setPlrList(content.players);
-                setStatus(content.status);
-                //setGameSpec(typeMap[content.rules.type])
             case "Update":
+                content = JSON.parse(data.content)
                 setIsLeader(content.leader === pid);
                 setRules(content.rules);
                 setPlrList(content.players);
                 setStatus(content.status);
-                //setGameSpec(typeMap[content.rules.type])
+                setType(content.type)
+                break;
             case "Status": 
-                setStatus(content.status);
+                setStatus(data.content);
                 break;
             case "Players":
+                content = JSON.parse(data.content)
                 setPlrList(content.players);
                 break;
             case "Leader":
-                setIsLeader(content.leader === pid);
+                setIsLeader(data.content === pid);
                 break;
             case "Rules":
+                content = JSON.parse(data.content)
                 setRules(content.rules);
-                setGameSpec(typeMap[content.rules.type])
+                setGameSpec(typeMap[content.type])
                 break;
             case "Issue":
-                console.log(content.issue);
+                console.log(data.content);
+                //TODO what issues can be handled here?
                 break;
-
-            //If the standard options are not covered, pass it on to the gameSpecific logic
             default:
-                //gameSpec(pid, gid, event.data);
+                //If the standard options are not covered, pass it on to the gameSpecific logic
+                setGameMessage(data)
                 break;
         }
     }
@@ -115,7 +126,7 @@ export default function GameScreen({pid, gid, callback}) {
 
         socket.send(JSON.stringify(message));
     }
-
+    
     switch (status) {
         case "Pre":
             return (
@@ -128,11 +139,11 @@ export default function GameScreen({pid, gid, callback}) {
                 <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
                 </>
             );
-        case "InGame":
+        case "Play":
             return (
                 <>
-                <LeaderView e={rules} gid={gid} status={status} send={send}/>
-                <h2> THis is the game part</h2>
+                {isLeader ? <LeaderView e={rules} gid={gid} status={status} send={send}/> : <></>}
+                <GameRender/>
                 </>
             );
         case "Pause":

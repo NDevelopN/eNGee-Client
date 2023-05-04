@@ -10,6 +10,8 @@ export default function Home() {
     let [UserName, setUserName] = useState("Test Name");
     let [GID, setGID] = useState("");
     let [status, setStatus] = useState("Naming")
+
+    let endpoint = "http://localhost:8090"
    
     function setUser(id, name){
         setUUID(id);
@@ -29,9 +31,7 @@ export default function Home() {
         };
 
         //TODO remove endpoint harcoding
-        let endpoint = "http://localhost:8080/server/join";
-
-        POST(JSON.stringify(message), endpoint, (e) => {
+        POST(JSON.stringify(message), endpoint + "/server/join", (e) => {
             console.log("Joined");
             if (e.message === "ACK") {
                 setGID(gameID);
@@ -56,7 +56,7 @@ export default function Home() {
                     <ContentSwitch
                         UUID={UUID} GID={GID} UserName={UserName} status={status} 
                         setUser={setUser} setGame={setGame} statusChange={setStatus}
-                        joinFunc={join}
+                        joinFunc={join} endpoint={endpoint}
                     />
                 </main>
         </Layout>

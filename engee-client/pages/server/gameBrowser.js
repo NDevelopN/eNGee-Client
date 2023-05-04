@@ -3,12 +3,12 @@ import {useState, useEffect} from 'react';
 import { GameList } from '@/components/listView';
 import { GET }  from '@/lib/networkFunctions';
 
-export default function GameBrowser({callback, joinFunc}) {
+export default function GameBrowser({callback, joinFunc, endpoint}) {
     let [gameList, setGameList] = useState([])
 
     useEffect(() => {
         getGames();
-        const timer = setInterval(() => getGames(), 5000);
+        const timer = setInterval(() => getGames(), 2000);
 
         return () => {
             clearInterval(timer);
@@ -16,7 +16,7 @@ export default function GameBrowser({callback, joinFunc}) {
     },[]);
 
     function getGames() {
-        let endpoint = "http://localhost:8080/server/browser";
+        endpoint += "/server/browser";
         
         GET(endpoint, (e) => {
            // console.log(e);

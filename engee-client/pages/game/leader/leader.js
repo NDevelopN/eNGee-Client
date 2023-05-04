@@ -41,7 +41,7 @@ export default function LeaderView({e, gid, status, send}) {
                     <button onClick={start}>Start</button>
                 </div>
             );
-        case "InGame":
+        case "Play":
             return(
                 <div>
                     <button onClick={pause}>Pause</button>

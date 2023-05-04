@@ -1,7 +1,5 @@
 import {useState, useEffect} from 'react';
 
-import {POST} from '@/lib/networkFunctions.js';
-
 export default function GameUpdater({gid, e, send, exit}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
