@@ -1,8 +1,8 @@
 import {useState} from 'react'
 
-import GameUpdate from '@/pages/game/leader/gameUpdate'
+import GameManager from '@/components/gameManager'
 
-export default function LeaderView({e, gid, status, send}) {
+export default function LeaderView({info, gid, status, send, types}) {
 
     let [inRules, setInRules] = useState(false)
 
@@ -29,7 +29,7 @@ export default function LeaderView({e, gid, status, send}) {
     //Override current status until exited rules
     if (inRules) {
         return (
-            <GameUpdate gid={gid} e={e} send={send} exit={rulesUpdate}/>
+            <GameManager gid={gid} info={info} send={send} exit={rulesUpdate} types={types}/>
         );
     }
 

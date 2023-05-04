@@ -1,10 +1,10 @@
 import UserCreate from '@/pages/server/userCreate';
 import GameBrowser from '@/pages/server/gameBrowser';
-import GameCreator from '@/pages/server/gameCreator';
+import GameManager from '@/components/gameManager';
 import GameScreen from '@/pages/game/gameScreen';
 
 
-export default function DisplayContent({UUID, GID, UserName, status, setUser, statusChange, joinFunc, endpoint}) {
+export default function DisplayContent({UUID, GID, UserName, status, setUser, statusChange, joinFunc, endpoint, gameCreate, exit, types, defGInfo}) {
 
     switch(status) {
         case "Naming":
@@ -17,11 +17,11 @@ export default function DisplayContent({UUID, GID, UserName, status, setUser, st
             );
         case "InGame":
             return (
-                <GameScreen pid={UUID} gid={GID} callback={statusChange}/>
+                <GameScreen pid={UUID} gid={GID} callback={statusChange} types={types} defGInfo={defGInfo}/>
             );
         case "Creating":
             return (
-                <GameCreator id={UUID} joinFunc={joinFunc} endpoint={endpoint}/>
+                <GameManager gid="" info={defGInfo} send={gameCreate} exit={exit} types={types}/>
             );
         default:
             return null;

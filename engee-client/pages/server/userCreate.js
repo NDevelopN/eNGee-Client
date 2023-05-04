@@ -7,15 +7,13 @@ export default function UserCreate({id, name, callback, endpoint}) {
     let [UserName, setUserName] = useState("");
 
     function joinServer() {
-        endpoint += "/server/";
-
         let message = {
             pid: id, 
             name: UserName,
         };
 
-        POST(JSON.stringify(message), endpoint, (e) => {
-            callback(e.id)
+        POST(JSON.stringify(message), endpoint + "/server/", (e) => {
+            callback(e.pid, UserName)
         });
     }
 

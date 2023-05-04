@@ -10,8 +10,27 @@ export default function Home() {
     let [UserName, setUserName] = useState("Test Name");
     let [GID, setGID] = useState("");
     let [status, setStatus] = useState("Naming")
+    //TODO: Request from server
+    let [types, setTypes] = useState(["", "Consequences"]);
 
     let endpoint = "http://localhost:8090"
+
+    let defGInfo = {
+        gid: "",
+        name: "",
+        type: "",
+        status: "",
+        old_status: "",
+        leader: "",
+        rules: {
+            rounds: 1,
+            min_plrs: 1,
+            max_plrs: 1,
+            timeout: 0,
+            additional: ""
+        },
+        players: [],
+    }
    
     function setUser(id, name){
         setUUID(id);
@@ -44,9 +63,19 @@ export default function Home() {
         });
     }
 
+    function gameCreate(type, message) {
+        POST(message, endpoint + "/server/create", (e) => {
+            console.log(e);
+            join(e.gid);
+        });
+    }
+
+    function exit() {
+        setStatus("Browsing");
+    }
+
     return (
-        <Layout home>
-            <Head>
+        <Layout home> <Head>
                 <title>
                     {siteTitle}
                     <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -56,7 +85,8 @@ export default function Home() {
                     <ContentSwitch
                         UUID={UUID} GID={GID} UserName={UserName} status={status} 
                         setUser={setUser} setGame={setGame} statusChange={setStatus}
-                        joinFunc={join} endpoint={endpoint}
+                        joinFunc={join} endpoint={endpoint} gameCreate={gameCreate} 
+                        exit={exit} types={types} defGInfo={defGInfo}
                     />
                 </main>
         </Layout>
