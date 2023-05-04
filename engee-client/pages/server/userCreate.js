@@ -2,13 +2,12 @@ import {useState} from 'react';
 
 import {POST} from '@/lib/networkFunctions';
 
-export default function UserCreate({id, name, callback}) {
+export default function UserCreate({id, name, callback, endpoint}) {
 
     let [UserName, setUserName] = useState("");
-    let curName = name;
 
     function joinServer() {
-        let endpoint = "http://localhost:8080/server/";
+        endpoint += "/server/";
 
         let message = {
             pid: id, 
@@ -29,7 +28,7 @@ export default function UserCreate({id, name, callback}) {
 
         if (UserName !== "") {
             //No need to post new update if name isn't changing
-            if (UserName === curName) {
+            if (UserName === name) {
                 return;
             }
 
@@ -43,6 +42,7 @@ export default function UserCreate({id, name, callback}) {
             <label>
                 Change your name:
                 <input type="text" name="name" value={UserName} onChange={handleChange}/>
+                <input type="submit" value="submit"/>
             </label>
         </form>
     );

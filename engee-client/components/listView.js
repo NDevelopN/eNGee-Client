@@ -1,11 +1,8 @@
-import { useState } from "react";
 import utilStyles from "../styles/utils.module.css";
 
-
-//TODO: Tidy this up
 //TODO: Change ready status to a symbol
-//TODO: Is this something that can be made generic?
 export function PlayerList({playerList}) {
+
     return (
         <div className={utilStyles.list}>
             <div className={utilStyles.listItem}>
@@ -34,12 +31,12 @@ export function GameList({gameList, joinFunc}) {
             </div>
 
             {gameList.map(game=> (
-                <div key={game.id} className={utilStyles.listItem}>
+                <div key={game.gid} className={utilStyles.listItem}>
                     <div className={utilStyles.listItemElement}>{game.name}</div>
                     <div className={utilStyles.listItemElement}>{game.game_type}</div>
-                    <div className={utilStyles.listItemElement}>{game.status}</div>
-                    <div className={utilStyles.listItemElement}>{game.player_count}</div>
-                    <button onClick={() => {joinFunc(game.id);}} className={utilStyles.listItemElement }>Join</button>
+                    <div className={utilStyles.listItemElement}>{game.cur_plrs}</div>
+                    <div className={utilStyles.listItemElement}>{game.max_plrs}</div>
+                    <button onClick={() => {joinFunc(game.gid);}} className={utilStyles.listItemElement }>Join</button>
                 </div>
             ))}
         </div>
