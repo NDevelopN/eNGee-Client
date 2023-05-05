@@ -11,8 +11,8 @@ export default function Prompts({prompts, reply}) {
         e.preventDefault();
         
         for (let i = 0; i < prompts.length; i++) {
-            if (replies[i] === null  || replies[i] === "") {
-                console.log("Empty field: " + i);
+            if (replies[i] === undefined  || replies[i] === "") {
+                alert("Please enter a reply for " + prompts[i]);
                 return
             }
         }
@@ -23,7 +23,6 @@ export default function Prompts({prompts, reply}) {
 
     function handleChange(e, key) {
         replies[key] = e.target.value
-        console.log(key +": " + replies[key])
     }
 
     //TODO make changes to bring back lobby
@@ -43,7 +42,7 @@ export default function Prompts({prompts, reply}) {
             {prompts.map((prompt, index) => (
                 <div key={index} className={utilStyles.listItem}>
                     <label>{prompt}
-                        <input type="text" name={prompt} value={replies[index]} autocomplete='off' onChange={(e) => handleChange(e, index)}/>
+                        <input type="text" name={prompt} autoComplete='off' onChange={(e) => handleChange(e, index)}/>
                     </label>
                 </div>
             ))}
