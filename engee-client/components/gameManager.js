@@ -95,7 +95,7 @@ export default function GameManager({gid, info, send, exit, types}) {
         }
 
 
-        let message = info;
+        let message = JSON.parse(JSON.stringify(info));
 
         message.name = gameName;
         message.type = gameType;
@@ -106,8 +106,8 @@ export default function GameManager({gid, info, send, exit, types}) {
             timeout: timeout,
             additional: additional,
         };
-        
-        if (message === info) {
+
+        if (JSON.stringify(message) === JSON.stringify(info)) {
             alert("No changes were made.");
             return
         }
