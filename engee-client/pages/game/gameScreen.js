@@ -11,6 +11,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
     let [pStatus, setPStatus] = useState("Not Ready");
     let [isLeader, setIsLeader] = useState(false);
     let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
+    let [plrList, setPlrList] = useState([]);
 
     let [status, setStat] = useState("Lobby");
 
@@ -59,6 +60,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
 
         gm.players = input.players 
         setGameInfo(gm)
+        setStatus(input.status)
     }
 
 
@@ -69,10 +71,13 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
         setStat(status)
     }
 
-    function setPlrList(plrList) {
+    function setPlayers(plrList) {
         var gm = gameInfo
+        console.log("Players list first :" + gm.players )
         gm.players = plrList
+        console.log("Players list after :" + gm.players )
         setGameInfo(gm)
+        setPlrList(plrList)
     }
 
     //TODO redundant?
@@ -125,13 +130,16 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
                 setIsLeader(content.leader === pid);
                 break;
             case "Status": 
+                console.log("Recieving status update: " + data.content)
                 setStatus(data.content);
                 break;
             case "Players":
+                console.log("Got players update " + data.content);
                 content = JSON.parse(data.content)
-                setPlrList(content.players);
+                setPlayers(content.players);
                 break;
             case "Leader":
+                console.log("Got leader update")
                 setIsLeader(data.pid === pid);
                 break;
             case "Rules":
@@ -169,7 +177,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
         return <h2> Loading... </h2>
     }
 
-    switch (gameInfo.status) {
+    switch (status) {
         case "Pre":
             return (
                 <h2>Loading</h2>
@@ -178,7 +186,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
             return (
                 <>
                 {isLeader ?  <Leader/> : <></>}
-                <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={gameInfo.players}/>
+                <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
                 </>
             );
         case "Play":
@@ -193,7 +201,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
                 <div>
                 <h3>Paused</h3>
                 {isLeader ? <Leader/> : <></>}
-                <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={gameInfo.players}/>
+                <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
                 </div>
             );
         case "Restart":
