@@ -8,7 +8,7 @@ import LeaderView from '@/pages/game/leader/leader';
 export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
     let [socket, setSocket] = useState();
     let [gameInfo, setGameInfo] = useState(defGInfo);
-    let [pStatus, setPStatus] = useState("Not Ready");
+    let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
     let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
     let [plrList, setPlrList] = useState([]);
