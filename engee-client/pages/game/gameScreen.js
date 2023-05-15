@@ -16,9 +16,6 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
 
     useEffect(() => {
         connect()
-        
-      //  return(disconnect);
-
     }, []);
 
     function connect() {
@@ -66,7 +63,6 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
 
 
     function setStatus(status) {
-        console.log("setting status to " + status); 
         var gm = gameInfo
         gm.status = status
         setGameInfo(gm)
@@ -85,7 +81,6 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
         gm.rules = rules
         setGameInfo(gm)
     }
-
 
     function changePStatus() {
         var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready")
@@ -137,7 +132,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
                 setPlrList(content.players);
                 break;
             case "Leader":
-                setIsLeader(data.content === pid);
+                setIsLeader(data.pid === pid);
                 break;
             case "Rules":
                 content = JSON.parse(data.content)
@@ -145,16 +140,15 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
                 setGameSpec(typeMap[content.type])
                 break;
             case "Issue":
-                console.log(data.content);
+                console.log("Issue from server: " + data.content);
                 //TODO what issues can be handled here?
-                break;te
+                break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
                 setGameMessage(data)
                 break;
         }
     }
-
     
     function send(type, data) {
         let message = {

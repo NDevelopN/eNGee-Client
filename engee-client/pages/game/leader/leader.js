@@ -26,13 +26,13 @@ export default function LeaderView({info, gid, status, send, types}) {
     }
 
     function endGame() {
-        setConfirmationText("This will remove the game for all players, are you sure?");
+        setConfirmationText("This will delete the game for all players, are you sure?");
         setSubmitType("End");
         setDialog(true);
     }
 
     function restart () {
-        setConfirmationText("Return all players to first lobby state?");
+        setConfirmationText("Reset all players to the lobby?");
         setSubmitType("Restart");
         setDialog(true);
     }

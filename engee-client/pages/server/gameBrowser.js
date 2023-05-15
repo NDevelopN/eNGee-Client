@@ -18,9 +18,10 @@ export default function GameBrowser({callback, joinFunc, endpoint}) {
     function getGames() {
         
         GET(endpoint + "/server/browser", (e) => {
-           // console.log(e);
             if (e.games) {
                 setGameList(e.games)
+            } else {
+                console.log("No games received from server");
             }
         });
     }
