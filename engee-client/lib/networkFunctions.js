@@ -59,7 +59,7 @@ export function GET(endpoint, callback) {
  * Accepts an endpoint and creates a websocket connection
  * Callback allows the client function to manage connection 
  */
-export async function SOCK(endpoint, callback) {
+export async function SOCK(endpoint, close, callback) {
     let socket = new WebSocket(endpoint);
 
     socket.onopen = (e) => {
@@ -73,6 +73,7 @@ export async function SOCK(endpoint, callback) {
         } else {
             console.log("[close] Connection died");
         }
+        close();
     };
 
     socket.onerror = (e) => {

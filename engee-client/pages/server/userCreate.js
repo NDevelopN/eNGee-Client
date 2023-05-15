@@ -62,7 +62,7 @@ export default function UserCreate({id, name, callback, endpoint}) {
         <Popup open={dialog} onClose={()=>setDialog(false)}>
             <ConfirmDialog 
                 text={"Are you happy with the username \"" + UserName + "\"?"}
-                confirm={(e) => {handleSubmit(); setDialog(false)}} 
+                confirm={() => {handleSubmit(); setDialog(false)}} 
                 close={() => setDialog(false)}
             />
         </Popup>

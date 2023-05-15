@@ -5,7 +5,7 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({pid, gid, callback, types, defGInfo}) {
+export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
     let [socket, setSocket] = useState();
     let [gameInfo, setGameInfo] = useState(defGInfo);
     let [pStatus, setPStatus] = useState("Not Ready");
@@ -25,7 +25,7 @@ export default function GameScreen({pid, gid, callback, types, defGInfo}) {
         console.log("Connecting");
         //TODO change this hardcoding
         let endpoint = "ws://localhost:8090/game/consequences";
-        SOCK(endpoint, (sock) => {
+        SOCK(endpoint, close, (sock) => {
             sock.addEventListener("message", Receive);
             setSocket(sock)
             
@@ -38,6 +38,10 @@ export default function GameScreen({pid, gid, callback, types, defGInfo}) {
 
             sock.send(JSON.stringify(message))
         });
+    }
+
+    function close() {
+        statusChange("Browsing");
     }
 
     function setGInfo(input) {
@@ -92,7 +96,7 @@ export default function GameScreen({pid, gid, callback, types, defGInfo}) {
     function leaveGame() {
         send("Leave", "");
         disconnect();
-        callback("Browsing");
+        statusChange("Browsing");
     }
 
     function disconnect() {

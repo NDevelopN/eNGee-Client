@@ -17,7 +17,7 @@ export default function DisplayContent({UUID, GID, UserName, status, setUser, st
             );
         case "InGame":
             return (
-                <GameScreen pid={UUID} gid={GID} callback={statusChange} types={types} defGInfo={defGInfo}/>
+                <GameScreen pid={UUID} gid={GID} statusChange={statusChange} types={types} defGInfo={defGInfo}/>
             );
         case "Creating":
             return (

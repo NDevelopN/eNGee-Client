@@ -1,6 +1,9 @@
 import {useState, useEffect} from 'react';
+import Popup from 'reactjs-popup';
 
-export default function GameManager({gid, info, send, exit, types}) {
+import { ConfirmDialog } from '@/components/dialogs';
+
+export default function GameManager({info, send, exit, types}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
     let [rounds, setRounds] = useState(1);
@@ -9,8 +12,16 @@ export default function GameManager({gid, info, send, exit, types}) {
     let [timeout, setTimeout] = useState(0);
     //Allow for extensability
     let [additional, setAdditional] = useState("");
+
+    let [dialog, setDialog] = useState(false);
+    let [creating, setCreating] = useState(false);
     
     useEffect(() => {
+        if (info.gid === "") {
+            setCreating(true);
+            return
+        }
+
         setGameName(info.name);
         setGameType(info.type)
         setRounds(info.rules.rounds)
@@ -52,11 +63,7 @@ export default function GameManager({gid, info, send, exit, types}) {
         }
     };
 
-    function handleSubmit(event) {
-        event.preventDefault();
-
-
-
+    function handleSubmit() {
         if (gameName === undefined || gameName === "") {
             alert("Please enter a game name");
             return;
@@ -67,12 +74,10 @@ export default function GameManager({gid, info, send, exit, types}) {
             return;
         }
 
-
         if (rounds === undefined || rounds < 1) {
             alert("Please enter a number of rounds to play, must be greater than zero.");
             return;
         }
-
 
         if (minPlrs === undefined || minPlrs < 1) {
             alert("Please enter a minimum number of players, must be greater than zero.");
@@ -94,7 +99,6 @@ export default function GameManager({gid, info, send, exit, types}) {
             return;
         }
 
-
         let message = JSON.parse(JSON.stringify(info));
 
         message.name = gameName;
@@ -115,51 +119,75 @@ export default function GameManager({gid, info, send, exit, types}) {
         send("Rules", JSON.stringify(message))
     }
 
+    function Pop() {
+        if (dialog) {
+            return <Popup open={dialog} onClose={()=>setDialog(false)}>
+                <ConfirmDialog
+                    text={"Are you sure you want to submit these new rules? Doing so will restart the game to the lobby."}
+                    confirm={(e) => {handleSubmit(); setDialog(false)}}
+                    close={()=>setDialog(false)}
+                />
+            </Popup>
+        } else {
+            return <></>
+        }
+    }
+
     return (
-    <form onSubmit={handleSubmit}>
+    <div>
+        <Pop/>
+        <form onSubmit={(e)=>{
+            e.preventDefault(); 
+            if (creating) { 
+                handleSubmit();
+            } else {
+                setDialog(true);
+            }
+        }}>
 
-        <label>
-            Name:
-            <input type="text" name="name" defaultValue={info.name} autoComplete='off' onChange={handleChange} contentEditable={false}/>
-        </label>
-        <br/>
+            <label>
+                Name:
+                <input type="text" name="name" defaultValue={info.name} autoComplete='off' onChange={handleChange} contentEditable={false}/>
+            </label>
+            <br/>
 
-        <label>
-            Game Type:
-            <select name="type" defaultValue={info.type} onChange={handleChange}>
-                {types.map((type, index) => ( 
-                    <option key={index} value={type}>{type}</option>
-                ))}
-            </select>
-        </label>
-        <br/>
+            <label>
+                Game Type:
+                <select name="type" defaultValue={info.type} onChange={handleChange}>
+                    {types.map((type, index) => ( 
+                        <option key={index} value={type}>{type}</option>
+                    ))}
+                </select>
+            </label>
+            <br/>
         
-        <label>
-            Rounds:
-            <input type="number" name="rounds" defaultValue={info.rules.rounds} mind={1} onChange={handleChange}/>
-        </label>
-        <br/>
+            <label>
+                Rounds:
+                <input type="number" name="rounds" defaultValue={info.rules.rounds} mind={1} onChange={handleChange}/>
+            </label>
+            <br/>
 
-        <label>
-            Minimum Players:
-            <input type="number" name="minPlrs" defaultValue={info.rules.min_plrs} min={1} onChange={handleChange}/>
-        </label>
-        <br/>
+            <label>
+                Minimum Players:
+                <input type="number" name="minPlrs" defaultValue={info.rules.min_plrs} min={1} onChange={handleChange}/>
+            </label>
+            <br/>
 
-        <label>
-            Maximum Players:
-            <input type="number" name="maxPlrs" defaultValue={info.rules.max_plrs} min={1} onChange={handleChange}/>
-        </label>
-        <br/>
+            <label>
+                Maximum Players:
+                <input type="number" name="maxPlrs" defaultValue={info.rules.max_plrs} min={1} onChange={handleChange}/>
+            </label>
+            <br/>
 
-        <label>
-            Idle Timeout:
-            <input type="number" name="timeout" defaultValue={info.rules.timeout} min={0} onChange={handleChange}/>
-        </label>
-        <br/>
+            <label>
+                Idle Timeout:
+                <input type="number" name="timeout" defaultValue={info.rules.timeout} min={0} onChange={handleChange}/>
+            </label>
+            <br/>
 
-        <input type="submit" value="submit"/>
-        <input type="button" value="close" onClick={exit}/>
-    </form>
+            <input type="submit" value="submit"/>
+            <input type="button" value="close" onClick={exit}/>
+        </form>
+    </div>
     );
 }

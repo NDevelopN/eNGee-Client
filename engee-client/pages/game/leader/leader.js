@@ -1,17 +1,24 @@
 import {useState} from 'react'
+import Popup from 'reactjs-popup';
 
 import GameManager from '@/components/gameManager'
+import { ConfirmDialog } from '@/components/dialogs';
 
 export default function LeaderView({info, gid, status, send, types}) {
 
     let [inRules, setInRules] = useState(false)
+    let [dialog, setDialog] = useState(false)
+    let [confirmationText, setConfirmationText] = useState("")
+    let [submitType, setSubmitType] = useState("")
 
     function pause() {
         send("Pause", "");
     }
 
     function start() {
-        send("Start", "");
+        setConfirmationText("Are you sure you're ready to start?");
+        setSubmitType("Start");
+        setDialog(true);
     }
 
     function rulesUpdate() {
@@ -19,11 +26,33 @@ export default function LeaderView({info, gid, status, send, types}) {
     }
 
     function endGame() {
-        send("End", "");
+        setConfirmationText("This will remove the game for all players, are you sure?");
+        setSubmitType("End");
+        setDialog(true);
     }
 
     function restart () {
-        send("Restart", "");
+        setConfirmationText("Return all players to first lobby state?");
+        setSubmitType("Restart");
+        setDialog(true);
+    }
+
+    function handleSubmit(type) {
+        send(type, "")
+    }
+
+    function Pop() {
+        if (dialog) {
+            return <Popup open={dialog} onClose={()=>setDialog(false)}>
+                <ConfirmDialog
+                    text={confirmationText}
+                    confirm={(e) => {handleSubmit(submitType); setDialog(false)}}
+                    close={()=>setDialog(false)}
+                />
+            </Popup>
+        } else {
+            return <></>
+        }
     }
 
     //Override current status until exited rules
@@ -37,6 +66,7 @@ export default function LeaderView({info, gid, status, send, types}) {
         case "Lobby": 
             return (
                 <div>
+                    <Pop/>
                     <button onClick={pause}>Pause</button>
                     <button onClick={start}>Start</button>
                 </div>
@@ -44,12 +74,14 @@ export default function LeaderView({info, gid, status, send, types}) {
         case "Play":
             return(
                 <div>
+                    <Pop/>
                     <button onClick={pause}>Pause</button>
                 </div>
             );
         case "Pause":
             return (
                 <div>
+                    <Pop/>
                     <button onClick={rulesUpdate}>Edit Rules</button>
                     <button onClick={pause}>Unpause</button>
                     <button onClick={endGame}>End Game</button>
