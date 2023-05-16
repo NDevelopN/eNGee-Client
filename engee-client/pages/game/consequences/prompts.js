@@ -4,7 +4,7 @@ import utilStyles from '@/styles/utils.module.css';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function Prompts({prompts, reply}) {
+export default function Prompts({prompts, reply, quit}) {
 
     let [sent, setSent] = useState(false)
     let replies = [];
@@ -60,6 +60,7 @@ export default function Prompts({prompts, reply}) {
             </TableBody>
         </Table>
         <button onClick={handleSubmit}>Submit</button>
+        <button onClick={quit}>Quit</button>
         </>
     );
 }
