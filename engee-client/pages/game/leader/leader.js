@@ -4,6 +4,8 @@ import Popup from 'reactjs-popup';
 import GameManager from '@/components/gameManager'
 import { ConfirmDialog } from '@/components/dialogs';
 
+import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
+
 export default function LeaderView({info, gid, status, send, types}) {
 
     let [inRules, setInRules] = useState(false)

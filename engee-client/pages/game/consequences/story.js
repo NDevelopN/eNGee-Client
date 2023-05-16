@@ -1,4 +1,5 @@
 import utilStyles from '@/styles/utils.module.css';
+import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
 export default function Story({story, update, quit}) {
 
@@ -9,20 +10,26 @@ export default function Story({story, update, quit}) {
     }
     
     return (
-        <div className={utilStyles.list}>
-            <div className={utilStyles.listItem}>
-                <div className={utilStyles.listItemElement}><b>Prompt</b></div>
-                <div classNaame={utilStyles.listItemElement}><b>Response</b></div>
-            </div>
-
-           {story.map((line, index) => (
-                <div key={index} className={utilStyles.listItem}>
-                    <div className={utilStyles.listItemElement}>{line.first}</div>
-                    <div className={utilStyles.listItemElement}>{line.second}</div>
-                </div>
-           ))} 
-           <button onClick={ready}>Ready</button>
-           <button onClick={quit}>Quit</button>
-        </div>
+        <>
+        <Table padding='none'>
+            <TableHead>
+                <TableRow>
+                    <TableCell><b>Prompt</b></TableCell>
+                    <TableCell><b>Response</b></TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                
+                {story.map((line, index) => (
+                    <TableRow key={index}>
+                        <TableCell>{line.first}</TableCell>
+                        <TableCell>{line.second}</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+        <button onClick={ready}>Ready</button>
+        <button onClick={quit}>Quit</button>
+        </>
     );
 }

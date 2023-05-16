@@ -3,6 +3,8 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
+import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
+
 export default function GameManager({info, send, exit, types}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
@@ -144,46 +146,104 @@ export default function GameManager({info, send, exit, types}) {
                 setDialog(true);
             }
         }}>
+            <Table padding='none'>
+                <TableHead>
+                    <TableRow>
 
-            <label>
-                Name:
-                <input type="text" name="name" defaultValue={info.name} autoComplete='off' onChange={handleChange} contentEditable={false}/>
-            </label>
-            <br/>
+                    </TableRow>
+                </TableHead>
 
-            <label>
-                Game Type:
-                <select name="type" defaultValue={info.type} onChange={handleChange}>
-                    {types.map((type, index) => ( 
-                        <option key={index} value={type}>{type}</option>
-                    ))}
-                </select>
-            </label>
-            <br/>
-        
-            <label>
-                Rounds:
-                <input type="number" name="rounds" defaultValue={info.rules.rounds} mind={1} onChange={handleChange}/>
-            </label>
-            <br/>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>
+                            Name
+                        </TableCell>
+                        <TableCell>
+                            <input 
+                                type="text" 
+                                name="name" 
+                                defaultValue={info.name} 
+                                autoComplete='off' 
+                                contentEditable={false}
+                                onChange={handleChange} 
+                            />
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
 
-            <label>
-                Minimum Players:
-                <input type="number" name="minPlrs" defaultValue={info.rules.min_plrs} min={1} onChange={handleChange}/>
-            </label>
-            <br/>
+                        <TableCell>
+                           Game Type 
+                        </TableCell>
+                        <TableCell>
+                            <select name="type" defaultValue={info.type} onChange={handleChange} >
+                                {types.map((type, index) => (
+                                    <option key={index} value={type}>{type}</option>
+                                ))}
+                            </select>
+                        </TableCell>
+                    </TableRow>
 
-            <label>
-                Maximum Players:
-                <input type="number" name="maxPlrs" defaultValue={info.rules.max_plrs} min={1} onChange={handleChange}/>
-            </label>
-            <br/>
+                    <TableRow>
+                        <TableCell>
+                           Rounds 
+                        </TableCell>
+                        <TableCell>
+                            <input 
+                                type="number" 
+                                name="rounds" 
+                                defaultValue={info.rules.rounds} 
+                                min={1} 
+                                onChange={handleChange}
+                            />
+                        </TableCell>
+                    </TableRow>
 
-            <label>
-                Idle Timeout:
-                <input type="number" name="timeout" defaultValue={info.rules.timeout} min={0} onChange={handleChange}/>
-            </label>
-            <br/>
+                    <TableRow>
+                        <TableCell>
+                           Minimum Players 
+                        </TableCell>
+                        <TableCell>
+                            <input 
+                                type="number" 
+                                name="minPlrs" 
+                                defaultValue={info.rules.min_plrs} 
+                                min={1} 
+                                onChange={handleChange}
+                            />
+                        </TableCell>
+                    </TableRow>
+
+                    <TableRow>
+                        <TableCell>
+                            Maximum Players            
+                        </TableCell>
+                        <TableCell>
+                            <input 
+                                type="number" 
+                                name="maxPlrs" 
+                                defaultValue={info.rules.max_plrs} 
+                                min={minPlrs} 
+                                onChange={handleChange}
+                            />
+                        </TableCell>
+                    </TableRow>
+
+                    <TableRow>
+                        <TableCell>
+                            Idle Timeout            
+                        </TableCell>
+                        <TableCell>
+                            <input 
+                                type="number" 
+                                name="timeout" 
+                                defaultValue={info.rules.timeout} 
+                                min={0} 
+                                onChange={handleChange}
+                            />
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
 
             <input type="submit" value="submit"/>
             <input type="button" value="close" onClick={exit}/>
