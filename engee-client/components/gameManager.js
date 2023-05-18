@@ -8,28 +8,19 @@ import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 export default function GameManager({info, send, exit, types}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
-    let [rounds, setRounds] = useState(1);
     let [minPlrs, setMinPlrs] = useState(1);
     let [maxPlrs, setMaxPlrs] = useState(1);
-    let [timeout, setTimeout] = useState(0);
     //Allow for extensability
     let [additional, setAdditional] = useState("");
 
     let [dialog, setDialog] = useState(false);
-    let [creating, setCreating] = useState(false);
+    let [message, setMessage] = useState();
     
     useEffect(() => {
-        if (info.gid === "") {
-            setCreating(true);
-            return
-        }
-
         setGameName(info.name);
         setGameType(info.type)
-        setRounds(info.rules.rounds)
         setMinPlrs(info.rules.min_plrs)
         setMaxPlrs(info.rules.max_plrs)
-        setTimeout(info.rules.timeout)
         setAdditional(info.rules.additional) 
     }, []);
 
@@ -43,10 +34,6 @@ export default function GameManager({info, send, exit, types}) {
                 console.log("Setting type..." + event.target.value);
                 setGameType(event.target.value);
                 break;
-            case "rounds":
-                console.log("Setting rounds..." + event.target.value);
-                setRounds(parseInt(event.target.value, 10));
-                break;
             case "minPlrs":
                 console.log("Setting minp..." + event.target.value);
                 setMinPlrs(parseInt(event.target.value, 10));
@@ -54,10 +41,6 @@ export default function GameManager({info, send, exit, types}) {
             case "maxPlrs":
                 console.log("Setting maxp..." + event.target.value);
                 setMaxPlrs(parseInt(event.target.value, 10));
-                break;
-            case "timeout":
-                console.log("Setting timeout..." + event.target.value);
-                setTimeout(parseInt(event.target.value, 10));
                 break;
             default:
                 console.error("Unknown event " + event);
@@ -76,11 +59,6 @@ export default function GameManager({info, send, exit, types}) {
             return;
         }
 
-        if (rounds === undefined || rounds < 1) {
-            alert("Please enter a number of rounds to play, must be greater than zero.");
-            return;
-        }
-
         if (minPlrs === undefined || minPlrs < 1) {
             alert("Please enter a minimum number of players, must be greater than zero.");
             return;
@@ -96,37 +74,32 @@ export default function GameManager({info, send, exit, types}) {
             return;
         }
 
-        if (timeout === undefined || timeout < 0) {
-            alert("Please enter an idle timeout in seconds. For no timeout, enter 0.")
-            return;
-        }
+        let msg = JSON.parse(JSON.stringify(info));
 
-        let message = JSON.parse(JSON.stringify(info));
-
-        message.name = gameName;
-        message.type = gameType;
-        message.rules = {
-            rounds: rounds,
+        msg.name = gameName;
+        msg.type = gameType;
+        msg.rules = {
             min_plrs: minPlrs,
             max_plrs: maxPlrs,
-            timeout: timeout,
             additional: additional,
         };
 
-        if (JSON.stringify(message) === JSON.stringify(info)) {
+        if (JSON.stringify(msg) === JSON.stringify(info)) {
             alert("No changes were made.");
             return
         }
+
         
-        send("Rules", JSON.stringify(message))
+        setMessage(msg)
+        setDialog(true)
     }
 
     function Pop() {
         if (dialog) {
             return <Popup open={dialog} onClose={()=>setDialog(false)}>
                 <ConfirmDialog
-                    text={"Are you sure you want to submit these new rules? Doing so will restart the game to the lobby."}
-                    confirm={(e) => {handleSubmit(); setDialog(false)}}
+                    text={"Are you sure you want to submit these new rules?"}
+                    confirm={(e) => {send("Rules", JSON.stringify(message)); setDialog(false)}}
                     close={()=>setDialog(false)}
                 />
             </Popup>
@@ -140,11 +113,7 @@ export default function GameManager({info, send, exit, types}) {
         <Pop/>
         <form onSubmit={(e)=>{
             e.preventDefault(); 
-            if (creating) { 
-                handleSubmit();
-            } else {
-                setDialog(true);
-            }
+            handleSubmit();
         }}>
             <Table padding='none'>
                 <TableHead>
@@ -185,21 +154,6 @@ export default function GameManager({info, send, exit, types}) {
 
                     <TableRow>
                         <TableCell>
-                           Rounds 
-                        </TableCell>
-                        <TableCell>
-                            <input 
-                                type="number" 
-                                name="rounds" 
-                                defaultValue={info.rules.rounds} 
-                                min={1} 
-                                onChange={handleChange}
-                            />
-                        </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                        <TableCell>
                            Minimum Players 
                         </TableCell>
                         <TableCell>
@@ -223,21 +177,6 @@ export default function GameManager({info, send, exit, types}) {
                                 name="maxPlrs" 
                                 defaultValue={info.rules.max_plrs} 
                                 min={minPlrs} 
-                                onChange={handleChange}
-                            />
-                        </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                        <TableCell>
-                            Idle Timeout            
-                        </TableCell>
-                        <TableCell>
-                            <input 
-                                type="number" 
-                                name="timeout" 
-                                defaultValue={info.rules.timeout} 
-                                min={0} 
                                 onChange={handleChange}
                             />
                         </TableCell>
