@@ -40,7 +40,10 @@ export default function Consequences({msg, send, quit}) {
         );
     }
     
-    let content = JSON.parse(msg.content);
+    let content = ""
+    if (msg.content !== "")  {
+        content = JSON.parse(msg.content);
+    }
 
     switch (msg.type) {
         case "Prompts":
@@ -53,10 +56,12 @@ export default function Consequences({msg, send, quit}) {
         case "Story":
             return (
                 <>
-                <Story story={content.list} update={update} quit={() => setDialog(true)}/>
+                <Story story={content.lines} update={update} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
+        case "Accept":
+            return (<h2>Waiting for other players...</h2>);
         default:
             return (<h2>Something isnt quite right.</h2>);
     }
