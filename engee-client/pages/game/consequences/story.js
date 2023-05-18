@@ -22,8 +22,8 @@ export default function Story({story, update, quit}) {
                 
                 {story.map((line, index) => (
                     <TableRow key={index}>
-                        <TableCell>{line.first}</TableCell>
-                        <TableCell>{line.second}</TableCell>
+                        <TableCell>{line.prompt}</TableCell>
+                        <TableCell>{line.story}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>
