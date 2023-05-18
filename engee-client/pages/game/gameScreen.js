@@ -22,7 +22,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
     function connect() {
         console.log("Connecting");
         //TODO change this hardcoding
-        let endpoint = "ws://localhost:8090/game/consequences";
+        let endpoint = "ws://localhost:8090/game/" + gid;
         SOCK(endpoint, close, (sock) => {
             sock.addEventListener("message", Receive);
             setSocket(sock)
@@ -140,7 +140,11 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
                 break;
             case "Leader":
                 console.log("Got leader update")
+                console.log("leader pid: " + data.pid + " current PID: " + pid)
                 setIsLeader(data.pid === pid);
+                if (isLeader) {
+                    alert("You are now the game leader")
+                }
                 break;
             case "Rules":
                 content = JSON.parse(data.content)
