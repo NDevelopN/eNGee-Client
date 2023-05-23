@@ -13,7 +13,14 @@ export default function Home() {
     //TODO: Request from server
     let [types, setTypes] = useState(["", "Consequences"]);
 
-    let endpoint = "http://localhost:8090"
+
+    let CONFIG = require('@/config.json')
+
+    let url = CONFIG.url
+    if (url === null) {
+        console.log("URL not found in config file");
+        return
+    }
 
     let defGInfo = {
         gid: "",
@@ -50,7 +57,7 @@ export default function Home() {
         };
 
         //TODO remove endpoint harcoding
-        POST(JSON.stringify(message), endpoint + "/server/join", (e) => {
+        POST(JSON.stringify(message), url + "/server/join", (e) => {
             console.log("Joined");
             if (e.message === "ACK") {
                 setGID(gameID);
@@ -64,7 +71,7 @@ export default function Home() {
     }
 
     function gameCreate(type, message) {
-        POST(message, endpoint + "/server/create", (e) => {
+        POST(message, url + "/server/create", (e) => {
             console.log(e);
             join(e.gid);
         });
@@ -85,7 +92,7 @@ export default function Home() {
                     <ContentSwitch
                         UUID={UUID} GID={GID} UserName={UserName} status={status} 
                         setUser={setUser} setGame={setGame} statusChange={setStatus}
-                        joinFunc={join} endpoint={endpoint} gameCreate={gameCreate} 
+                        joinFunc={join} url={url} gameCreate={gameCreate} 
                         exit={exit} types={types} defGInfo={defGInfo}
                     />
                 </main>

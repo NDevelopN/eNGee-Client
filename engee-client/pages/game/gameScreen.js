@@ -5,7 +5,7 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
+export default function GameScreen({pid, gid, url, statusChange, types, defGInfo}) {
     let [socket, setSocket] = useState();
     let [gameInfo, setGameInfo] = useState(defGInfo);
     let [pStatus, setPStatus] = useState("");
@@ -20,9 +20,7 @@ export default function GameScreen({pid, gid, statusChange, types, defGInfo}) {
     }, []);
 
     function connect() {
-        console.log("Connecting");
-        //TODO change this hardcoding
-        let endpoint = "ws://localhost:8090/game/" + gid;
+        let endpoint = "ws" + url.substring(4) + "/game/" + gid;
         SOCK(endpoint, close, (sock) => {
             sock.addEventListener("message", Receive);
             setSocket(sock)

@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import { GameList } from '@/components/listView';
 import { GET }  from '@/lib/networkFunctions';
 
-export default function GameBrowser({callback, joinFunc, endpoint}) {
+export default function GameBrowser({callback, joinFunc, url}) {
     let [gameList, setGameList] = useState([])
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export default function GameBrowser({callback, joinFunc, endpoint}) {
 
     function getGames() {
         
-        GET(endpoint + "/server/browser", (e) => {
+        GET(url + "/server/browser", (e) => {
             if (e.games) {
                 setGameList(e.games)
             } else {

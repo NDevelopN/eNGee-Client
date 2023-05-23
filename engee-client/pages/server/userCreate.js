@@ -5,7 +5,7 @@ import { ConfirmDialog } from '@/components/dialogs';
 
 import {POST} from '@/lib/networkFunctions';
 
-export default function UserCreate({id, name, callback, endpoint}) {
+export default function UserCreate({id, name, callback, url}) {
 
     let [UserName, setUserName] = useState("");
     let [dialog, setDialog] = useState(false);
@@ -16,7 +16,7 @@ export default function UserCreate({id, name, callback, endpoint}) {
             name: UserName,
         };
 
-        POST(JSON.stringify(message), endpoint + "/server/", (e) => {
+        POST(JSON.stringify(message), url + "/server/", (e) => {
             callback(e.pid, UserName)
         });
     }
