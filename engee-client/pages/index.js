@@ -1,18 +1,34 @@
 import {useState, useEffect} from 'react';
 import Head from 'next/head';
 
-import ContentSwitch from '@/pages/server/contentSwitch';
 import Layout, {siteTitle} from '@/components/layout';
 import { POST } from '@/lib/networkFunctions';
+import ReadCookie from '@/lib/readCookie';
+
+import UserCreate from '@/pages/server/userCreate';
+import GameBrowser from '@/pages/server/gameBrowser';
+import GameManager from '@/components/gameManager';
+import GameScreen from '@/pages/game/gameScreen';
 
 export default function Home() {
     let [UUID, setUUID] = useState("");
-    let [UserName, setUserName] = useState("Test Name");
+    let [UserName, setUserName] = useState("");
     let [GID, setGID] = useState("");
     let [status, setStatus] = useState("Naming")
+    let [oldStatus, setOldStatus] = useState("");
     //TODO: Request from server
     let [types, setTypes] = useState(["", "Consequences"]);
 
+    useEffect(() => {
+        let id = ReadCookie("uuid");
+        if (id != "" ){
+            setUUID(id);
+            setUserName(ReadCookie("username"));
+            setStatus("Browsing");
+        }
+    }, []) 
+
+    setTimeout(() => {console.log("Cookies: " + UUID + ", " + UserName)}, 2000);
 
     let CONFIG = require('@/config.json')
 
@@ -38,16 +54,36 @@ export default function Home() {
         },
         players: [],
     }
-   
+
     function setUser(id, name){
         setUUID(id);
+        document.cookie = "uuid=" + id +" ;path='/'";
         setUserName(name);
+        document.cookie = "username=" + name + ";path='/'";
         setStatus("Browsing");
     }
 
     function setGame(id) {
         setGID(id);
         setStatus("InGame");
+    }
+
+    function toLobby() {
+        if (status != "InGame") {
+            setStatus("Lobby");
+        }
+    }
+
+    function toUser() {
+        setOldStatus(status);
+        setStatus("Naming")
+    }
+
+    function goBack() {
+        if (oldStatus != "") {
+            setStatus(oldStatus);
+            setOldStatus("");
+        }
     }
 
     function join(gameID) {
@@ -81,20 +117,45 @@ export default function Home() {
         setStatus("Browsing");
     }
 
+    function logout() {
+        //TODO send message to server
+        setUser("", "");
+        setStatus("Naming");
+    }
+
+    function ContentSwitch() {
+        switch (status) {
+        case "Naming":
+            return (
+                <UserCreate id={UUID} name={UserName} login={setUser} goBack={goBack} logout={logout} url={url}/>
+            );
+        case "Browsing":
+            return (
+                <GameBrowser callback={setStatus} joinFunc={join} url={url}/>
+            );
+        case "InGame":
+            return (
+                <GameScreen pid={UUID} gid={GID} url={url} statusChange={setStatus} types={types} defGInfo={defGInfo}/>
+            );
+        case "Creating":
+            return (
+                <GameManager gid="" info={defGInfo} send={gameCreate} exit={exit} types={types}/>
+            );
+        default:
+            return null;
+        }
+    }
+
     return (
-        <Layout home> <Head>
+        <Layout name={UserName} userChange={toUser} home={toLobby}> 
+            <Head>
                 <title>
                     {siteTitle}
                     <meta name="viewport" content="initial-scale=1.0, width=device-width" />
                 </title>
             </Head>
                 <main>
-                    <ContentSwitch
-                        UUID={UUID} GID={GID} UserName={UserName} status={status} 
-                        setUser={setUser} setGame={setGame} statusChange={setStatus}
-                        joinFunc={join} url={url} gameCreate={gameCreate} 
-                        exit={exit} types={types} defGInfo={defGInfo}
-                    />
+                    <ContentSwitch/>
                 </main>
         </Layout>
     );

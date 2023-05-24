@@ -5,9 +5,9 @@ import { ConfirmDialog } from '@/components/dialogs';
 
 import {POST} from '@/lib/networkFunctions';
 
-export default function UserCreate({id, name, callback, url}) {
+export default function UserCreate({id, name, login, goBack, logout, url}) {
 
-    let [UserName, setUserName] = useState("");
+    let [UserName, setUserName] = useState(name);
     let [dialog, setDialog] = useState(false);
 
     function joinServer() {
@@ -17,7 +17,7 @@ export default function UserCreate({id, name, callback, url}) {
         };
 
         POST(JSON.stringify(message), url + "/server/", (e) => {
-            callback(e.pid, UserName)
+            login(e.pid, UserName)
         });
     }
 
@@ -47,18 +47,22 @@ export default function UserCreate({id, name, callback, url}) {
         //TODO: Error saying it can't be empty
     }
 
-
     return (
         <div>
-        {dialog ? <></> :
         <form onSubmit={(e)=>dialogCheck(e)}>
             <label>
-                Change your name:
-                <input type="text" name="name" value={UserName} autoComplete='off' onChange={handleChange}/>
+                Change your name: 
+                <input type="text" name="name" defaultValue={UserName} autoComplete='off' onChange={handleChange}/>
                 <input type="submit" value="submit"/>
             </label>
+            {id !== "" ? 
+            <div>
+                <button onClick={goBack}>Return</button>
+                <button onClick={logout}>Logout</button>
+                </div>
+            : null}
         </form>
-        }
+
         <Popup open={dialog} onClose={()=>setDialog(false)}>
             <ConfirmDialog 
                 text={"Are you happy with the username \"" + UserName + "\"?"}
