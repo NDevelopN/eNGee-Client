@@ -5,35 +5,27 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({pid, gid, callback}) {
-
-    let [status, setStatus] = useState("Pre");
-    let [pStatus, setPStatus] = useState("Not Ready");
-    let [isLeader, setIsLeader] = useState(false);
-    let [plrList, setPlrList] = useState([]);
+export default function GameScreen({pid, gid, url, statusChange, types, defGInfo}) {
     let [socket, setSocket] = useState();
-    let [rules, setRules] = useState();
-    let [type, setType] = useState("");
+    let [gameInfo, setGameInfo] = useState(defGInfo);
+    let [pStatus, setPStatus] = useState("");
+    let [isLeader, setIsLeader] = useState(false);
     let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
+    let [plrList, setPlrList] = useState([]);
 
-    let message = {}
+    let [status, setStat] = useState("Lobby");
 
     useEffect(() => {
         connect()
-        
-      //  return(disconnect);
-
     }, []);
 
     function connect() {
-        console.log("Connecting");
-        //TODO change this hardcoding
-        endpoint = "ws://localhost:8090/game/consequences";
-        SOCK(endpoint, (sock) => {
+        let endpoint = "ws" + url.substring(4) + "/game/" + gid;
+        SOCK(endpoint, close, (sock) => {
             sock.addEventListener("message", Receive);
             setSocket(sock)
             
-            message = {
+            let message = {
                 type: "Connect",
                 PID: pid,
                 GID: gid,
@@ -42,6 +34,55 @@ export default function GameScreen({pid, gid, callback}) {
 
             sock.send(JSON.stringify(message))
         });
+    }
+
+    function close() {
+        statusChange("Browsing");
+    }
+
+    function setGInfo(input) {
+        var gm = gameInfo
+        gm.gid = input.gid
+        gm.name = input.name
+        gm.type = input.type
+        gm.status = input.status
+        gm.old_status = input.old_status
+        gm.leader = input.leader
+        gm.rules =  {
+            rounds: input.rules.rounds,
+            min_plrs: input.rules.min_plrs,
+            max_plrs: input.rules.max_plrs,
+            timeout: input.rules.timeout,
+            additional: input.rules.additional, 
+        }
+
+        gm.players = input.players 
+        setGameInfo(gm)
+        setStatus(input.status)
+    }
+
+
+    function setStatus(status) {
+        var gm = gameInfo
+        gm.status = status
+        setGameInfo(gm)
+        setStat(status)
+    }
+
+    function setPlayers(plrList) {
+        var gm = gameInfo
+        console.log("Players list first :" + gm.players )
+        gm.players = plrList
+        console.log("Players list after :" + gm.players )
+        setGameInfo(gm)
+        setPlrList(plrList)
+    }
+
+    //TODO redundant?
+    function setRules(rules) {
+        var gm = gameInfo
+        gm.rules = rules
+        setGameInfo(gm)
     }
 
     function changePStatus() {
@@ -53,7 +94,7 @@ export default function GameScreen({pid, gid, callback}) {
     function leaveGame() {
         send("Leave", "");
         disconnect();
-        callback("Browsing");
+        statusChange("Browsing");
     }
 
     function disconnect() {
@@ -67,8 +108,8 @@ export default function GameScreen({pid, gid, callback}) {
             return (<h2>Loading...</h2>)
         }
         
-        switch (type.toLowerCase()) {
-            case "con":
+        switch (gameInfo.type.toLowerCase()) {
+            case "consequences":
                 return (<Consequences msg={gameMessage} send={send} quit={leaveGame}/>)
         }
     }
@@ -83,21 +124,25 @@ export default function GameScreen({pid, gid, callback}) {
             case "Info":
             case "Update":
                 content = JSON.parse(data.content)
+                setGInfo(content)
                 setIsLeader(content.leader === pid);
-                setRules(content.rules);
-                setPlrList(content.players);
-                setStatus(content.status);
-                setType(content.type)
                 break;
             case "Status": 
+                console.log("Recieving status update: " + data.content)
                 setStatus(data.content);
                 break;
             case "Players":
+                console.log("Got players update " + data.content);
                 content = JSON.parse(data.content)
-                setPlrList(content.players);
+                setPlayers(content.players);
                 break;
             case "Leader":
-                setIsLeader(data.content === pid);
+                console.log("Got leader update")
+                console.log("leader pid: " + data.pid + " current PID: " + pid)
+                setIsLeader(data.pid === pid);
+                if (isLeader) {
+                    alert("You are now the game leader")
+                }
                 break;
             case "Rules":
                 content = JSON.parse(data.content)
@@ -105,7 +150,7 @@ export default function GameScreen({pid, gid, callback}) {
                 setGameSpec(typeMap[content.type])
                 break;
             case "Issue":
-                console.log(data.content);
+                console.log("Issue from server: " + data.content);
                 //TODO what issues can be handled here?
                 break;
             default:
@@ -114,10 +159,9 @@ export default function GameScreen({pid, gid, callback}) {
                 break;
         }
     }
-
     
     function send(type, data) {
-        message = {
+        let message = {
             type: type,
             pid: pid,
             gid: gid,
@@ -126,7 +170,15 @@ export default function GameScreen({pid, gid, callback}) {
 
         socket.send(JSON.stringify(message));
     }
+
+    function Leader() {
+        return (<LeaderView info={gameInfo} gid={gid} status={gameInfo.status} send={send} types={types}/>);
+    }
     
+    if (gameInfo === undefined) {
+        return <h2> Loading... </h2>
+    }
+
     switch (status) {
         case "Pre":
             return (
@@ -135,14 +187,14 @@ export default function GameScreen({pid, gid, callback}) {
         case "Lobby":
             return (
                 <>
-                {isLeader ?  <LeaderView e={rules} gid={gid} status={status} send={send}/> : <></>}
+                {isLeader ?  <Leader/> : <></>}
                 <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
                 </>
             );
         case "Play":
             return (
                 <>
-                {isLeader ? <LeaderView e={rules} gid={gid} status={status} send={send}/> : <></>}
+                {isLeader ? <Leader/> : <></>}
                 <GameRender/>
                 </>
             );
@@ -150,7 +202,7 @@ export default function GameScreen({pid, gid, callback}) {
             return (
                 <div>
                 <h3>Paused</h3>
-                {isLeader ?  <LeaderView e={rules} gid={gid} status={status} send={send}/> : <></>}
+                {isLeader ? <Leader/> : <></>}
                 <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
                 </div>
             );

@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import { GameList } from '@/components/listView';
 import { GET }  from '@/lib/networkFunctions';
 
-export default function GameBrowser({callback, joinFunc, endpoint}) {
+export default function GameBrowser({callback, joinFunc, url}) {
     let [gameList, setGameList] = useState([])
 
     useEffect(() => {
@@ -16,12 +16,13 @@ export default function GameBrowser({callback, joinFunc, endpoint}) {
     },[]);
 
     function getGames() {
-        endpoint += "/server/browser";
         
-        GET(endpoint, (e) => {
-           // console.log(e);
+        GET(url + "/server/browser", (e) => {
             if (e.games) {
                 setGameList(e.games)
+            } else {
+                setGameList([]);
+                console.log("No games received from server");
             }
         });
     }

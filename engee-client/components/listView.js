@@ -1,44 +1,52 @@
 import utilStyles from "../styles/utils.module.css";
+import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-//TODO: Change ready status to a symbol
 export function PlayerList({playerList}) {
 
     return (
-        <div className={utilStyles.list}>
-            <div className={utilStyles.listItem}>
-                    <div className={utilStyles.listItemElement}><b>Name</b></div>
-                    <div className={utilStyles.listItemElement}><b>Status</b></div>
-            </div>
+        <Table padding='none'>
+            <TableHead>
+                <TableRow>
+                    <TableCell><b>Player</b></TableCell>
+                    <TableCell><b>Status</b></TableCell>
+                </TableRow>
+            </TableHead>
 
-            {playerList.map(player=> (
-                <div key={player.id} className={utilStyles.listItem}>
-                    <div className={utilStyles.listItemElement}>{player.name}</div>
-                    <div className={utilStyles.listItemElement}>{player.status}</div>
-                </div>
-            ))}
-        </div>
+            <TableBody>
+                {playerList.map(player=> (
+                <TableRow key ={player.pid}>
+                    <TableCell>{player.name}</TableCell>
+                    <TableCell>{player.status}</TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+        </Table>
     );
 }
 
 export function GameList({gameList, joinFunc}) {
     return (
-        <div className={utilStyles.list}>
-            <div className={utilStyles.listItem}>
-                    <div className={utilStyles.listItemElement}><b>Name</b></div>
-                    <div className={utilStyles.listItemElement}><b>GameType</b></div>
-                    <div className={utilStyles.listItemElement}><b>Status</b></div>
-                    <div className={utilStyles.listItemElement}><b>Players</b></div>
-            </div>
+        <Table padding='none'>
+            <TableHead>
+                <TableRow>
+                    <TableCell><b>Game</b></TableCell>
+                    <TableCell><b>Mode</b></TableCell>
+                    <TableCell><b>Status</b></TableCell>
+                    <TableCell><b>Players</b></TableCell>
+                </TableRow>
+            </TableHead>
 
+            <TableBody>
             {gameList.map(game=> (
-                <div key={game.gid} className={utilStyles.listItem}>
-                    <div className={utilStyles.listItemElement}>{game.name}</div>
-                    <div className={utilStyles.listItemElement}>{game.game_type}</div>
-                    <div className={utilStyles.listItemElement}>{game.cur_plrs}</div>
-                    <div className={utilStyles.listItemElement}>{game.max_plrs}</div>
-                    <button onClick={() => {joinFunc(game.gid);}} className={utilStyles.listItemElement }>Join</button>
-                </div>
+                <TableRow key={game.gid}>
+                    <TableCell>{game.name}</TableCell>
+                    <TableCell>{game.type}</TableCell>
+                    <TableCell>{game.status}</TableCell>
+                    <TableCell>{game.cur_plrs}/{game.max_plrs}</TableCell>
+                    <TableCell><button onClick={()=>{joinFunc(game.gid);}}>Join</button></TableCell>
+                </TableRow>
             ))}
-        </div>
-    );
+            </TableBody>
+        </Table>
+    )
 }
