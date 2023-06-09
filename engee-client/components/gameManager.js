@@ -7,7 +7,7 @@ import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
 export default function GameManager({info, send, exit, types}) {
     let [gameName, setGameName] = useState("");
-    let [gameType, setGameType] = useState("");
+    let [gameType, setGameType] = useState(types[0]);
     let [minPlrs, setMinPlrs] = useState(1);
     let [maxPlrs, setMaxPlrs] = useState(1);
     //Allow for extensability
@@ -17,11 +17,13 @@ export default function GameManager({info, send, exit, types}) {
     let [message, setMessage] = useState();
     
     useEffect(() => {
-        setGameName(info.name);
-        setGameType(info.type)
-        setMinPlrs(info.min_plrs)
-        setMaxPlrs(info.max_plrs)
-        setAdditional(info.additional) 
+        if (info != null) {
+            setGameName(info.name);
+            setGameType(info.type)
+            setMinPlrs(info.min_plrs)
+            setMaxPlrs(info.max_plrs)
+            setAdditional(info.additional) 
+        }
     }, []);
 
     function handleChange(event) {
@@ -49,6 +51,7 @@ export default function GameManager({info, send, exit, types}) {
     };
 
     function handleSubmit() {
+        console.log("__DEBUG__ \ngamename: " + gameName + "\ngametype: " + gameType + "\nmin: " + minPlrs + " max: " + maxPlrs)
         if (gameName === undefined || gameName === "") {
             alert("Please enter a game name");
             return;
@@ -74,17 +77,29 @@ export default function GameManager({info, send, exit, types}) {
             return;
         }
 
-        let msg = JSON.parse(JSON.stringify(info));
 
-        msg.name = gameName;
-        msg.type = gameType;
-        msg.min_plrs = minPlrs;
-        msg.max_plrs = maxPlrs;
-        msg.additional_rules = additional;
+        let msg;
+        if (info != null) {
+            msg = JSON.parse(JSON.stringify(info));
 
-        if (JSON.stringify(msg) === JSON.stringify(info)) {
-            alert("No changes were made.");
-            return
+            msg.name = gameName;
+            msg.type = gameType;
+            msg.min_plrs = minPlrs;
+            msg.max_plrs = maxPlrs;
+            msg.additional_rules = additional;
+
+            if (JSON.stringify(msg) === JSON.stringify(info)) {
+                alert("No changes were made.");
+                return
+            }
+        } else {
+            msg = {
+                name: gameName,
+                type: gameType,
+                min_plrs: minPlrs,
+                max_plrs: maxPlrs,
+                additional_rules: additional
+            }
         }
         
         setMessage(msg)
@@ -128,7 +143,7 @@ export default function GameManager({info, send, exit, types}) {
                             <input 
                                 type="text" 
                                 name="name" 
-                                defaultValue={info.name} 
+                                value={gameName} 
                                 autoComplete='off' 
                                 contentEditable={false}
                                 onChange={handleChange} 
@@ -141,7 +156,7 @@ export default function GameManager({info, send, exit, types}) {
                            Game Type 
                         </TableCell>
                         <TableCell>
-                            <select name="type" defaultValue={info.type} onChange={handleChange} >
+                            <select name="type" value={gameType} onChange={handleChange} >
                                 {types.map((type, index) => (
                                     <option key={index} value={type}>{type}</option>
                                 ))}
@@ -157,7 +172,7 @@ export default function GameManager({info, send, exit, types}) {
                             <input 
                                 type="number" 
                                 name="minPlrs" 
-                                defaultValue={info.min_plrs} 
+                                value={minPlrs} 
                                 min={1} 
                                 onChange={handleChange}
                             />
@@ -172,7 +187,7 @@ export default function GameManager({info, send, exit, types}) {
                             <input 
                                 type="number" 
                                 name="maxPlrs" 
-                                defaultValue={info.max_plrs} 
+                                value={maxPlrs} 
                                 min={minPlrs} 
                                 onChange={handleChange}
                             />

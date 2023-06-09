@@ -130,7 +130,7 @@ export default function Home() {
             );
         case "Creating":
             return (
-                <GameManager gid="" info={defGInfo} send={gameCreate} exit={exit} types={types}/>
+                <GameManager gid="" info={null} send={gameCreate} exit={exit} types={types}/>
             );
         default:
             return null;
