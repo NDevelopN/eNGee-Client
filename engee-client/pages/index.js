@@ -35,19 +35,6 @@ export default function Home() {
         return
     }
 
-    let defGInfo = {
-        gid: "",
-        name: "",
-        type: "",
-        status: "",
-        old_status: "",
-        leader: "",
-        min_plrs: 0,
-        max_plrs: 0,
-        cur_plrs: 0,
-        additional_rules: "",
-    }
-
     function setUser(id, name){
         setUUID(id);
         document.cookie = "uuid=" + id +" ;path='/'";
@@ -126,7 +113,7 @@ export default function Home() {
             );
         case "InGame":
             return (
-                <GameScreen pid={UUID} gid={GID} url={url} statusChange={setStatus} types={types} defGInfo={defGInfo}/>
+                <GameScreen pid={UUID} gid={GID} url={url} statusChange={setStatus} types={types}/>
             );
         case "Creating":
             return (

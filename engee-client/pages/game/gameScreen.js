@@ -5,9 +5,9 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({pid, gid, url, statusChange, types, defGInfo}) {
+export default function GameScreen({pid, gid, url, statusChange, types}) {
     let [socket, setSocket] = useState();
-    let [gameInfo, setGameInfo] = useState(defGInfo);
+    let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
     let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
