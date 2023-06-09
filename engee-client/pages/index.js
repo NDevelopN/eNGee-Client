@@ -85,12 +85,10 @@ export default function Home() {
             gid: gameID,
         };
 
-        //TODO remove endpoint harcoding
         POST(JSON.stringify(message), url + "/server/join", (e) => {
             console.log("Joined");
             if (e.message === "ACK") {
-                setGID(gameID);
-                setStatus("InGame");
+                setGame(gameID);
             }
             //TODO this should be a http error
             else {
