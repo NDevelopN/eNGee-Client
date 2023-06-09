@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import { GameList } from '@/components/listView';
 import { GET }  from '@/lib/networkFunctions';
 
-export default function GameBrowser({callback, joinFunc, url}) {
+export default function GameBrowser({updateStatus, joinFunc, url}) {
     let [gameList, setGameList] = useState([])
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export default function GameBrowser({callback, joinFunc, url}) {
     }
 
     function createGame() {
-        callback("Creating");
+        updateStatus("Creating");
     }
 
     return (

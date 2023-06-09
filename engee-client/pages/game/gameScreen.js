@@ -5,7 +5,7 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({pid, gid, url, statusChange, types}) {
+export default function GameScreen({pid, gid, url, updateStatus, types}) {
     let [socket, setSocket] = useState();
     let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
@@ -37,7 +37,7 @@ export default function GameScreen({pid, gid, url, statusChange, types}) {
     }
 
     function close() {
-        statusChange("Browsing");
+        updateStatus("Browsing");
     }
 
     //TODO redundant?
@@ -61,7 +61,7 @@ export default function GameScreen({pid, gid, url, statusChange, types}) {
     function disconnect() {
         //TODO inform the server? 
         socket.close();
-        statusChange("Browsing");
+        updateStatus("Browsing");
     }
 
     function GameRender() {
@@ -118,7 +118,7 @@ export default function GameScreen({pid, gid, url, statusChange, types}) {
                 break;
             case "End":
                 alert("The Game has been deleted.")
-                statusChange("Browsing");
+                updateStatus("Browsing");
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic

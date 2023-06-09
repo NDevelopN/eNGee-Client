@@ -109,11 +109,11 @@ export default function Home() {
             );
         case "Browsing":
             return (
-                <GameBrowser callback={setStatus} joinFunc={join} url={url}/>
+                <GameBrowser updateStatus={setStatus} joinFunc={join} url={url}/>
             );
         case "InGame":
             return (
-                <GameScreen pid={UUID} gid={GID} url={url} statusChange={setStatus} types={types}/>
+                <GameScreen pid={UUID} gid={GID} url={url} updateStatus={setStatus} types={types}/>
             );
         case "Creating":
             return (
