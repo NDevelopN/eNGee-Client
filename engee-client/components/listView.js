@@ -30,30 +30,3 @@ export function PlayerList({playerList, lid}) {
         </Table>
     );
 }
-
-export function GameList({gameList, joinFunc}) {
-    return (
-        <Table padding='none'>
-            <TableHead>
-                <TableRow>
-                    <TableCell><b>Game</b></TableCell>
-                    <TableCell><b>Mode</b></TableCell>
-                    <TableCell><b>Status</b></TableCell>
-                    <TableCell><b>Players</b></TableCell>
-                </TableRow>
-            </TableHead>
-
-            <TableBody>
-            {gameList.map(game=> (
-                <TableRow key={game.gid}>
-                    <TableCell>{game.name}</TableCell>
-                    <TableCell>{game.type}</TableCell>
-                    <TableCell>{game.status}</TableCell>
-                    <TableCell>{game.cur_plrs}/{game.max_plrs}</TableCell>
-                    <TableCell><button onClick={()=>{joinFunc(game.gid);}}>Join</button></TableCell>
-                </TableRow>
-            ))}
-            </TableBody>
-        </Table>
-    )
-}

@@ -1,41 +1,33 @@
-import {useState, useEffect} from 'react';
-
-import { GameList } from '@/components/listView';
-import { GET }  from '@/lib/networkFunctions';
-
-export default function GameBrowser({updateStatus, joinFunc, url}) {
-    let [gameList, setGameList] = useState([])
-
-    useEffect(() => {
-        getGames();
-        const timer = setInterval(() => getGames(), 100000);
-
-        return () => {
-            clearInterval(timer);
-        }
-    },[]);
-
-    function getGames() {
-        
-        GET(url + "/server/browser", (e) => {
-            if (e[0]) {
-                setGameList(e)
-                console.log(e)
-            } else {
-                setGameList([]);
-                console.log("No games received from server");
-            }
-        });
-    }
-
+export default function GameBrowser({updateStatus, joinFunc, gameList}) {
     function createGame() {
         updateStatus("Creating");
     }
+    //TODO change to material design
 
     return (
         <>
-        <GameList gameList={gameList} joinFunc={joinFunc}/>
-        <button onClick={createGame}>Create new Game</button>
+        <Table padding='none'>
+            <TableHeader>
+                <TableRow>
+                    <TableCell><b>Game</b></TableCell>
+                    <TableCell><b>Mode</b></TableCell>
+                    <TableCell><b>Status</b></TableCell>
+                    <TableCell><b>Players</b></TableCell>
+                </TableRow>
+            </TableHeader>
+
+            <TableBody>
+                {gameList.map(game=> (
+                    <TableRow key={game.gid}>
+                        <TableCell>{game.name}</TableCell>
+                        <TableCell>{game.type}</TableCell>
+                        <TableCell>{game.status}</TableCell>
+                        <TableCell>{game.cur_plrs}/{game.max_plrs}</TableCell>
+                        <TableCell><button onClick={()=>joinFunc(game.gid)}>Join</button></TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
         </>
     );
 }

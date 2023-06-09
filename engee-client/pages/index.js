@@ -10,6 +10,8 @@ import GameBrowser from '@/pages/server/gameBrowser';
 import GameManager from '@/components/gameManager';
 import GameScreen from '@/pages/game/gameScreen';
 
+const listInterval = 1000;
+
 export default function Home() {
     let [UUID, setUUID] = useState("");
     let [UserName, setUserName] = useState("");
@@ -19,6 +21,8 @@ export default function Home() {
     //TODO: Request from server
     let [types, setTypes] = useState(["Consequences"]);
 
+    let [gameList, setGameList] = useState([]);
+
     useEffect(() => {
         let id = ReadCookie("uuid");
         if (id != "" ){
@@ -26,6 +30,12 @@ export default function Home() {
             setUserName(ReadCookie("username"));
             setStatus("Browsing");
         }
+
+        const timer = setInterval(() => getGameList(), listInterval);
+        return () => {
+            clearInterval(timer);
+        }
+
     }, []) 
 
     let CONFIG = require('@/config.json')
@@ -59,11 +69,31 @@ export default function Home() {
         setStatus("Naming")
     }
 
+    function updateStatus(newStatus) {
+        setOldStatus(status);
+        setStatus(newStatus);
+    }
+
+    function revertStatus() {
+        setStatus(oldStatus);
+        setOldStatus("");
+    }
+
     function goBack() {
         if (oldStatus != "") {
             setStatus(oldStatus);
             setOldStatus("");
         }
+    }
+
+    function getGameList() {
+        GET(url + "/server/browser", (e) => {
+            if (e.games) {
+                setGameList(e.games);
+            } else {
+                setGameList([]);
+            }
+        });
     }
 
     function join(gameID) {
@@ -105,11 +135,11 @@ export default function Home() {
         switch (status) {
         case "Naming":
             return (
-                <UserCreate id={UUID} name={UserName} login={setUser} goBack={goBack} logout={logout} url={url}/>
+                <UserCreate id={UUID} name={UserName} login={setUser} revertStatus={revertStatus} logout={logout} url={url}/>
             );
         case "Browsing":
             return (
-                <GameBrowser updateStatus={setStatus} joinFunc={join} url={url}/>
+                <GameBrowser updateStatus={updateStatus} joinFunc={join} gameList={gameList}/>
             );
         case "InGame":
             return (
