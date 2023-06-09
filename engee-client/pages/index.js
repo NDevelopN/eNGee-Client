@@ -28,10 +28,7 @@ export default function Home() {
         }
     }, []) 
 
-    setTimeout(() => {console.log("Cookies: " + UUID + ", " + UserName)}, 2000);
-
     let CONFIG = require('@/config.json')
-
     let url = CONFIG.url
     if (url === null) {
         console.log("URL not found in config file");
