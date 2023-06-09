@@ -17,7 +17,7 @@ export default function Home() {
     let [status, setStatus] = useState("Naming")
     let [oldStatus, setOldStatus] = useState("");
     //TODO: Request from server
-    let [types, setTypes] = useState(["", "Consequences"]);
+    let [types, setTypes] = useState(["Consequences"]);
 
     useEffect(() => {
         let id = ReadCookie("uuid");
