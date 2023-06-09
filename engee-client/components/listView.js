@@ -1,8 +1,7 @@
 import utilStyles from "../styles/utils.module.css";
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export function PlayerList({playerList}) {
-
+export function PlayerList({playerList, lid}) {
     return (
         <Table padding='none'>
             <TableHead>
@@ -15,8 +14,16 @@ export function PlayerList({playerList}) {
             <TableBody>
                 {playerList.map(player=> (
                 <TableRow key ={player.pid}>
-                    <TableCell>{player.name}</TableCell>
-                    <TableCell>{player.status}</TableCell>
+                    {player.pid === lid ? 
+                    <>
+                        <TableCell><b>{player.name}</b></TableCell>
+                        <TableCell><b>{player.status}</b></TableCell>
+                    </>
+                    : <>
+                        <TableCell>{player.name}</TableCell>
+                        <TableCell>{player.status}</TableCell>
+                    </>
+                }
                 </TableRow>
                 ))}
             </TableBody>

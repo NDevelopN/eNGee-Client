@@ -1,14 +1,15 @@
 import utilStyles from '@/styles/utils.module.css';
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function Story({story, update, quit}) {
+export default function Story({story, send, quit}) {
 
     function ready(e) {
         e.preventDefault();
 
-        update("Ready");
+        send("Ready", "");
     }
     
+    //TODO add ready button when supported server side
     return (
         <>
         <Table padding='none'>
@@ -28,7 +29,6 @@ export default function Story({story, update, quit}) {
                 ))}
             </TableBody>
         </Table>
-        <button onClick={ready}>Ready</button>
         <button onClick={quit}>Quit</button>
         </>
     );

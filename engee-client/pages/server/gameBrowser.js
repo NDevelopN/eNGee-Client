@@ -8,7 +8,7 @@ export default function GameBrowser({callback, joinFunc, url}) {
 
     useEffect(() => {
         getGames();
-        const timer = setInterval(() => getGames(), 2000);
+        const timer = setInterval(() => getGames(), 100000);
 
         return () => {
             clearInterval(timer);
@@ -18,8 +18,9 @@ export default function GameBrowser({callback, joinFunc, url}) {
     function getGames() {
         
         GET(url + "/server/browser", (e) => {
-            if (e.games) {
-                setGameList(e.games)
+            if (e[0]) {
+                setGameList(e)
+                console.log(e)
             } else {
                 setGameList([]);
                 console.log("No games received from server");
