@@ -39,24 +39,26 @@ export default function Consequences({msg, send, quit}) {
             </Popup>
         );
     }
-    
-    let content = ""
-    if (msg.content !== "")  {
-        content = JSON.parse(msg.content);
+
+    if (msg.content === "" || msg.content === undefined) {
+        //TODO: should this be handled?
+        return;
     }
+
+    let content = JSON.parse(msg.content);
 
     switch (msg.type) {
         case "Prompts":
             return (
                 <>
-                <Prompts prompts={content.list} reply={reply} quit={() => setDialog(true)}/>
+                <Prompts prompts={content} reply={reply} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
         case "Story":
             return (
                 <>
-                <Story story={content.lines} update={update} quit={() => setDialog(true)}/>
+                <Story story={content.lines} send={send} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );

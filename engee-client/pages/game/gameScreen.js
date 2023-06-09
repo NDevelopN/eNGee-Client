@@ -13,7 +13,7 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
     let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
     let [plrList, setPlrList] = useState([]);
 
-    let [status, setStat] = useState("Lobby");
+    let [status, setStatus] = useState("Lobby");
 
     useEffect(() => {
         connect()
@@ -40,44 +40,6 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
         statusChange("Browsing");
     }
 
-    function setGInfo(input) {
-        var gm = gameInfo
-        gm.gid = input.gid
-        gm.name = input.name
-        gm.type = input.type
-        gm.status = input.status
-        gm.old_status = input.old_status
-        gm.leader = input.leader
-        gm.rules =  {
-            rounds: input.rules.rounds,
-            min_plrs: input.rules.min_plrs,
-            max_plrs: input.rules.max_plrs,
-            timeout: input.rules.timeout,
-            additional: input.rules.additional, 
-        }
-
-        gm.players = input.players 
-        setGameInfo(gm)
-        setStatus(input.status)
-    }
-
-
-    function setStatus(status) {
-        var gm = gameInfo
-        gm.status = status
-        setGameInfo(gm)
-        setStat(status)
-    }
-
-    function setPlayers(plrList) {
-        var gm = gameInfo
-        console.log("Players list first :" + gm.players )
-        gm.players = plrList
-        console.log("Players list after :" + gm.players )
-        setGameInfo(gm)
-        setPlrList(plrList)
-    }
-
     //TODO redundant?
     function setRules(rules) {
         var gm = gameInfo
@@ -85,7 +47,7 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
         setGameInfo(gm)
     }
 
-    function changePStatus() {
+    function playerToggleReady() {
         var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready")
         send("Status", nStatus);
         setPStatus(nStatus);
@@ -94,12 +56,12 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
     function leaveGame() {
         send("Leave", "");
         disconnect();
-        statusChange("Browsing");
     }
 
     function disconnect() {
         //TODO inform the server? 
         socket.close();
+        statusChange("Browsing");
     }
 
     function GameRender() {
@@ -124,17 +86,17 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
             case "Info":
             case "Update":
                 content = JSON.parse(data.content)
-                setGInfo(content)
+                setGameInfo(content)
                 setIsLeader(content.leader === pid);
                 break;
             case "Status": 
                 console.log("Recieving status update: " + data.content)
                 setStatus(data.content);
+                setGameMessage(data.content)
                 break;
             case "Players":
                 console.log("Got players update " + data.content);
-                content = JSON.parse(data.content)
-                setPlayers(content.players);
+                setPlrList(JSON.parse(data.content));
                 break;
             case "Leader":
                 console.log("Got leader update")
@@ -144,6 +106,7 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
                     alert("You are now the game leader")
                 }
                 break;
+                //TODO Should be no longer needed
             case "Rules":
                 content = JSON.parse(data.content)
                 setRules(content.rules);
@@ -153,8 +116,13 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
                 console.log("Issue from server: " + data.content);
                 //TODO what issues can be handled here?
                 break;
+            case "End":
+                alert("The Game has been deleted.")
+                statusChange("Browsing");
+                break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
+
                 setGameMessage(data)
                 break;
         }
@@ -172,7 +140,7 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
     }
 
     function Leader() {
-        return (<LeaderView info={gameInfo} gid={gid} status={gameInfo.status} send={send} types={types}/>);
+        return (<LeaderView info={gameInfo} gid={gid} status={status} send={send} types={types}/>);
     }
     
     if (gameInfo === undefined) {
@@ -188,7 +156,7 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
             return (
                 <>
                 {isLeader ?  <Leader/> : <></>}
-                <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
+                <Lobby leave={leaveGame} status={pStatus} changeStatus={playerToggleReady} plrList={plrList} lid={gameInfo.leader}/>
                 </>
             );
         case "Play":
@@ -203,17 +171,13 @@ export default function GameScreen({pid, gid, url, statusChange, types, defGInfo
                 <div>
                 <h3>Paused</h3>
                 {isLeader ? <Leader/> : <></>}
-                <Lobby leave={leaveGame} status={pStatus} changeStatus={changePStatus} plrList={plrList}/>
+                <Lobby leave={leaveGame} status={pStatus} changeStatus={playerToggleReady} plrList={plrList} lid={gameInfo.leader}/>
                 </div>
             );
         case "Restart":
             return (
                 <h2>Restarting game...</h2>
             );
-        case "Ended":
-            //TODO: Notification that game has been deleted
-            leaveGame();
-            return null;
         default:
             return null;
     }

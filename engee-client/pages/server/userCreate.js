@@ -13,7 +13,9 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
     function joinServer() {
         let message = {
             pid: id, 
+            gid: "",
             name: UserName,
+            status: "Creating",
         };
 
         POST(JSON.stringify(message), url + "/server/", (e) => {

@@ -19,9 +19,9 @@ export default function GameManager({info, send, exit, types}) {
     useEffect(() => {
         setGameName(info.name);
         setGameType(info.type)
-        setMinPlrs(info.rules.min_plrs)
-        setMaxPlrs(info.rules.max_plrs)
-        setAdditional(info.rules.additional) 
+        setMinPlrs(info.min_plrs)
+        setMaxPlrs(info.max_plrs)
+        setAdditional(info.additional) 
     }, []);
 
     function handleChange(event) {
@@ -78,17 +78,14 @@ export default function GameManager({info, send, exit, types}) {
 
         msg.name = gameName;
         msg.type = gameType;
-        msg.rules = {
-            min_plrs: minPlrs,
-            max_plrs: maxPlrs,
-            additional: additional,
-        };
+        msg.min_plrs = minPlrs;
+        msg.max_plrs = maxPlrs;
+        msg.additional_rules = additional;
 
         if (JSON.stringify(msg) === JSON.stringify(info)) {
             alert("No changes were made.");
             return
         }
-
         
         setMessage(msg)
         setDialog(true)
@@ -160,7 +157,7 @@ export default function GameManager({info, send, exit, types}) {
                             <input 
                                 type="number" 
                                 name="minPlrs" 
-                                defaultValue={info.rules.min_plrs} 
+                                defaultValue={info.min_plrs} 
                                 min={1} 
                                 onChange={handleChange}
                             />
@@ -175,7 +172,7 @@ export default function GameManager({info, send, exit, types}) {
                             <input 
                                 type="number" 
                                 name="maxPlrs" 
-                                defaultValue={info.rules.max_plrs} 
+                                defaultValue={info.max_plrs} 
                                 min={minPlrs} 
                                 onChange={handleChange}
                             />

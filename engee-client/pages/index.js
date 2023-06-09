@@ -45,14 +45,10 @@ export default function Home() {
         status: "",
         old_status: "",
         leader: "",
-        rules: {
-            rounds: 1,
-            min_plrs: 1,
-            max_plrs: 1,
-            timeout: 0,
-            additional: ""
-        },
-        players: [],
+        min_plrs: 0,
+        max_plrs: 0,
+        cur_plrs: 0,
+        additional_rules: "",
     }
 
     function setUser(id, name){
