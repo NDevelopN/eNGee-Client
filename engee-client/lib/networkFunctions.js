@@ -20,7 +20,7 @@ export async function POST(message, endpoint, callback) {
                 if (callback) {
                     callback(data);
                 }
-            })
+            });
         } else {
             throw new Error ("Something went wrong on API server " + response.status);
         }
@@ -29,7 +29,32 @@ export async function POST(message, endpoint, callback) {
     });
 }
 
-export function GET(endpoint, callback) {
+export async function PUT(message, endpoint, callback) {
+    const request = new Request(endpoint, {
+        method: 'PUT',
+        body: message,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        }
+    });
+
+    fetch(request).then((response) => {
+        if (response.status === 200) {
+            response.json().then((data) => {
+                if (callback) {
+                    callback(data);
+                }
+            });
+        } else {
+            throw new Error ("Something went wrong on API server " + response.status);
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
+}
+
+export async function GET(endpoint, callback) {
     let retval = null;
 
     const request = new Request(endpoint, {
@@ -46,7 +71,31 @@ export function GET(endpoint, callback) {
         if (response.status === 200) {
             response.json().then((data) => {
                 callback(data);
-            })
+            });
+        } else {
+            throw new Error ("Something went wrong on API server " + response.status);
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
+}
+
+export async function DELETE(endpoint, callback) {
+    let retval = null;
+    
+    const request = new Request(endpoint, {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        }
+    });
+
+    fetch(request).then((response) => {
+        if (response.status === 200) {
+            response.json().then((data) => {
+                callback(data);
+            });
         } else {
             throw new Error ("Something went wrong on API server " + response.status);
         }

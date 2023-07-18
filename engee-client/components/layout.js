@@ -13,20 +13,16 @@ export const siteTitle = "eNGee Server";
 // This creates the default layout for all pages of the app.
 // For now, it only includes a header which links back to the homepage.
 // TODO: change header to include player icon as well as their name.
-export default function Layout({name, userChange, home, children}) {
-    let [userName, setUserName] = useState("Username");
+export default function Layout({name, isNaming, updateStatus, children}) {
 
-    useEffect(() => {
-        setUserName(name)
-    },[name])
-    
     return (
         <>
         <Head>{siteTitle}</Head>
-        <header className={styles.header} onClick={userChange} >
+        <header className={styles.header} onClick={()=> {
+            if (!isNaming) { updateStatus("Naming") } }}>
             <>
             {/* This is the player name, links to name change */}
-            <h2 className={utilStyles.headingLg}><u>{userName}</u></h2>
+            <h2 className={utilStyles.headingLg}><u>{name}</u></h2>
             </>
 
         </header>

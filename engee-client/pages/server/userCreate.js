@@ -3,24 +3,21 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
-import {POST} from '@/lib/networkFunctions';
+export default function UserCreate({user, updateUser, revertStatus}) {
 
-export default function UserCreate({id, name, login, goBack, logout, url}) {
-
-    let [UserName, setUserName] = useState(name);
+    let [UserName, setUserName] = useState(user.name);
     let [dialog, setDialog] = useState(false);
 
-    function joinServer() {
-        let message = {
-            pid: id, 
+    function logout() {
+        user = {
+            uid: user.uid,
             gid: "",
-            name: UserName,
-            status: "Creating",
-        };
+            name: "",
+            status: "",
+        }
 
-        POST(JSON.stringify(message), url + "/server/", (e) => {
-            login(e.pid, UserName)
-        });
+        updateUser(user);
+        setUserName("");
     }
 
     function dialogCheck(e) {
@@ -40,12 +37,20 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
     function handleSubmit() {
         if (UserName !== "") {
             //No need to post new update if name isn't changing
-            if (UserName === name) {
+            if (UserName === user.name) {
                 return;
             }
 
-            joinServer();
+            let revert = user.name === "";
+
+            user.name = UserName;
+            updateUser(user);
+
+            if (revert) {
+                revertStatus();
+            }
         }
+
         //TODO: Error saying it can't be empty
     }
 
@@ -57,9 +62,9 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
                 <input type="text" name="name" defaultValue={UserName} autoComplete='off' onChange={handleChange}/>
                 <input type="submit" value="submit"/>
             </label>
-            {id !== "" ? 
+            {user.name !== "" ? 
             <div>
-                <button onClick={goBack}>Return</button>
+                <button onClick={revertStatus}>Return</button>
                 <button onClick={logout}>Logout</button>
                 </div>
             : null}
@@ -73,7 +78,5 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
             />
         </Popup>
         </div>
-
-
     );
 }

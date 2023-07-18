@@ -2,10 +2,13 @@ import {useState, useEffect} from 'react';
 import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
+import { POST, PUT } from '@/lib/networkFunctions';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function GameManager({info, send, exit, types}) {
+export default function GameManager({uid, info, setGame, revertStatus, url}) {
+    let [types, setTypes] = useState(["consequences"])
+
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState(types[0]);
     let [minPlrs, setMinPlrs] = useState(1);
@@ -24,24 +27,22 @@ export default function GameManager({info, send, exit, types}) {
             setMaxPlrs(info.max_plrs)
             setAdditional(info.additional) 
         }
+
+        //TODO get types
     }, []);
 
     function handleChange(event) {
         switch (event.target.name) {
             case "name": 
-                console.log("Setting name..." + event.target.value);
                 setGameName(event.target.value);
                 break;
             case "type":
-                console.log("Setting type..." + event.target.value);
                 setGameType(event.target.value);
                 break;
             case "minPlrs":
-                console.log("Setting minp..." + event.target.value);
                 setMinPlrs(parseInt(event.target.value, 10));
                 break;
             case "maxPlrs":
-                console.log("Setting maxp..." + event.target.value);
                 setMaxPlrs(parseInt(event.target.value, 10));
                 break;
             default:
@@ -50,8 +51,49 @@ export default function GameManager({info, send, exit, types}) {
         }
     };
 
+    function createGame() {
+        let msg = {
+            gid: "",
+            name: gameName,
+            type: gameType,
+            status: "Lobby",
+            old_status: "",
+            leader: uid,
+            min_plrs: minPlrs,
+            max_plrs: maxPlrs,
+            cur_plrs: 0,
+            additional_rules: additional
+        };
+
+        setMessage(msg);
+        setDialog(true);
+    }
+
+    function updateGame() {
+
+        let msg = {
+            gid: info.gid,
+            name: gameName, 
+            type: gameType,
+            status: info.status,
+            old_status: info.old_status, 
+            leader: info.leader,
+            min_plrs: minPlrs,
+            max_plrs: maxPlrs,
+            cur_plrs: info.cur_plrs,
+            additional_rules: info.additional_rules,
+        };
+
+        if (JSON.stringify(msg) === JSON.stringify(info)) {
+            alert("No changes were made.");
+            return;
+        }
+
+        setMessage(msg)
+        setDialog(true)
+    }
+
     function handleSubmit() {
-        console.log("__DEBUG__ \ngamename: " + gameName + "\ngametype: " + gameType + "\nmin: " + minPlrs + " max: " + maxPlrs)
         if (gameName === undefined || gameName === "") {
             alert("Please enter a game name");
             return;
@@ -77,41 +119,38 @@ export default function GameManager({info, send, exit, types}) {
             return;
         }
 
-
         let msg;
         if (info != null) {
-            msg = JSON.parse(JSON.stringify(info));
-
-            msg.name = gameName;
-            msg.type = gameType;
-            msg.min_plrs = minPlrs;
-            msg.max_plrs = maxPlrs;
-            msg.additional_rules = additional;
-
-            if (JSON.stringify(msg) === JSON.stringify(info)) {
-                alert("No changes were made.");
-                return
-            }
+            updateGame();
         } else {
-            msg = {
-                name: gameName,
-                type: gameType,
-                min_plrs: minPlrs,
-                max_plrs: maxPlrs,
-                additional_rules: additional
-            }
+            createGame();
         }
-        
-        setMessage(msg)
-        setDialog(true)
+    }
+
+    function put(msg) {
+        let endpoint = url + "/games/" + msg.gid;
+        let text = JSON.stringify(msg);
+
+        PUT(text, endpoint, (e) => {
+            //TODO anything here?
+        });
+    }
+
+    function post(msg) {
+        let endpoint = url + "/games"
+        let text  = JSON.stringify(msg);
+
+        POST(text, endpoint, (e) => {
+            setGame(e.gid);
+        });
     }
 
     function Pop() {
         if (dialog) {
             return <Popup open={dialog} onClose={()=>setDialog(false)}>
                 <ConfirmDialog
-                    text={"Are you sure you want to submit these new rules?"}
-                    confirm={(e) => {send("Rules", JSON.stringify(message)); setDialog(false)}}
+                    text={"Are you sure you want to submit these new settings?"}
+                    confirm={(e) => {(info === null) ? post(message) : put(message); setDialog(false)}}
                     close={()=>setDialog(false)}
                 />
             </Popup>
@@ -197,7 +236,7 @@ export default function GameManager({info, send, exit, types}) {
             </Table>
 
             <input type="submit" value="submit"/>
-            <input type="button" value="close" onClick={exit}/>
+            <input type="button" value="close" onClick={revertStatus}/>
         </form>
     </div>
     );

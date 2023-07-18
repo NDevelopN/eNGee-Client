@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import Head from 'next/head';
 
 import Layout, {siteTitle} from '@/components/layout';
-import { POST } from '@/lib/networkFunctions';
+import { GET, POST, PUT, DELETE } from '@/lib/networkFunctions';
 import ReadCookie from '@/lib/readCookie';
 
 import UserCreate from '@/pages/server/userCreate';
@@ -10,161 +10,154 @@ import GameBrowser from '@/pages/server/gameBrowser';
 import GameManager from '@/components/gameManager';
 import GameScreen from '@/pages/game/gameScreen';
 
-const listInterval = 1000;
-
 export default function Home() {
-    let [UUID, setUUID] = useState("");
-    let [UserName, setUserName] = useState("");
-    let [GID, setGID] = useState("");
-    let [status, setStatus] = useState("Naming")
-    let [oldStatus, setOldStatus] = useState("");
-    //TODO: Request from server
-    let [types, setTypes] = useState(["Consequences"]);
-
-    let [gameList, setGameList] = useState([]);
+    let [User, setUser] = useState({});
+    let [Status, setStatus] = useState([]);
+    let [active, setActive] = useState(false);
 
     useEffect(() => {
-        let id = ReadCookie("uuid");
-        if (id != "" ){
-            setUUID(id);
-            setUserName(ReadCookie("username"));
-            setStatus("Browsing");
+        let uid = ReadCookie("uuid");
+        if (uid === undefined) {
+            uid = "";
         }
 
-        const timer = setInterval(() => getGameList(), listInterval);
-        return () => {
-            clearInterval(timer);
+        let gid = ReadCookie("gid");
+        if (gid === undefined) {
+            gid = "";
+        }
+        
+        let uName = ReadCookie("username");
+        if (uName === undefined) {
+            uName = "UserName";
         }
 
-    }, []) 
+        let uStatus = ReadCookie("userstatus");
+        if (uStatus === undefined) {
+            uStatus = "";
+        }
 
-    let CONFIG = require('@/config.json')
+        let user = {
+            uid: uid,
+            gid: gid,
+            name: uName,
+            status: uStatus,
+        };
+
+        setUser(user);
+
+        if (gid != "") {
+            setStatus(["Browsing","InGame"])
+        } else if (uid != "") {
+            setStatus(["Browsing"])
+        } else {
+            setStatus(["Naming"])
+        }
+
+        setActive(true);
+        
+    }, []);
+
+    let CONFIG = require(`@/config.json`);
     let url = CONFIG.url
     if (url === null) {
-        console.log("URL not found in config file");
-        return
+        console.error("Could not get URL from config.json");
     }
 
-    function setUser(id, name){
-        setUUID(id);
-        document.cookie = "uuid=" + id +" ;path='/'";
-        setUserName(name);
-        document.cookie = "username=" + name + ";path='/'";
-        setStatus("Browsing");
+    function updateUser(user) {
+        setActive(false);
+        if (user.uid === "") {
+            POST(JSON.stringify(user), url + "/users", (e) => {
+                user.uid = e.uid;
+                setStatus(["Browsing"])
+            });
+        } else if (user.name === "") {
+            DELETE(url + "/users/" + user.uid, (e) => {
+                user.uid = ""
+            });
+            setStatus(["Naming"]);
+        } else {
+            PUT(JSON.stringify(user), url + "/users/" + user.uid);
+        }
+
+        setUser(user)
+
+        document.cookie = "uuid=" + user.uid + ";path='/'";
+        document.cookie = "username=" + user.name + ";path='/'";
+        setActive(true);
     }
 
-    function setGame(id) {
-        setGID(id);
-        setStatus("InGame");
-    }
+    function setGame(gid) {
+        setActive(false)
+        let user = User
+        user.gid = gid
 
-    function toLobby() {
-        if (status != "InGame") {
-            setStatus("Lobby");
+        updateUser(user);
+       
+        document.cookie = "gid=" + gid + ";path='/'";
+
+        if (Status === "Browser" || Status === "Creating") {
+            statusChange("InGame");
+        } else {
+            setStatus(["Browsing"]);
         }
     }
 
-    function toUser() {
-        setOldStatus(status);
-        setStatus("Naming")
-    }
+    function updateStatus(nStat) {
+        setActive(false)
+        let s = [...Status] 
+        s.push(nStat);
+        setStatus(s);
 
-    function updateStatus(newStatus) {
-        setOldStatus(status);
-        setStatus(newStatus);
+        document.cookie = "status=" + Status +";path=`/`";
+        setActive(true)
     }
 
     function revertStatus() {
-        setStatus(oldStatus);
-        setOldStatus("");
-    }
-
-    function goBack() {
-        if (oldStatus != "") {
-            setStatus(oldStatus);
-            setOldStatus("");
+        setActive(false)
+        let s = [...Status];
+        if (s.length > 1) {
+            s.pop();
+            setStatus(s);
         }
-    }
-
-    function getGameList() {
-        GET(url + "/server/browser", (e) => {
-            if (e.games) {
-                setGameList(e.games);
-            } else {
-                setGameList([]);
-            }
-        });
-    }
-
-    function join(gameID) {
-        let message = {
-            pid: UUID,
-            gid: gameID,
-        };
-
-        POST(JSON.stringify(message), url + "/server/join", (e) => {
-            console.log("Joined");
-            if (e.message === "ACK") {
-                setGame(gameID);
-            }
-            //TODO this should be a http error
-            else {
-                console.log("ERROR: gameID not matching");
-            }
-        });
-    }
-
-    function gameCreate(type, message) {
-        POST(message, url + "/server/create", (e) => {
-            console.log(e);
-            join(e.gid);
-        });
-    }
-
-    function exit() {
-        setStatus("Browsing");
-    }
-
-    function logout() {
-        //TODO send message to server
-        setUser("", "");
-        setStatus("Naming");
+        setActive(true)
     }
 
     function ContentSwitch() {
-        switch (status) {
+        switch (Status[Status.length-1]) {
         case "Naming":
             return (
-                <UserCreate id={UUID} name={UserName} login={setUser} revertStatus={revertStatus} logout={logout} url={url}/>
+                <UserCreate user={User} updateUser={updateUser} revertStatus={revertStatus} url={url}/>
             );
         case "Browsing":
             return (
-                <GameBrowser updateStatus={updateStatus} joinFunc={join} gameList={gameList}/>
+                <GameBrowser updateStatus={updateStatus} setGame={setGame} url={url}/>
             );
         case "InGame":
             return (
-                <GameScreen pid={UUID} gid={GID} url={url} updateStatus={setStatus} types={types}/>
+                <GameScreen user={User} updateStatus={updateStatus} revertStatus={revertStatus} url={url}/>
             );
         case "Creating":
             return (
-                <GameManager gid="" info={null} send={gameCreate} exit={exit} types={types}/>
+                <GameManager uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} url={url}/>
             );
         default:
             return null;
         }
     }
 
-    return (
-        <Layout name={UserName} userChange={toUser} home={toLobby}> 
-            <Head>
-                <title>
-                    {siteTitle}
-                    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-                </title>
-            </Head>
+    if (active) {
+        return (
+            <Layout name={User.name} isNaming={Status[Status.length-1] === "Naming"} updateStatus={updateStatus}>
+                <Head>
+                    <title>
+                        {siteTitle}
+                        <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+                    </title>
+                </Head>
                 <main>
                     <ContentSwitch/>
                 </main>
-        </Layout>
-    );
+            </Layout>
+        );
+    }
 }
