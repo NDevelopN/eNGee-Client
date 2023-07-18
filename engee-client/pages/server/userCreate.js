@@ -3,7 +3,7 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
-export default function UserCreate({user, updateUser, revertStatus}) {
+export default function UserCreate({user, updateUser, revertStatus, setActive}) {
 
     let [UserName, setUserName] = useState(user.name);
     let [dialog, setDialog] = useState(false);
@@ -16,8 +16,10 @@ export default function UserCreate({user, updateUser, revertStatus}) {
             status: "",
         }
 
-        updateUser(user);
-        setUserName("");
+        updateUser(user, () => {
+            setUserName("");
+            setActive(true);
+        });
     }
 
     function dialogCheck(e) {
@@ -44,11 +46,13 @@ export default function UserCreate({user, updateUser, revertStatus}) {
             let revert = user.name === "";
 
             user.name = UserName;
-            updateUser(user);
-
-            if (revert) {
-                revertStatus();
-            }
+            updateUser(user, () => {
+                if (revert) {
+                    revertStatus();
+                } else {
+                    setActive(true);
+                }
+            });
         }
 
         //TODO: Error saying it can't be empty

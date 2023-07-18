@@ -6,7 +6,7 @@ import { POST, PUT } from '@/lib/networkFunctions';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function GameManager({uid, info, setGame, revertStatus, url}) {
+export default function GameManager({uid, info, setGame, revertStatus, setActive, url}) {
     let [types, setTypes] = useState(["consequences"])
 
     let [gameName, setGameName] = useState("");
@@ -141,7 +141,9 @@ export default function GameManager({uid, info, setGame, revertStatus, url}) {
         let text  = JSON.stringify(msg);
 
         POST(text, endpoint, (e) => {
-            setGame(e.gid);
+            setGame(e.gid, () => {
+                setActive(true);
+            });
         });
     }
 

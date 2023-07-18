@@ -63,44 +63,57 @@ export default function Home() {
         console.error("Could not get URL from config.json");
     }
 
-    function updateUser(user) {
+    async function updateUser(user, callback) {
         setActive(false);
         if (user.uid === "") {
             POST(JSON.stringify(user), url + "/users", (e) => {
                 user.uid = e.uid;
                 setStatus(["Browsing"])
+                setUser(user)
+
+                document.cookie = "uuid=" + user.uid + ";path='/'";
+                document.cookie = "username=" + user.name + ";path='/'";
+                callback();
             });
         } else if (user.name === "") {
             DELETE(url + "/users/" + user.uid, (e) => {
                 user.uid = ""
+                setStatus(["Naming"]);
+                setUser(user)
+
+                document.cookie = "uuid=" + user.uid + ";path='/'";
+                document.cookie = "username=" + user.name + ";path='/'";
+                callback();
             });
-            setStatus(["Naming"]);
         } else {
-            PUT(JSON.stringify(user), url + "/users/" + user.uid);
+            PUT(JSON.stringify(user), url + "/users/" + user.uid, (e) => {
+                setUser(user)
+
+                document.cookie = "uuid=" + user.uid + ";path='/'";
+                document.cookie = "username=" + user.name + ";path='/'";
+                callback();
+            });
         }
-
-        setUser(user)
-
-        document.cookie = "uuid=" + user.uid + ";path='/'";
-        document.cookie = "username=" + user.name + ";path='/'";
-        setActive(true);
     }
 
-    function setGame(gid) {
+    async function setGame(gid, callback) {
         setActive(false)
         let user = User
         user.gid = gid
 
-        updateUser(user);
-       
-        document.cookie = "gid=" + gid + ";path='/'";
+        updateUser(user, () => {
+            document.cookie = "gid=" + gid + ";path='/'";
 
-        if (Status === "Browser" || Status === "Creating") {
-            statusChange("InGame");
-        } else {
-            setStatus(["Browsing"]);
-        }
-    }
+            let stat = Status[Status.length - 1];
+            if (stat === "Browsing" || stat === "Creating") {
+                console.log("In Game");
+                setStatus(["Browsing", "InGame"]);
+            } else {
+                setStatus(["Browsing"]);
+            }
+            callback();
+        });
+   }
 
     function updateStatus(nStat) {
         setActive(false)
@@ -130,7 +143,7 @@ export default function Home() {
             );
         case "Browsing":
             return (
-                <GameBrowser updateStatus={updateStatus} setGame={setGame} url={url}/>
+                <GameBrowser updateStatus={updateStatus} setGame={setGame} setActive={setActive} url={url}/>
             );
         case "InGame":
             return (
@@ -138,7 +151,7 @@ export default function Home() {
             );
         case "Creating":
             return (
-                <GameManager uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} url={url}/>
+                <GameManager uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} setActive={setActive} url={url}/>
             );
         default:
             return null;
