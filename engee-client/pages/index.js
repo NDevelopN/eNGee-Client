@@ -7,7 +7,7 @@ import ReadCookie from '@/lib/readCookie';
 
 import UserCreate from '@/pages/server/userCreate';
 import GameBrowser from '@/pages/server/gameBrowser';
-import GameManager from '@/components/gameManager';
+import GameCreator from '@/pages/server/gameCreator';
 import GameScreen from '@/pages/game/gameScreen';
 
 export default function Home() {
@@ -76,11 +76,11 @@ export default function Home() {
                 callback();
             });
         } else if (user.name === "") {
-            DELETE(url + "/users/" + user.uid, (e) => {
-                user.uid = ""
-                setStatus(["Naming"]);
-                setUser(user)
+            user.uid = "";
+            setStatus(["Naming"]);
+            setUser(user)
 
+            DELETE(url + "/users/" + user.uid, (e) => {
                 document.cookie = "uuid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
                 callback();
@@ -121,7 +121,6 @@ export default function Home() {
         s.push(nStat);
         setStatus(s);
 
-        document.cookie = "status=" + Status +";path=`/`";
         setActive(true)
     }
 
@@ -151,7 +150,7 @@ export default function Home() {
             );
         case "Creating":
             return (
-                <GameManager uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} setActive={setActive} url={url}/>
+                <GameCreator uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} setActive={setActive} url={url}/>
             );
         default:
             return null;

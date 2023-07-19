@@ -2,13 +2,10 @@ import {useState, useEffect} from 'react';
 import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
-import { POST, PUT } from '@/lib/networkFunctions';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function GameManager({uid, info, setGame, revertStatus, setActive, url}) {
-    let [types, setTypes] = useState(["consequences"])
-
+export default function GameManager({info, send, types, revertStatus}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState(types[0]);
     let [minPlrs, setMinPlrs] = useState(1);
@@ -20,15 +17,12 @@ export default function GameManager({uid, info, setGame, revertStatus, setActive
     let [message, setMessage] = useState();
     
     useEffect(() => {
-        if (info != null) {
-            setGameName(info.name);
-            setGameType(info.type)
-            setMinPlrs(info.min_plrs)
-            setMaxPlrs(info.max_plrs)
-            setAdditional(info.additional) 
-        }
+        setGameName(info.name);
+        setGameType(info.type)
+        setMinPlrs(info.min_plrs)
+        setMaxPlrs(info.max_plrs)
+        setAdditional(info.additional) 
 
-        //TODO get types
     }, []);
 
     function handleChange(event) {
@@ -50,48 +44,6 @@ export default function GameManager({uid, info, setGame, revertStatus, setActive
                 break;
         }
     };
-
-    function createGame() {
-        let msg = {
-            gid: "",
-            name: gameName,
-            type: gameType,
-            status: "Lobby",
-            old_status: "",
-            leader: uid,
-            min_plrs: minPlrs,
-            max_plrs: maxPlrs,
-            cur_plrs: 0,
-            additional_rules: additional
-        };
-
-        setMessage(msg);
-        setDialog(true);
-    }
-
-    function updateGame() {
-
-        let msg = {
-            gid: info.gid,
-            name: gameName, 
-            type: gameType,
-            status: info.status,
-            old_status: info.old_status, 
-            leader: info.leader,
-            min_plrs: minPlrs,
-            max_plrs: maxPlrs,
-            cur_plrs: info.cur_plrs,
-            additional_rules: info.additional_rules,
-        };
-
-        if (JSON.stringify(msg) === JSON.stringify(info)) {
-            alert("No changes were made.");
-            return;
-        }
-
-        setMessage(msg)
-        setDialog(true)
-    }
 
     function handleSubmit() {
         if (gameName === undefined || gameName === "") {
@@ -119,40 +71,35 @@ export default function GameManager({uid, info, setGame, revertStatus, setActive
             return;
         }
 
-        let msg;
-        if (info != null) {
-            updateGame();
-        } else {
-            createGame();
+        let msg = {
+            gid: info.gid,
+            name: gameName, 
+            type: gameType,
+            status: info.status,
+            old_status: info.old_status, 
+            leader: info.leader,
+            min_plrs: minPlrs,
+            max_plrs: maxPlrs,
+            cur_plrs: info.cur_plrs,
+            additional_rules: info.additional_rules,
+        };
+
+        if (JSON.stringify(msg) === JSON.stringify(info)) {
+            alert("No changes were made.");
+            return;
         }
+
+        setMessage(msg)
+        setDialog(true)
     }
 
-    function put(msg) {
-        let endpoint = url + "/games/" + msg.gid;
-        let text = JSON.stringify(msg);
-
-        PUT(text, endpoint, (e) => {
-            //TODO anything here?
-        });
-    }
-
-    function post(msg) {
-        let endpoint = url + "/games"
-        let text  = JSON.stringify(msg);
-
-        POST(text, endpoint, (e) => {
-            setGame(e.gid, () => {
-                setActive(true);
-            });
-        });
-    }
 
     function Pop() {
         if (dialog) {
             return <Popup open={dialog} onClose={()=>setDialog(false)}>
                 <ConfirmDialog
                     text={"Are you sure you want to submit these new settings?"}
-                    confirm={(e) => {(info === null) ? post(message) : put(message); setDialog(false)}}
+                    confirm={(e) => {send(message); setDialog(false)}}
                     close={()=>setDialog(false)}
                 />
             </Popup>

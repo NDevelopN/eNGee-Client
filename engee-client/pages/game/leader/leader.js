@@ -5,13 +5,16 @@ import GameManager from '@/components/gameManager'
 import { ConfirmDialog } from '@/components/dialogs';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
+import { userAgent } from 'next/server';
 
-export default function LeaderView({info, gid, status, send, types}) {
-
-    let [inRules, setInRules] = useState(false)
-    let [dialog, setDialog] = useState(false)
-    let [confirmationText, setConfirmationText] = useState("")
-    let [submitType, setSubmitType] = useState("")
+export default function LeaderView({uid, info, status, send, url}) {
+    let [types, setTypes] = useState(["consequences"]);
+    let [inRules, setInRules] = useState(false); 
+    let [dialog, setDialog] = useState(false);
+    let [confirmationText, setConfirmationText] = useState("");
+    let [submitType, setSubmitType] = useState("");
+    
+    //TODO get types
 
     function pause() {
         send("Pause", "");
@@ -23,8 +26,10 @@ export default function LeaderView({info, gid, status, send, types}) {
         setDialog(true);
     }
 
-    function rulesUpdate() {
-        setInRules(!inRules)
+    function rulesUpdate(info) {
+        let text = JSON.stringify(info);
+        send("Rules", text);
+        setInRules(false);
     }
 
     function endGame() {
@@ -35,7 +40,7 @@ export default function LeaderView({info, gid, status, send, types}) {
 
     function restart () {
         setConfirmationText("Reset all players to the lobby?");
-        setSubmitType("Restart");
+        setSubmitType("Reset");
         setDialog(true);
     }
 
@@ -60,7 +65,7 @@ export default function LeaderView({info, gid, status, send, types}) {
     //Override current status until exited rules
     if (inRules) {
         return (
-            <GameManager gid={gid} info={info} send={send} exit={rulesUpdate} types={types}/>
+            <GameManager info={info} send={rulesUpdate} types={types} revertStatus={()=>setInRules(false)}/>
         );
     }
 
@@ -84,7 +89,7 @@ export default function LeaderView({info, gid, status, send, types}) {
             return (
                 <div>
                     <Pop/>
-                    <button onClick={rulesUpdate}>Edit Rules</button>
+                    <button onClick={()=>setInRules(true)}>Edit Rules</button>
                     <button onClick={pause}>Unpause</button>
                     <button onClick={endGame}>End Game</button>
                     <button onClick={restart}>Restart</button>
