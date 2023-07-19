@@ -5,39 +5,42 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({pid, gid, url, updateStatus, types}) {
+export default function GameScreen({user, revertStatus, url}) {
     let [socket, setSocket] = useState();
     let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
-    let [gameMessage, setGameMessage] = useState({type: "", pid: "", gid: "", content: ""});
+    let [gameMessage, setGameMessage] = useState({type: "", uid: "", gid: "", content: ""});
     let [plrList, setPlrList] = useState([]);
 
-    let [status, setStatus] = useState("Lobby");
+    let [status, setStatus] = useState("Loading");
 
     useEffect(() => {
-        connect()
+        if (socket === undefined) {
+            connect()
+        }
     }, []);
 
     function connect() {
-        let endpoint = "ws" + url.substring(4) + "/game/" + gid;
+        let endpoint = "ws" + url.substring(4) + "/games/" + user.uid;
         SOCK(endpoint, close, (sock) => {
             sock.addEventListener("message", Receive);
-            setSocket(sock)
-            
+            setSocket(sock);
+
             let message = {
-                type: "Connect",
-                PID: pid,
-                GID: gid,
-                Content: "",
+                type: "Status",
+                uid: user.uid,
+                gid: user.gid,
+                content: "Not Ready",
             }
 
-            sock.send(JSON.stringify(message))
+            sock.send(JSON.stringify(message));
         });
     }
 
     function close() {
-        updateStatus("Browsing");
+        socket.close();
+        revertStatus();
     }
 
     //TODO redundant?
@@ -61,7 +64,7 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
     function disconnect() {
         //TODO inform the server? 
         socket.close();
-        updateStatus("Browsing");
+        revertStatus(); 
     }
 
     function GameRender() {
@@ -75,19 +78,26 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
                 return (<Consequences msg={gameMessage} send={send} quit={leaveGame}/>)
         }
     }
-    
+
     function Receive(event) {
         let data = JSON.parse(event.data);
         let content;
 
         switch(data.type){
             //Should be the reply for first connection, same as a full update
-            //TODO is there any reason for difrentiating these?
             case "Info":
+                content = JSON.parse(data.content)
+                setGameInfo(content)
+                setStatus(content.status)
+
+                setIsLeader(content.leader === user.uid);
+
+                break;
             case "Update":
                 content = JSON.parse(data.content)
                 setGameInfo(content)
-                setIsLeader(content.leader === pid);
+                setStatus(content.Status)
+                setIsLeader(content.leader === user.uid);
                 break;
             case "Status": 
                 console.log("Recieving status update: " + data.content)
@@ -100,8 +110,8 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
                 break;
             case "Leader":
                 console.log("Got leader update")
-                console.log("leader pid: " + data.pid + " current PID: " + pid)
-                setIsLeader(data.pid === pid);
+                console.log("leader uid: " + data.uid + " current uid: " + user.uid)
+                setIsLeader(data.uid === user.uid);
                 if (isLeader) {
                     alert("You are now the game leader")
                 }
@@ -118,11 +128,10 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
                 break;
             case "End":
                 alert("The Game has been deleted.")
-                updateStatus("Browsing");
+                revertStatus();
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
-
                 setGameMessage(data)
                 break;
         }
@@ -131,16 +140,21 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
     function send(type, data) {
         let message = {
             type: type,
-            pid: pid,
-            gid: gid,
+            uid: user.uid,
+            gid: user.gid,
             content: data
         };
+
+        if (socket === undefined) {
+            console.error("Socket is undefined") 
+            return 
+        }
 
         socket.send(JSON.stringify(message));
     }
 
     function Leader() {
-        return (<LeaderView info={gameInfo} gid={gid} status={status} send={send} types={types}/>);
+        return (<LeaderView uid={user.uid} info={gameInfo} status={status} send={send} url={url}/>);
     }
     
     if (gameInfo === undefined) {
@@ -148,7 +162,7 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
     }
 
     switch (status) {
-        case "Pre":
+        case "Loading":
             return (
                 <h2>Loading</h2>
             );
@@ -181,4 +195,5 @@ export default function GameScreen({pid, gid, url, updateStatus, types}) {
         default:
             return null;
     }
+
 }
