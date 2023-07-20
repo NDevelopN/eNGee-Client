@@ -14,7 +14,10 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
             gid: "",
             name: "",
             status: "",
-        }
+        };
+
+        document.cookie = "uid=;path='/'";
+        document.cookie = "username=;path='/'";
 
         updateUser(user, () => {
             setUserName("");
