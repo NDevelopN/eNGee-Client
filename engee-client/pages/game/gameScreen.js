@@ -1,108 +1,132 @@
 import {useState, useEffect} from 'react';
 
-import {SOCK} from '@/lib/networkFunctions';
+import {GET, SOCK} from '@/lib/networkFunctions';
 import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
-export default function GameScreen({user, revertStatus, url}) {
+export default function GameScreen({user, setUser, revertStatus, url}) {
     let [socket, setSocket] = useState();
+
     let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
-    let [gameMessage, setGameMessage] = useState({type: "", uid: "", gid: "", content: ""});
-    let [plrList, setPlrList] = useState([]);
+    let [plrList, setPlrList] = useState([])
 
+    let [gameMessage, setGameMessage] = useState({type: "", uid: "", gid: "", content: ""});
     let [status, setStatus] = useState("Loading");
 
+
+    //TODO remove this mess
+    let uE = 0;
     useEffect(() => {
-        if (socket === undefined) {
-            connect()
-        }
+        GET(url + "/games", (e) => {
+            if (e) {
+                for (let i = 0; i < e.length; i++) {
+                    if (e[i].gid === user.gid) {
+                        connect();
+                        return
+                    }
+                }
+            }
+            
+            console.error("Could not connect: game not found");
+            leave();
+        });
     }, []);
 
     function connect() {
+        if (uE == 0) {
+            uE += 1;
+            return
+        }
         let endpoint = "ws" + url.substring(4) + "/games/" + user.uid;
-        SOCK(endpoint, close, (sock) => {
-            sock.addEventListener("message", Receive);
-            setSocket(sock);
 
-            let message = {
-                type: "Status",
-                uid: user.uid,
-                gid: user.gid,
-                content: "Not Ready",
-            }
-
-            sock.send(JSON.stringify(message));
+        let socket
+        SOCK(endpoint, receive, close, (sock) => {
+            socket = sock
+            open(sock)
+            setSocket(socket);
         });
     }
 
-    function close() {
-        socket.close();
+    function open(sock) {
+        console.log("open()");
+        let message = {
+            type: "Status",
+            uid: user.uid,
+            gid: user.gid,
+            content: "Not Ready",
+        };
+
+        sock.send(JSON.stringify(message));
+ 
+    }
+
+    function leave() {
+        document.cookie = "gid=;path='/'";
         revertStatus();
     }
 
-    //TODO redundant?
-    function setRules(rules) {
-        var gm = gameInfo
-        gm.rules = rules
-        setGameInfo(gm)
-    }
-
-    function playerToggleReady() {
-        var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready")
-        send("Status", nStatus);
-        setPStatus(nStatus);
-    }
-
-    function leaveGame() {
-        send("Leave", "");
-        disconnect();
-    }
-
-    function disconnect() {
-        //TODO inform the server? 
-        socket.close();
-        revertStatus(); 
-    }
-
-    function GameRender() {
-        //IF the server has not replied yet, tell user game is Loading
-        if (gameMessage.type === "") {
-            return (<h2>Loading...</h2>)
+    function close(event) {
+        if (event.wasClean) {
+            console.log("[close] Connection closed cleanly, code=" + event.code + " reason=" + event.reason);
+        } else {
+            console.log("[close] Connection died");
         }
+
+        leave();
+    }
+
+    function send(type, data) {
+        console.log("send(" + type + ", " + data + ")");
         
-        switch (gameInfo.type.toLowerCase()) {
-            case "consequences":
-                return (<Consequences msg={gameMessage} send={send} quit={leaveGame}/>)
+        let message = {
+            type: type,
+            uid: user.uid,
+            gid: user.gid,
+            content: data,
+        };
+
+        if (socket === undefined) {
+            console.error("Socket is undefined");
+            return
         }
+
+        socket.send(JSON.stringify(message));
     }
 
-    function Receive(event) {
+    function receive(event) {
         let data = JSON.parse(event.data);
         let content;
 
         switch(data.type){
             //Should be the reply for first connection, same as a full update
             case "Info":
-                content = JSON.parse(data.content)
-                setGameInfo(content)
-                setStatus(content.status)
-
+                console.log("Received Info: " + data.content)
+                content = JSON.parse(data.content);
+                setGameInfo(content);
+                setStatus(content.status);
                 setIsLeader(content.leader === user.uid);
-
                 break;
             case "Update":
-                content = JSON.parse(data.content)
-                setGameInfo(content)
-                setStatus(content.Status)
+                console.log("Received update: " + data.content)
+                content = JSON.parse(data.content);
+                setGameInfo(content);
+                setStatus(content.status);
                 setIsLeader(content.leader === user.uid);
                 break;
             case "Status": 
-                console.log("Recieving status update: " + data.content)
+                console.log("Recieving status update: " + data.content);
                 setStatus(data.content);
-                setGameMessage(data.content)
+                setGameMessage(data.content);
+                break;
+            case "Player":
+                console.log("Receiving player update: " + data.content);
+                content = JSON.parse(data.content);
+                setUser(content);
+                setPStatus(content.Status);
+                revertStatus();
                 break;
             case "Players":
                 console.log("Got players update " + data.content);
@@ -136,29 +160,35 @@ export default function GameScreen({user, revertStatus, url}) {
                 break;
         }
     }
-    
-    function send(type, data) {
-        let message = {
-            type: type,
-            uid: user.uid,
-            gid: user.gid,
-            content: data
-        };
 
-        if (socket === undefined) {
-            console.error("Socket is undefined") 
-            return 
+    function setRules(rules) {
+        var gm = gameInfo
+        gm.rules = rules
+        setGameInfo(gm)
+    }
+
+    function playerToggleReady() {
+        var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready")
+        send("Status", nStatus);
+        setPStatus(nStatus);
+    }
+
+    function GameRender() {
+        if (gameMessage.type === "") {
+            return (<h2>Loading...</h2>)
         }
-
-        socket.send(JSON.stringify(message));
+        switch (gameInfo.type.toLowerCase()) {
+            case "consequences":
+                return (<Consequences msg={gameMessage} send={send} quit={close}/>);
+        }
     }
 
     function Leader() {
         return (<LeaderView uid={user.uid} info={gameInfo} status={status} send={send} url={url}/>);
     }
-    
-    if (gameInfo === undefined) {
-        return <h2> Loading... </h2>
+
+    function Paused() {
+        return (<h3>Paused</h3>);
     }
 
     switch (status) {
@@ -166,12 +196,9 @@ export default function GameScreen({user, revertStatus, url}) {
             return (
                 <h2>Loading</h2>
             );
-        case "Lobby":
+        case "Reset":
             return (
-                <>
-                {isLeader ?  <Leader/> : <></>}
-                <Lobby leave={leaveGame} status={pStatus} changeStatus={playerToggleReady} plrList={plrList} lid={gameInfo.leader}/>
-                </>
+                <h2>Restarting game...</h2>
             );
         case "Play":
             return (
@@ -180,20 +207,17 @@ export default function GameScreen({user, revertStatus, url}) {
                 <GameRender/>
                 </>
             );
+        case "Lobby":
         case "Pause":
             return (
                 <div>
-                <h3>Paused</h3>
+                {status === "Pause" ? <Paused/> : <></>}
                 {isLeader ? <Leader/> : <></>}
-                <Lobby leave={leaveGame} status={pStatus} changeStatus={playerToggleReady} plrList={plrList} lid={gameInfo.leader}/>
+                <Lobby socket={socket} status={pStatus} changeStatus={playerToggleReady} plrList={plrList} lid={gameInfo.leader}/>
                 </div>
             );
-        case "Restart":
-            return (
-                <h2>Restarting game...</h2>
-            );
-        default:
-            return null;
+       default:
+        console.error("Unknown status: " + status);
+        socket.close();
     }
-
 }
