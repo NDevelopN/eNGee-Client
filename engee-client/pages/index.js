@@ -16,7 +16,7 @@ export default function Home() {
     let [active, setActive] = useState(false);
 
     useEffect(() => {
-        let uid = ReadCookie("uuid");
+        let uid = ReadCookie("uid");
         if (uid === undefined) {
             uid = "";
         }
@@ -71,7 +71,7 @@ export default function Home() {
                 setStatus(["Browsing"])
                 setUser(user)
 
-                document.cookie = "uuid=" + user.uid + ";path='/'";
+                document.cookie = "uid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
                 callback();
             });
@@ -81,7 +81,7 @@ export default function Home() {
             setUser(user)
 
             DELETE(url + "/users/" + user.uid, (e) => {
-                document.cookie = "uuid=" + user.uid + ";path='/'";
+                document.cookie = "uid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
                 callback();
             });
@@ -89,7 +89,7 @@ export default function Home() {
             PUT(JSON.stringify(user), url + "/users/" + user.uid, (e) => {
                 setUser(user)
 
-                document.cookie = "uuid=" + user.uid + ";path='/'";
+                document.cookie = "uid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
                 callback();
             });
@@ -146,7 +146,7 @@ export default function Home() {
             );
         case "InGame":
             return (
-                <GameScreen user={User} updateStatus={updateStatus} revertStatus={revertStatus} url={url}/>
+                <GameScreen user={User} revertStatus={revertStatus} url={url}/>
             );
         case "Creating":
             return (
