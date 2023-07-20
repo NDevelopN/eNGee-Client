@@ -5,7 +5,7 @@ import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
 const listInterval = 1000
 
-export default function GameBrowser({updateStatus, setGame, url}) {
+export default function GameBrowser({updateStatus, setGame, setActive, url}) {
     let [GameList, setGameList] = useState([]);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ export default function GameBrowser({updateStatus, setGame, url}) {
     }, []);
 
     function join(gid) {
-        setGame(gid);
+        setGame(gid, (e) => setActive(true));
     }
 
     function createGame() {
@@ -25,8 +25,8 @@ export default function GameBrowser({updateStatus, setGame, url}) {
 
     function getGameList() {
         GET(url + "/games", (e) => {
-            if (e.games) {
-                setGameList(e.games);
+            if (e) {
+                setGameList(e);
             } else {
                 setGameList([]);
             }
