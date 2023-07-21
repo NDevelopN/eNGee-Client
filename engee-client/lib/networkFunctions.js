@@ -115,7 +115,7 @@ export async function SOCK(endpoint, receive, close, callback) {
     socket.onmessage = receive;
     socket.onclose = close;
     socket.onerror = (e) => {
-        console.log("[error] " + e.data);
+        console.error("Websocket issue: " + e.data);
     };
 
     /*

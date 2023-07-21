@@ -20,7 +20,7 @@ export default function Lobby({socket, status, changeStatus, plrList, lid}) {
         <Popup open={dialog} onClose={()=>setDialog(false)}>
             <ConfirmDialog
                 text={"Are you sure you want to leave?"}
-                confirm={() => {socket.close(1000, "Player left"); console.log("Leaving!");setDialog(false)}}
+                confirm={() => {socket.close(1000, "Player left"); setDialog(false)}}
                 close={() => setDialog(false)}
             />
         </Popup>

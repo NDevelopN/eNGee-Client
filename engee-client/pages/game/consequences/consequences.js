@@ -20,13 +20,6 @@ export default function Consequences({msg, send, quit}) {
     let tempState = ""
 
     useEffect(() => {
-        console.log("Prompts have changed: " + prompts);
-    }, [prompts])
-
-    useEffect(() => {
-        console.log("Type: " + msg.type);
-        console.log("Content: " + msg.content);
-
         switch (msg.type) {
             case "ConState":
                 if (msg.content !== "" && msg.content !== undefined) {
@@ -93,8 +86,6 @@ export default function Consequences({msg, send, quit}) {
     if (msg !== message) {
         setMessage(msg);
     }
-
-    console.log("State: " + conState);
 
     switch (conState) {
         case "Wait":

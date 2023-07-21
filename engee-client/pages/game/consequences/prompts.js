@@ -6,14 +6,12 @@ import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
 export default function Prompts({prompts, reply, quit}) {
 
-    let [sent, setSent] = useState(false)
     let replies = [];
 
     function handleSubmit(e) {
         e.preventDefault();
         
         for (let i = 0; i < prompts.length; i++) {
-            console.log(replies[i])
             if (replies[i] === undefined  || replies[i] === "") {
                 alert("Please enter a reply for " + prompts[i]);
                 return
@@ -21,16 +19,10 @@ export default function Prompts({prompts, reply, quit}) {
         }
 
         reply(replies)
-        setSent(true)
     }
 
     function handleChange(e, key) {
         replies[key] = e.target.value
-    }
-
-    //TODO make changes to bring back lobby
-    if (sent) {
-        return (<h2>Message sent, waiting for other players</h2>);
     }
 
     return (

@@ -53,7 +53,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function open(sock) {
-        console.log("open()");
         let message = {
             type: "Status",
             uid: user.uid,
@@ -81,8 +80,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function send(type, data) {
-        console.log("send(" + type + ", " + data + ")");
-        
         let message = {
             type: type,
             uid: user.uid,
@@ -101,44 +98,36 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     function receive(event) {
 
         let data = JSON.parse(event.data);
-        console.log("Received: " + data)
         let content;
 
         switch(data.type){
             //Should be the reply for first connection, same as a full update
             case "Info":
-                console.log("Received Info: " + data.content)
                 content = JSON.parse(data.content);
                 setGameInfo(content);
                 setStatus(content.status);
                 setIsLeader(content.leader === user.uid);
                 break;
             case "Update":
-                console.log("Received update: " + data.content)
                 content = JSON.parse(data.content);
                 setGameInfo(content);
                 setStatus(content.status);
                 setIsLeader(content.leader === user.uid);
                 break;
             case "Status": 
-                console.log("Recieving status update: " + data.content);
                 setStatus(data.content);
                 setGameMessage(data.content);
                 break;
             case "Player":
-                console.log("Receiving player update: " + data.content);
                 content = JSON.parse(data.content);
                 setUser(content);
                 setPStatus(content.Status);
                 revertStatus();
                 break;
             case "Players":
-                console.log("Got players update " + data.content);
                 setPlrList(JSON.parse(data.content));
                 break;
             case "Leader":
-                console.log("Got leader update")
-                console.log("leader uid: " + data.uid + " current uid: " + user.uid)
                 setIsLeader(data.uid === user.uid);
                 if (isLeader) {
                     alert("You are now the game leader")
@@ -150,11 +139,11 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 setRules(content.rules);
                 break;
             case "Error":
-                console.log("Issue from server: " + data.content);
+                console.error("Received error message: " + data.content);
                 //TODO what issues can be handled here?
                 break;
             case "ACK":
-                console.log("Server happy");
+                //TODO is there any reason?
                 break;
             case "End":
                 alert("The Game has been deleted.")
@@ -162,7 +151,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
-                console.log("Game mode message: " + count++)
                 setGameMessage(data)
                 break;
         }
@@ -224,8 +212,8 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 </div>
             );
        default:
-            
-        console.error("Unknown status: " + status);
-        socket.close();
+            console.error("Unknown status: " + status);
+            socket.close();
+            break;
     }
 }

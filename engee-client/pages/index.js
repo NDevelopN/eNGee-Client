@@ -106,7 +106,6 @@ export default function Home() {
 
             let stat = Status[Status.length - 1];
             if (stat === "Browsing" || stat === "Creating") {
-                console.log("In Game");
                 setStatus(["Browsing", "InGame"]);
             } else {
                 setStatus(["Browsing"]);
