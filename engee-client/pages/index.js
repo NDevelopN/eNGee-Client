@@ -146,7 +146,7 @@ export default function Home() {
             );
         case "InGame":
             return (
-                <GameScreen user={User} revertStatus={revertStatus} url={url}/>
+                <GameScreen user={User} setUser={setUser} revertStatus={revertStatus} url={url}/>
             );
         case "Creating":
             return (

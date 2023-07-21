@@ -6,30 +6,19 @@ export default function Story({story, send, quit}) {
     function ready(e) {
         e.preventDefault();
 
-        send("Ready", "");
+        send("Status", "Read");
     }
-    
-    //TODO add ready button when supported server side
+
+
+    let text = ""
+    for (let i=0;i<story.length;i++) {
+        text += story[i] + ". ";
+    }
+
     return (
         <>
-        <Table padding='none'>
-            <TableHead>
-                <TableRow>
-                    <TableCell><b>Prompt</b></TableCell>
-                    <TableCell><b>Response</b></TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                
-                {story.map((line, index) => (
-                    <TableRow key={index}>
-                        <TableCell>{line.prompt}</TableCell>
-                        <TableCell>{line.story}</TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-        <button onClick={quit}>Quit</button>
+        <p>{text}</p>
+        <button onClick={ready}>Ready</button>
         </>
     );
 }

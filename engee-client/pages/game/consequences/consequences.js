@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Prompts from '@/pages/game/consequences/prompts';
 import Story from '@/pages/game/consequences/story';
@@ -9,14 +9,64 @@ import {ConfirmDialog} from '@/components/dialogs';
 
 export default function Consequences({msg, send, quit}) {
 
+
     let [dialog, setDialog] = useState(false);
 
-    function reply(replies) {
-        let response = {
-            list: replies
-        };
+    let [conState, setConState] = useState("Wait");
+    let [prompts, setPrompts] = useState([]);
+    let [story, setStory] = useState([]);
+    let [message, setMessage] = useState();
 
-        send("Reply", JSON.stringify(response));
+    let tempState = ""
+
+    useEffect(() => {
+        console.log("Prompts have changed: " + prompts);
+    }, [prompts])
+
+    useEffect(() => {
+        console.log("Type: " + msg.type);
+        console.log("Content: " + msg.content);
+
+        switch (msg.type) {
+            case "ConState":
+                if (msg.content !== "" && msg.content !== undefined) {
+                
+                }
+                setConState(msg.content);
+                break;
+            case "Prompts":
+                if (msg.content === "" || msg.content === undefined) {
+                    console.error("Empty prompts");
+                    setConState("Error");
+                    break;
+                }
+
+                setPrompts(JSON.parse(msg.content));
+                setConState("Prompts");
+                break;
+            case "Story":
+                if (msg.content === "" || msg.content === undefined) {
+                    console.error("Empty story");
+                    setConState("Error");
+                    break;
+                }
+
+                setStory(JSON.parse(msg.content));
+                setConState("Story");
+                break;
+            case "Accept":
+                //TODO
+                break;
+            default:
+                console.error("Unknown message type: " + msg.type);
+                break;
+        }
+    }, [message]);
+
+
+    function reply(replies) {
+
+        send("Reply", JSON.stringify(replies));
     }
 
     function update(text) {
@@ -40,31 +90,41 @@ export default function Consequences({msg, send, quit}) {
         );
     }
 
-    if (msg.content === "" || msg.content === undefined) {
-        //TODO: should this be handled?
-        return;
+    if (msg !== message) {
+        setMessage(msg);
     }
 
-    let content = JSON.parse(msg.content);
+    console.log("State: " + conState);
 
-    switch (msg.type) {
+    switch (conState) {
+        case "Wait":
+            return (<h3>Waiting for other players...</h3>);
         case "Prompts":
             return (
                 <>
-                <Prompts prompts={content} reply={reply} quit={() => setDialog(true)}/>
+                <Prompts prompts={prompts} reply={reply} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
+        case "Pause":
+            return (<h3>Please wait for unpause...</h3>)
         case "Story":
             return (
                 <>
-                <Story story={content.lines} send={send} quit={() => setDialog(true)}/>
+                <Story story={story} send={send} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
-        case "Accept":
-            return (<h2>Waiting for other players...</h2>);
         default:
-            return (<h2>Something isnt quite right.</h2>);
+            tempState = conState
+            setInterval(() => {
+                if (conState === tempState) {
+                    leave();
+                }
+            }, 5000);
+
+            return (
+                <h3>Something went wrong</h3>
+            );
     }
 }

@@ -5,6 +5,8 @@ import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
+
+let count = 0;
 export default function GameScreen({user, setUser, revertStatus, url}) {
     let [socket, setSocket] = useState();
 
@@ -18,7 +20,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
 
 
     //TODO remove this mess
-    let uE = 0;
+    let uE = true;
     useEffect(() => {
         GET(url + "/games", (e) => {
             if (e) {
@@ -36,8 +38,8 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }, []);
 
     function connect() {
-        if (uE == 0) {
-            uE += 1;
+        if (uE) {
+            uE = false;
             return
         }
         let endpoint = "ws" + url.substring(4) + "/games/" + user.uid;
@@ -69,7 +71,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function close(event) {
-        if (event.wasClean) {
+        if (event !== undefined && event.wasClean) {
             console.log("[close] Connection closed cleanly, code=" + event.code + " reason=" + event.reason);
         } else {
             console.log("[close] Connection died");
@@ -97,7 +99,9 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function receive(event) {
+
         let data = JSON.parse(event.data);
+        console.log("Received: " + data)
         let content;
 
         switch(data.type){
@@ -144,11 +148,13 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
             case "Rules":
                 content = JSON.parse(data.content)
                 setRules(content.rules);
-                setGameSpec(typeMap[content.type])
                 break;
-            case "Issue":
+            case "Error":
                 console.log("Issue from server: " + data.content);
                 //TODO what issues can be handled here?
+                break;
+            case "ACK":
+                console.log("Server happy");
                 break;
             case "End":
                 alert("The Game has been deleted.")
@@ -156,6 +162,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
+                console.log("Game mode message: " + count++)
                 setGameMessage(data)
                 break;
         }
@@ -217,6 +224,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 </div>
             );
        default:
+            
         console.error("Unknown status: " + status);
         socket.close();
     }
