@@ -43,6 +43,7 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
         if (UserName !== "") {
             //No need to post new update if name isn't changing
             if (UserName === user.name) {
+                alert("User name has not been changed");
                 return;
             }
 
@@ -56,6 +57,8 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
                     setActive(true);
                 }
             });
+        } else {
+            alert("Please enter a user name");
         }
     }
 
