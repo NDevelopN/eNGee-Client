@@ -57,8 +57,6 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
                 }
             });
         }
-
-        //TODO: Error saying it can't be empty
     }
 
     return (

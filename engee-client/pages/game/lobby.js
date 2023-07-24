@@ -9,7 +9,6 @@ export default function Lobby({socket, status, changeStatus, plrList, lid}) {
 
     let [dialog, setDialog] = useState(false);
     
-    //TODO: something odd with the ternary operator 
     return (
         <>
         <PlayerList playerList={plrList} lid={lid}/>

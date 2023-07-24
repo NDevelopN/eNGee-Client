@@ -1,5 +1,3 @@
-//TODO: Investigate CORS and identify what configuration is needed.
-
 /** POST
  * Accepts a JSON object (message) to be sent to the endpoint
  * Can also accept a callback function to be called when the server responds
@@ -64,8 +62,6 @@ export async function GET(endpoint, callback) {
             'Access-Control-Allow-Origin': '*',
         }
     });
-
-    //TODO: Which other statuses are acceptable?
 
     fetch(request).then((response) => {
         if (response.status === 200) {

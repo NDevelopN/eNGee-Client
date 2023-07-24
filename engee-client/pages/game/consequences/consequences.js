@@ -48,7 +48,6 @@ export default function Consequences({msg, send, quit}) {
                 setConState("Story");
                 break;
             case "Accept":
-                //TODO
                 break;
             default:
                 console.error("Unknown message type: " + msg.type);

@@ -8,8 +8,6 @@ export default function GameCreator({uid, setGame, revertStatus, setActive, url}
 
     let [types, setTypes] = useState(["consequences"]);
     
-    //TODO get types
-
     let info = {
         gid: "",
         name: "",

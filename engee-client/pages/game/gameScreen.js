@@ -19,7 +19,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     let [status, setStatus] = useState("Loading");
 
 
-    //TODO remove this mess
     let uE = true;
     useEffect(() => {
         GET(url + "/games", (e) => {
@@ -133,17 +132,14 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                     alert("You are now the game leader")
                 }
                 break;
-                //TODO Should be no longer needed
             case "Rules":
                 content = JSON.parse(data.content)
                 setRules(content.rules);
                 break;
             case "Error":
                 console.error("Received error message: " + data.content);
-                //TODO what issues can be handled here?
                 break;
             case "ACK":
-                //TODO is there any reason?
                 break;
             case "End":
                 alert("The Game has been deleted.")
