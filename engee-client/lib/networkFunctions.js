@@ -39,7 +39,8 @@ export async function PUT(message, endpoint, callback) {
     });
 
     fetch(request).then((response) => {
-        if (response.status === 200) {
+        let s = response.status
+        if (s === 200 || s === 201 || s === 202) {
             response.json().then((data) => {
                 if (callback) {
                     callback(data);
@@ -65,7 +66,8 @@ export async function GET(endpoint, callback) {
     });
 
     fetch(request).then((response) => {
-        if (response.status === 200) {
+        let s = response.status
+        if (s === 200 || s === 201 || s === 202) {
             response.json().then((data) => {
                 callback(data);
             });
@@ -89,7 +91,8 @@ export async function DELETE(endpoint, callback) {
     });
 
     fetch(request).then((response) => {
-        if (response.status === 200) {
+        let s = response.status
+        if (s === 200 || s === 201 || s === 202) {
             response.json().then((data) => {
                 callback(data);
             });
