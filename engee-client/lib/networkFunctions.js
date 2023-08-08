@@ -13,7 +13,8 @@ export async function POST(message, endpoint, callback) {
     });
 
     fetch(request).then((response) => {
-        if (response.status === 200) {
+        let s = response.status
+        if (s === 200 || s === 201 || s === 202) {
             response.json().then((data) => {
                 if (callback) {
                     callback(data);
