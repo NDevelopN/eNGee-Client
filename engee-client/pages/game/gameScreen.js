@@ -136,14 +136,15 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 content = JSON.parse(data.content)
                 setRules(content.rules);
                 break;
-            case "Error":
-                console.error("Received error message: " + data.content);
+            case "Response":
+                let response = JSON.parse(data.content) 
+                console.error("Received " + response.cause + " message: " + response.message);
                 break;
             case "ACK":
                 break;
             case "End":
                 alert("The Game has been deleted.")
-                revertStatus();
+                leave();
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
@@ -170,7 +171,13 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
         }
         switch (gameInfo.type.toLowerCase()) {
             case "consequences":
-                return (<Consequences msg={gameMessage} send={send} quit={close}/>);
+                return (<Consequences msg={gameMessage} send={send} 
+                        quit={ () => {
+                                send("Leave", ""); 
+                                socket.close(1000, "playerLeft")
+                            }
+                        }
+                />);
         }
     }
 
@@ -204,7 +211,10 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 <div>
                 {status === "Pause" ? <Paused/> : <></>}
                 {isLeader ? <Leader/> : <></>}
-                <Lobby socket={socket} status={pStatus} changeStatus={playerToggleReady} plrList={plrList} lid={gameInfo.leader}/>
+                <Lobby 
+                    socket={socket} status={pStatus} changeStatus={playerToggleReady} 
+                    plrList={plrList} lid={gameInfo.leader} quit={() => send("Leave", "")}
+                />
                 </div>
             );
        default:
