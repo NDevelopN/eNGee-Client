@@ -33,9 +33,6 @@ export function PlayerList({playerList, lid}) {
         );
     }
 
-
-    console.log("length: " + playerList.length)
-
     return (
         <Table padding='none'>
             <TableHead>
