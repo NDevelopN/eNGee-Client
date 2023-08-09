@@ -21,7 +21,7 @@ export default function Consequences({msg, send, quit}) {
 
     let [dialog, setDialog] = useState(false);
 
-    let [conState, setConState] = useState(WAIT);
+    let [conState, setConState] = useState(States.WAIT);
     let [prompts, setPrompts] = useState([]);
     let [story, setStory] = useState([]);
     let [message, setMessage] = useState();
@@ -29,10 +29,12 @@ export default function Consequences({msg, send, quit}) {
     let tempState = ""
 
     useEffect(() => {
-        switch (msg.type) {
+        switch (message.type) {
             case "ConState":
-                if (msg.content !== "" && msg.content !== undefined) {
-                    setConState(msg.content);
+                if (message.content !== "" && message.content !== undefined) {
+                    setConState(Number(message.content));
+                } else {
+                    setConState(States.ERROR);
                 }
                 break;
             case "ConTimer":
@@ -40,28 +42,27 @@ export default function Consequences({msg, send, quit}) {
             case "ConState":
                 break;
             case "Prompts":
-                if (msg.content === "" || msg.content === undefined) {
+                if (message.content === "" || message.content === undefined) {
                     console.error("Empty prompts");
                     setConState("Error");
                     break;
                 }
 
-                setPrompts(JSON.parse(msg.content));
+                setPrompts(JSON.parse(message.content));
                 setConState("Prompts");
                 break;
             case "Story":
-                if (msg.content === "" || msg.content === undefined) {
+                if (message.content === "" || message.content === undefined) {
                     console.error("Empty story");
                     setConState("Error");
                     break;
                 }
 
-                setStory(JSON.parse(msg.content));
+                setStory(JSON.parse(message.content));
                 setConState("Story");
                 break;
             default:
-                console.log("MESSAGE: " + msg);
-                console.error("Unknown message type: " + msg.type);
+                console.error("Unknown message type: " + message.type);
                 break;
         }
     }, [message]);
@@ -121,12 +122,14 @@ export default function Consequences({msg, send, quit}) {
         case States.ERROR:
             break;
         default:
+            /** 
             tempState = conState
             setInterval(() => {
                 if (conState === tempState) {
                     leave();
                 }
             }, 5000);
+            */  
 
             return (
                 <h3>Something went wrong</h3>
