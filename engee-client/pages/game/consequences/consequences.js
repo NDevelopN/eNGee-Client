@@ -7,7 +7,7 @@ import Popup from 'reactjs-popup';
 
 import {ConfirmDialog} from '@/components/dialogs';
 
-export default function Consequences({msg, send, quit}) {
+export default function Consequences({msgs, setMsgs, send, quit}) {
 
     const States = {
         LOBBY: 0,
@@ -24,49 +24,59 @@ export default function Consequences({msg, send, quit}) {
     let [conState, setConState] = useState(States.WAIT);
     let [prompts, setPrompts] = useState([]);
     let [story, setStory] = useState([]);
-    let [message, setMessage] = useState();
 
     let tempState = ""
 
+    const timeout = 100
+
     useEffect(() => {
-        switch (message.type) {
-            case "ConState":
-                if (message.content !== "" && message.content !== undefined) {
-                    setConState(Number(message.content));
-                } else {
-                    setConState(States.ERROR);
-                }
-                break;
-            case "ConTimer":
-                break;
-            case "ConState":
-                break;
-            case "Prompts":
-                if (message.content === "" || message.content === undefined) {
-                    console.error("Empty prompts");
-                    setConState("Error");
-                    break;
-                }
-
-                setPrompts(JSON.parse(message.content));
-                setConState("Prompts");
-                break;
-            case "Story":
-                if (message.content === "" || message.content === undefined) {
-                    console.error("Empty story");
-                    setConState("Error");
-                    break;
-                }
-
-                setStory(JSON.parse(message.content));
-                setConState("Story");
-                break;
-            default:
-                console.error("Unknown message type: " + message.type);
-                break;
+        processInput();
+    },[msgs]);
+    
+    function processInput() {
+        if (msgs.length == 0) {
+            return
         }
-    }, [message]);
 
+        let message = msgs.pop() 
+
+        switch (message.type) {
+        case "ConState":
+            if (message.content !== "" && message.content !== undefined) {
+                setConState(Number(message.content));
+            } else {
+                setConState(States.ERROR);
+            }
+            break;
+        case "ConTimer":
+            break;
+        case "Prompts":
+            if (message.content === "" || message.content === undefined) {
+                console.error("Empty prompts");
+                setConState(States.ERROR);
+                break;
+            }
+
+            setPrompts(JSON.parse(message.content));
+            break;
+        case "Story":
+            if (message.content === "" || message.content === undefined) {
+                console.error("Empty story");
+                setConState(States.ERROR);
+                break;
+            }
+
+            setStory(JSON.parse(message.content));
+            break;
+        default:
+            console.error("Unknown message type: " + message.type);
+            setConState(States.ERROR)
+            break;
+        }
+
+        setMsgs(msgs);
+
+    }
 
     function reply(replies) {
 
@@ -92,10 +102,6 @@ export default function Consequences({msg, send, quit}) {
                 />
             </Popup>
         );
-    }
-
-    if (msg !== message) {
-        setMessage(msg);
     }
 
     switch (conState) {

@@ -15,9 +15,8 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     let [isLeader, setIsLeader] = useState(false);
     let [plrList, setPlrList] = useState([])
 
-    let [gameMessage, setGameMessage] = useState({type: "", uid: "", gid: "", content: ""});
+    let [gameMessages, setGameMessages] = useState([])
     let [status, setStatus] = useState("Loading");
-
 
     let uE = true;
     useEffect(() => {
@@ -62,8 +61,8 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
         sock.send(JSON.stringify(message));
  
     }
-
-    function leave() {
+    
+    function leave() { 
         document.cookie = "gid=;path='/'";
         revertStatus();
     }
@@ -128,28 +127,29 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
             case "Leader":
                 setIsLeader(data.uid === user.uid);
                 if (isLeader) {
-                    alert("You are now the game leader")
+                    alert("You are now the game leader");
                 }
                 break;
             case "Rules":
-                content = JSON.parse(data.content)
+                content = JSON.parse(data.content);
                 setRules(content.rules);
                 break;
             case "Response":
                 let response = JSON.parse(data.content) 
                 if (response.cause === "Warn") {
-                    alert(response.message)
+                    alert(response.message);
                 } else {
                     console.error("Received " + response.cause + " message: " + response.message);
                 }
                 break;
             case "End":
-                alert("The Game has been deleted.")
+                alert("The Game has been deleted.");
                 leave();
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
-                setGameMessage(data)
+                gameMessages.push(data);
+                setGameMessages(gameMessages);
                 break;
         }
     }
@@ -167,12 +167,9 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function GameRender() {
-        if (gameMessage.type === "") {
-            return (<h2>Loading...</h2>)
-        }
         switch (gameInfo.type.toLowerCase()) {
             case "consequences":
-                return (<Consequences msg={gameMessage} send={send} 
+                return (<Consequences msgs={gameMessages} setMsgs={setGameMessages} send={send} 
                         quit={ () => {
                                 send("Leave", ""); 
                                 socket.close(1000, "playerLeft")
