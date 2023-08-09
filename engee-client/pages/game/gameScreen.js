@@ -115,7 +115,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             case "Status": 
                 setStatus(data.content);
-                setGameMessage(data.content);
                 break;
             case "Player":
                 content = JSON.parse(data.content);
