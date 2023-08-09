@@ -9,10 +9,19 @@ import {ConfirmDialog} from '@/components/dialogs';
 
 export default function Consequences({msg, send, quit}) {
 
+    const States = {
+        LOBBY: 0,
+        PROMPTS: 1,
+        POSTPROMPTS: 2,
+        STORIES: 3,
+        POSTSTORIES: 4,
+        ERROR: 5,
+        WAIT: 10,
+    }
 
     let [dialog, setDialog] = useState(false);
 
-    let [conState, setConState] = useState("Wait");
+    let [conState, setConState] = useState(WAIT);
     let [prompts, setPrompts] = useState([]);
     let [story, setStory] = useState([]);
     let [message, setMessage] = useState();
@@ -23,9 +32,12 @@ export default function Consequences({msg, send, quit}) {
         switch (msg.type) {
             case "ConState":
                 if (msg.content !== "" && msg.content !== undefined) {
-                
+                    setConState(msg.content);
                 }
-                setConState(msg.content);
+                break;
+            case "ConTimer":
+                break;
+            case "ConState":
                 break;
             case "Prompts":
                 if (msg.content === "" || msg.content === undefined) {
@@ -47,9 +59,8 @@ export default function Consequences({msg, send, quit}) {
                 setStory(JSON.parse(msg.content));
                 setConState("Story");
                 break;
-            case "Accept":
-                break;
             default:
+                console.log("MESSAGE: " + msg);
                 console.error("Unknown message type: " + msg.type);
                 break;
         }
@@ -87,24 +98,28 @@ export default function Consequences({msg, send, quit}) {
     }
 
     switch (conState) {
-        case "Wait":
+        case States.WAIT:
             return (<h3>Waiting for other players...</h3>);
-        case "Prompts":
+        case States.PROMPTS:
             return (
                 <>
                 <Prompts prompts={prompts} reply={reply} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
-        case "Pause":
-            return (<h3>Please wait for unpause...</h3>)
-        case "Story":
+        case States.POSTPROMPTS:
+            break;
+        case States.STORIES:
             return (
                 <>
                 <Story story={story} send={send} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
+        case States.POSTSTORIES:
+            break;
+        case States.ERROR:
+            break;
         default:
             tempState = conState
             setInterval(() => {
