@@ -138,9 +138,11 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             case "Response":
                 let response = JSON.parse(data.content) 
-                console.error("Received " + response.cause + " message: " + response.message);
-                break;
-            case "ACK":
+                if (response.cause === "Warn") {
+                    alert(response.message)
+                } else {
+                    console.error("Received " + response.cause + " message: " + response.message);
+                }
                 break;
             case "End":
                 alert("The Game has been deleted.")
