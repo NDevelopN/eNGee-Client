@@ -5,22 +5,22 @@ export function PlayerList({playerList, lid}) {
 
     function body() {
         return(
-            <TableBody>
-                {playerList.map(player=> (
-                <TableRow key ={player.uid}>
-                    {player.uid === lid ? 
-                    <>
-                        <TableCell><b>{player.name}</b></TableCell>
-                        <TableCell><b>{player.status}</b></TableCell>
-                    </>
-                    : <>
-                        <TableCell>{player.name}</TableCell>
-                        <TableCell>{player.status}</TableCell>
-                    </>
-                }
-                </TableRow>
-                ))}
-            </TableBody>
+            <>
+            {playerList.map(player=> (
+            <TableRow key ={player.uid}>
+                {player.uid === lid ? 
+                <>
+                    <TableCell><b>{player.name}</b></TableCell>
+                    <TableCell><b>{player.status}</b></TableCell>
+                </>
+                : <>
+                    <TableCell>{player.name}</TableCell>
+                    <TableCell>{player.status}</TableCell>
+                </>
+            }
+            </TableRow>
+            ))}
+            </>
         );
     }
 
@@ -42,8 +42,9 @@ export function PlayerList({playerList, lid}) {
                 </TableRow>
             </TableHead>
 
+        <TableBody>
         {playerList.length > 0 ? body() : loading()}
-
+        </TableBody>
         </Table>
     );
 }
