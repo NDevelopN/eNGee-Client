@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
+
+import ReadCookie from '@/lib/readCookie';
 
 import Prompts from '@/pages/game/consequences/prompts';
 import Story from '@/pages/game/consequences/story';
@@ -7,79 +9,129 @@ import Popup from 'reactjs-popup';
 
 import {ConfirmDialog} from '@/components/dialogs';
 
-export default function Consequences({msgs, setMsgs, send, quit}) {
+const States = {
+    LOBBY: 0,
+    PROMPTS: 1,
+    POSTPROMPTS: 2,
+    STORIES: 3,
+    POSTSTORIES: 4,
+    ERROR: 5,
+}
 
-    const States = {
-        LOBBY: 0,
-        PROMPTS: 1,
-        POSTPROMPTS: 2,
-        STORIES: 3,
-        POSTSTORIES: 4,
-        ERROR: 5,
-        WAIT: 10,
-    }
+function Consequences({round, getMsg, send, quit}) {
 
     let [dialog, setDialog] = useState(false);
 
-    let [conState, setConState] = useState(States.WAIT);
+    let [conState, setConState] = useState();
     let [prompts, setPrompts] = useState([]);
     let [story, setStory] = useState([]);
+    let [err, setErr] = useState("");
 
-    let tempState = ""
+    let issue = false;
 
-    const timeout = 100
+    const ivRef = useRef(null);
+    const toRef = useRef(null);
+    const doOnce = useRef(0);
 
-    useEffect(() => {
-        processInput();
-    },[msgs]);
-    
-    function processInput() {
-        if (msgs.length == 0) {
-            return
+    useEffect(getCookies, []);
+
+    function getCookies() {
+
+        let state = ReadCookie("state");
+        if (state !== undefined) {
+            setConState(state);
+        } else {
+            setErr("No state in cookies");
         }
 
-        let message = msgs.pop() 
+        let p = ReadCookie("prompts");
+        if (p !== undefined && p !== "") {
+            setPrompts(p);
+        }
+
+        let s = ReadCookie("story");
+        if (s !== undefined && s !== "") {
+            setStory(s);
+        }
+    } 
+
+
+    useEffect(() => {
+        ivRef.current = setInterval(processInput, 100);
+
+        toRef.current = setTimeout(() =>  {
+            if (issue) {
+                setConState(States.ERROR); 
+                setErr("Timeout on invalid state");
+            }
+        }, 2000);
+
+
+
+        return () => {
+            clearInterval(ivRef.current);
+            clearTimeout(toRef.current);
+        }
+    }, []);
+
+    function updateState(state) {
+        setConState(state);
+        setCookie("state", state);
+        issue = false;
+    }
+ 
+    function processInput() {
+
+        let message = getMsg();
+        if (message == null) {
+            return;
+        }
 
         switch (message.type) {
         case "ConState":
             if (message.content !== "" && message.content !== undefined) {
-                setConState(Number(message.content));
+                updateState(Number(message.content));
             } else {
-                setConState(States.ERROR);
+                updateState(States.ERROR);
+                setErr("Invalid state message: " + message.content);
             }
             break;
         case "ConTimer":
             break;
         case "Prompts":
             if (message.content === "" || message.content === undefined) {
-                console.error("Empty prompts");
-                setConState(States.ERROR);
+                updateState(States.ERROR);
+                setErr("Invalid prompts message: " + message.content);
                 break;
             }
 
-            setPrompts(JSON.parse(message.content));
+            let p = JSON.parse(message.content);
+            setPrompts(p);
+            setCookie("prompts", p);
             break;
         case "Story":
             if (message.content === "" || message.content === undefined) {
-                console.error("Empty story");
-                setConState(States.ERROR);
+                updateState(States.ERROR);
+                setErr("Invalid story message: " + message.content);
                 break;
             }
 
-            setStory(JSON.parse(message.content));
+            let s = JSON.parse(message.content);
+            setStory(s);
+            setCookie("story", s);
             break;
         default:
-            console.error("Unknown message type: " + message.type);
-            setConState(States.ERROR)
+            updateState(States.ERROR);
+            setErr("Invalid message type: " + message.type);
             break;
         }
+    }
 
-        setMsgs(msgs);
-
+    function setCookie(vName, value) {
+        document.cookie = vName + "=" + value + ";path='/pages/game/consequences/'";
     }
 
     function reply(replies) {
-
         send("Reply", JSON.stringify(replies));
     }
 
@@ -105,8 +157,6 @@ export default function Consequences({msgs, setMsgs, send, quit}) {
     }
 
     switch (conState) {
-        case States.WAIT:
-            return (<h3>Waiting for other players...</h3>);
         case States.PROMPTS:
             return (
                 <>
@@ -115,7 +165,7 @@ export default function Consequences({msgs, setMsgs, send, quit}) {
                 </>
             );
         case States.POSTPROMPTS:
-            break;
+            return <button onClick={() => send("Status", "Ready")}>Ready</button>;
         case States.STORIES:
             return (
                 <>
@@ -124,21 +174,14 @@ export default function Consequences({msgs, setMsgs, send, quit}) {
                 </>
             );
         case States.POSTSTORIES:
-            break;
+            return <button onClick={() => send("Status", "Ready")}>Ready</button>;
         case States.ERROR:
-            break;
+            console.error(err);
+            return <h3>Something went wrong.</h3>;
         default:
-            /** 
-            tempState = conState
-            setInterval(() => {
-                if (conState === tempState) {
-                    leave();
-                }
-            }, 5000);
-            */  
-
-            return (
-                <h3>Something went wrong</h3>
-            );
+            issue = true;
+            return (<h3>Loading...</h3>);
     }
 }
+
+export default Consequences = memo(Consequences);

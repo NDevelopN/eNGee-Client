@@ -1,12 +1,17 @@
 import {useState, useEffect} from 'react';
 
 import {GET, SOCK} from '@/lib/networkFunctions';
+import CQ from '@/lib/queue';
 import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
 import LeaderView from '@/pages/game/leader/leader';
 
 
 let count = 0;
+let round = 0;
+
+let gameMessages = new CQ(20);
+
 export default function GameScreen({user, setUser, revertStatus, url}) {
     let [socket, setSocket] = useState();
 
@@ -15,7 +20,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     let [isLeader, setIsLeader] = useState(false);
     let [plrList, setPlrList] = useState([])
 
-    let [gameMessages, setGameMessages] = useState([])
     let [status, setStatus] = useState("Loading");
 
     let uE = true;
@@ -113,6 +117,9 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 setIsLeader(content.leader === user.uid);
                 break;
             case "Status": 
+                if (data.content === "Lobby") {
+                    round++;
+                }
                 setStatus(data.content);
                 break;
             case "Player":
@@ -148,10 +155,17 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
-                gameMessages.push(data);
-                setGameMessages(gameMessages);
+                if (!gameMessages.enqueue(data)) {
+                    //TODO
+                    console.error("Dropped message: " + data.type + ", " + data.content);
+                }
                 break;
         }
+    }
+
+    function DQ() {
+        let msg = gameMessages.dequeue();
+        return msg;
     }
 
     function setRules(rules) {
@@ -169,7 +183,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     function GameRender() {
         switch (gameInfo.type.toLowerCase()) {
             case "consequences":
-                return (<Consequences msgs={gameMessages} setMsgs={setGameMessages} send={send} 
+                return (<Consequences round={round} getMsg={DQ} send={send} 
                         quit={ () => {
                                 send("Leave", ""); 
                                 socket.close(1000, "playerLeft")
@@ -193,6 +207,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 <h2>Loading</h2>
             );
         case "Reset":
+            round = 0;
             return (
                 <h2>Restarting game...</h2>
             );
