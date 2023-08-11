@@ -3,14 +3,14 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
-export default function UserCreate({user, updateUser, revertStatus, setActive}) {
+export default function UserCreate({pUser, updateUser, revertStatus, setActive}) {
 
-    let [UserName, setUserName] = useState(user.name);
+    let [UserName, setUserName] = useState(pUser.name);
     let [dialog, setDialog] = useState(false);
 
     function logout() {
-        user = {
-            uid: user.uid,
+        let user = {
+            uid: pUser.uid,
             gid: "",
             name: "",
             status: "",
@@ -41,14 +41,21 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
     function handleSubmit() {
         if (UserName !== "") {
             //No need to post new update if name isn't changing
-            if (UserName === user.name) {
+            if (UserName === pUser.name) {
                 alert("User name has not been changed");
                 return;
             }
 
-            let revert = user.name === "";
+            let revert = pUser.name === "";
 
-            user.name = UserName;
+            let user = {
+                uid: pUser.uid,
+                gid: pUser.gid,
+                name: UserName,
+                status: pUser.status
+
+            }
+
             updateUser(user, () => {
                 if (revert) {
                     revertStatus();
@@ -69,7 +76,7 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
                 <input type="text" name="name" defaultValue={UserName} autoComplete='off' onChange={handleChange}/>
                 <input type="submit" value="submit"/>
             </label>
-            {user.name !== "" ? 
+            {pUser.uid !== "" ? 
             <div>
                 <button onClick={revertStatus}>Return</button>
                 <button onClick={logout}>Logout</button>

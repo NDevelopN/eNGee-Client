@@ -137,7 +137,7 @@ export default function Home() {
         switch (Status[Status.length-1]) {
         case "Naming":
             return (
-                <UserCreate user={User} updateUser={updateUser} revertStatus={revertStatus} url={url}/>
+                <UserCreate pUser={User} updateUser={updateUser} revertStatus={revertStatus} url={url}/>
             );
         case "Browsing":
             return (
