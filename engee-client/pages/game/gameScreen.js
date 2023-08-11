@@ -197,11 +197,12 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
         switch (gameInfo.type.toLowerCase()) {
             case "consequences":
                 return (<Consequences round={round} getMsg={DQ} send={send} 
-                        quit={ () => {
-                                send("Leave", ""); 
-                                socket.close(1000, "playerLeft");
+                            plrList={plrList} lid={gameInfo.Leader}
+                            quit={ () => {
+                                    send("Leave", ""); 
+                                    socket.close(1000, "playerLeft");
+                                }
                             }
-                        }
                 />);
         }
     }

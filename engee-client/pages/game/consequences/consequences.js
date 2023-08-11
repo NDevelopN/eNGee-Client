@@ -3,7 +3,9 @@ import { useState, useEffect, useRef, memo } from 'react';
 import ReadCookie from '@/lib/readCookie';
 
 import Prompts from '@/pages/game/consequences/prompts';
+import PostPrompts from '@/pages/game/consequences/postPrompts';
 import Story from '@/pages/game/consequences/story';
+import PostStory from '@/pages/game/consequences/postStory';
 
 import Popup from 'reactjs-popup';
 
@@ -18,7 +20,7 @@ const States = {
     ERROR: 5,
 }
 
-function Consequences({round, getMsg, send, quit}) {
+function Consequences({round, getMsg, send, quit, plrList, lid}) {
 
     let [dialog, setDialog] = useState(false);
 
@@ -133,16 +135,22 @@ function Consequences({round, getMsg, send, quit}) {
 
     function reply(replies) {
         send("Reply", JSON.stringify(replies));
+        setConState(States.POSTPROMPTS);
     }
 
-    function update(text) {
-        send("Update", text);
-    }
+    function finishStory() {
+        send("Status", "Ready");
+        setConState(States.POSTSTORIES);
+    } 
 
     function leave() {
         send("Leave", "");
         quit();
     }
+
+    useEffect(() => {
+        console.log("State: " + conState);
+    }, [conState]);
 
     function LeaveDialog() {
         return (
@@ -165,16 +173,16 @@ function Consequences({round, getMsg, send, quit}) {
                 </>
             );
         case States.POSTPROMPTS:
-            return <button onClick={() => send("Status", "Ready")}>Ready</button>;
+            return <PostPrompts plrList={plrList} lid={lid} quit={leave}/>;
         case States.STORIES:
             return (
                 <>
-                <Story story={story} send={send} quit={() => setDialog(true)}/>
+                <Story story={story} send={finishStory} quit={() => setDialog(true)}/>
                 <LeaveDialog/>
                 </>
             );
         case States.POSTSTORIES:
-            return <button onClick={() => send("Status", "Ready")}>Ready</button>;
+            return <PostStory plrList={plrList} lid={lid} quit={leave}/>;
         case States.ERROR:
             console.error(err);
             return <h3>Something went wrong.</h3>;

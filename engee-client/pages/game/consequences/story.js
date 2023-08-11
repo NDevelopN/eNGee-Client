@@ -6,7 +6,7 @@ export default function Story({story, send, quit}) {
     function ready(e) {
         e.preventDefault();
 
-        send("Status", "Ready");
+        send();
     }
 
 
