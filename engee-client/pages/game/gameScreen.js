@@ -1,13 +1,15 @@
 import {useState, useEffect} from 'react';
+import { createPortal } from 'react-dom';
+
+import popUp from '@/styles/popup.module.css';
 
 import {GET, SOCK} from '@/lib/networkFunctions';
 import CQ from '@/lib/queue';
 import Consequences from '@/pages/game/consequences/consequences';
 import Lobby from '@/pages/game/lobby';
-import LeaderView from '@/pages/game/leader/leader';
-
-
-let count = 0;
+import LeaderView from '@/pages/game/leader/leaderView';
+import LeaderPause from '@/pages/game/leader/leaderPause';
+ 
 let round = 0;
 
 let gameMessages = new CQ(20);
@@ -18,9 +20,10 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
-    let [plrList, setPlrList] = useState([])
+    let [plrList, setPlrList] = useState([]);
 
     let [status, setStatus] = useState("Loading");
+    let [paused, setPaused] = useState(false);
 
     let uE = true;
     useEffect(() => {
@@ -42,14 +45,13 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     function connect() {
         if (uE) {
             uE = false;
-            return
+            return;
         }
         let endpoint = "ws" + url.substring(4) + "/games/" + user.uid;
 
-        let socket
         SOCK(endpoint, receive, close, (sock) => {
-            socket = sock
-            open(sock)
+            let socket = sock;
+            open(sock);
             setSocket(socket);
         });
     }
@@ -73,7 +75,8 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
 
     function close(event) {
         if (event !== undefined && event.wasClean) {
-            console.log("[close] Connection closed cleanly, code=" + event.code + " reason=" + event.reason);
+            console.log("[close] Connection closed cleanly, code=" + event.code + 
+                                " reason=" + event.reason);
         } else {
             console.log("[close] Connection died");
         }
@@ -91,14 +94,24 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
 
         if (socket === undefined) {
             console.error("Socket is undefined");
-            return
+            return;
         }
 
         socket.send(JSON.stringify(message));
     }
 
-    function receive(event) {
+    function changeStatus(status) {
+        if (status === "Pause"){
+            setPaused(true);
+            return;
+        }
 
+        setPaused(false);
+        setStatus(status);
+    }
+
+
+    function receive(event) {
         let data = JSON.parse(event.data);
         let content;
 
@@ -107,7 +120,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
             case "Info":
                 content = JSON.parse(data.content);
                 setGameInfo(content);
-                setStatus(content.status);
+                changeStatus(content.status);
                 setIsLeader(content.leader === user.uid);
                 break;
             case "Update":
@@ -120,7 +133,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 if (data.content === "Lobby") {
                     round++;
                 }
-                setStatus(data.content);
+                changeStatus(data.content);
                 break;
             case "Player":
                 content = JSON.parse(data.content);
@@ -142,7 +155,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 setRules(content.rules);
                 break;
             case "Response":
-                let response = JSON.parse(data.content) 
+                let response = JSON.parse(data.content);
                 if (response.cause === "Warn") {
                     alert(response.message);
                 } else {
@@ -175,7 +188,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function playerToggleReady() {
-        var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready")
+        var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready");
         send("Status", nStatus);
         setPStatus(nStatus);
     }
@@ -186,7 +199,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 return (<Consequences round={round} getMsg={DQ} send={send} 
                         quit={ () => {
                                 send("Leave", ""); 
-                                socket.close(1000, "playerLeft")
+                                socket.close(1000, "playerLeft");
                             }
                         }
                 />);
@@ -194,45 +207,66 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function Leader() {
-        return (<LeaderView uid={user.uid} info={gameInfo} status={status} send={send} url={url}/>);
+        return (
+            <div>
+            <LeaderView uid={user.uid} status={status} paused={paused} send={send} url={url}/>
+            <GS/>
+            </div>
+        );
     }
 
     function Paused() {
-        return (<h3>Paused</h3>);
-    }
-
-    switch (status) {
-        case "Loading":
+        if (paused) {
             return (
-                <h2>Loading</h2>
-            );
-        case "Reset":
-            round = 0;
-            return (
-                <h2>Restarting game...</h2>
-            );
-        case "Play":
-            return (
-                <>
-                {isLeader ? <Leader/> : <></>}
-                <GameRender/>
-                </>
-            );
-        case "Lobby":
-        case "Pause":
-            return (
-                <div>
-                {status === "Pause" ? <Paused/> : <></>}
-                {isLeader ? <Leader/> : <></>}
-                <Lobby 
-                    socket={socket} status={pStatus} changeStatus={playerToggleReady} 
-                    plrList={plrList} lid={gameInfo.leader} quit={() => send("Leave", "")}
-                />
+                <div className={popUp.modal}>
+                {isLeader 
+                ? 
+                <LeaderPause paused={paused} info={gameInfo} status={status} send={send} url={url}/>
+                :
+                <div className={popUp.modal}>
+                    <h2>Paused</h2>
+                </div>
+                }
                 </div>
             );
-       default:
-            console.error("Unknown status: " + status);
-            socket.close();
-            break;
+        }
+        return <></>;
     }
+
+    function GS() {
+        switch (status) {
+            case "Loading":
+                return (
+                    <h2>Loading</h2>
+                );
+            case "Reset":
+                round = 0;
+                return (
+                    <h2>Restarting game...</h2>
+                );
+            case "Play":
+                return (
+                    <>
+                    {createPortal(<Paused/>, document.body)}
+                    <GameRender/>
+                    </>
+                );
+            case "Lobby":
+                return(
+                    <div>
+                    {createPortal(<Paused/>, document.body)}
+                    <Lobby 
+                        socket={socket} status={pStatus} paused={paused} changeStatus={playerToggleReady} 
+                        plrList={plrList} lid={gameInfo.leader} quit={() => send("Leave", "")}
+                    />
+                    </div>
+                );
+        default:
+                console.error("Unknown status: " + status);
+                socket.close();
+                break;
+        }
+    }
+
+    return (<>{isLeader ? <Leader/> : <GS/>}</>);
 }
