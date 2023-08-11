@@ -97,7 +97,7 @@ export async function DELETE(endpoint, callback) {
                 callback(data);
             });
         } else {
-            throw new Error ("Something went wrong on API server " + response.status);
+            console.error("Something went wrong on API server " + response.status);
         }
     }).catch((error) => {
         console.error(error);

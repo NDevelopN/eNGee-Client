@@ -64,7 +64,6 @@ export default function Home() {
     }
 
     async function updateUser(user, callback) {
-        setActive(false);
         if (user.uid === "") {
             POST(JSON.stringify(user), url + "/users", (e) => {
                 user.uid = e.uid;
@@ -76,15 +75,16 @@ export default function Home() {
                 callback();
             });
         } else if (user.name === "") {
-            user.uid = "";
-            setStatus(["Naming"]);
-            setUser(user)
 
             DELETE(url + "/users/" + user.uid, (e) => {
                 document.cookie = "uid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
                 callback();
             });
+            
+            user.uid = "";
+            setStatus(["Naming"]);
+            setUser(user)
         } else {
             PUT(JSON.stringify(user), url + "/users/" + user.uid, (e) => {
                 setUser(user)

@@ -21,7 +21,6 @@ export default function UserCreate({user, updateUser, revertStatus, setActive}) 
 
         updateUser(user, () => {
             setUserName("");
-            setActive(true);
         });
     }
 
