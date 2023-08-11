@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 import GameManager from '@/components/gameManager';
 import { ConfirmDialog } from '@/components/dialogs';
