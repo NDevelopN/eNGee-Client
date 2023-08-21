@@ -27,19 +27,13 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
 
     let uE = true;
     useEffect(() => {
-        GET(url + "/games", (e) => {
-            if (e) {
-                for (let i = 0; i < e.length; i++) {
-                    if (e[i].gid === user.gid) {
-                        connect();
-                        return
-                    }
-                }
+        connect();
+
+        return () => {
+            if (socket !== undefined) {
+                socket.close();
             }
-            
-            console.error("Could not connect: game not found");
-            leave();
-        });
+        }
     }, []);
 
     function connect() {
@@ -68,11 +62,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
  
     }
     
-    function leave() { 
-        document.cookie = "gid=;path='/'";
-        revertStatus();
-    }
-
     function close(event) {
         if (event !== undefined && event.wasClean) {
             console.log("[close] Connection closed cleanly, code=" + event.code + 
@@ -81,7 +70,10 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
             console.log("[close] Connection died");
         }
 
-        leave();
+        document.cookie = "gid=;path='/'";
+        user.Status = "Left";
+        user.gid = "";
+        setUser(user);
     }
 
     function send(type, data) {
@@ -126,7 +118,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
             case "Update":
                 content = JSON.parse(data.content);
                 setGameInfo(content);
-                setStatus(content.status);
+                changeStatus(content.status);
                 setIsLeader(content.leader === user.uid);
                 break;
             case "Status": 
@@ -136,13 +128,33 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 changeStatus(data.content);
                 break;
             case "Player":
-                content = JSON.parse(data.content);
-                setUser(content);
-                setPStatus(content.Status);
-                revertStatus();
+                let nUser = JSON.parse(data.content);
+                if (nUser.gid === "" || nUser.status === "Leaving") {
+                    revertStatus();
+                    break;
+                }
+
+                if (nUser.status !== pStatus) {
+                    setPStatus(nUser.status);
+                }
+
                 break;
             case "Players":
-                setPlrList(JSON.parse(data.content));
+                let pString = JSON.stringify(plrList); 
+
+                if (pString !== data.content) {
+                    let pList = JSON.parse(data.content);
+                    for (let i = 0; i < pList.length; i++) {
+                        let plr = pList[i]
+                        if (plr.uid == user.uid) {
+                            if (plr !== user) {
+                                setPStatus(plr.status);
+                            }
+                        }
+                    }
+
+                    setPlrList(JSON.parse(data.content));
+                }
                 break;
             case "Leader":
                 setIsLeader(data.uid === user.uid);
@@ -164,7 +176,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             case "End":
                 alert("The Game has been deleted.");
-                leave();
+                revertStatus();
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
