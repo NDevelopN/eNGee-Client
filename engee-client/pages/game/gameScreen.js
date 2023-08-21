@@ -13,6 +13,7 @@ import LeaderPause from '@/pages/game/leader/leaderPause';
 let round = 0;
 
 let gameMessages = new CQ(20);
+let plrList = [];
 
 export default function GameScreen({user, setUser, revertStatus, url}) {
     let [socket, setSocket] = useState();
@@ -20,7 +21,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
-    let [plrList, setPlrList] = useState([]);
 
     let [status, setStatus] = useState("Loading");
     let [paused, setPaused] = useState(false);
@@ -144,16 +144,16 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
 
                 if (pString !== data.content) {
                     let pList = JSON.parse(data.content);
-                    for (let i = 0; i < pList.length; i++) {
-                        let plr = pList[i]
-                        if (plr.uid == user.uid) {
-                            if (plr !== user) {
+                    if (JSON.stringify(pList) !== JSON.stringify(plrList)) {
+                        plrList = pList;
+                        for (let i = 0; i < pList.length; i++) {
+                            let plr = pList[i];
+                            if (plr.uid == user.uid) {
                                 setPStatus(plr.status);
                             }
                         }
-                    }
 
-                    setPlrList(JSON.parse(data.content));
+                    }
                 }
                 break;
             case "Leader":
@@ -202,7 +202,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     function playerToggleReady() {
         var nStatus = (pStatus === "Ready" ? "Not Ready" : "Ready");
         send("Status", nStatus);
-        setPStatus(nStatus);
     }
 
     function GameRender() {
@@ -212,7 +211,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                             plrList={plrList} lid={gameInfo.Leader}
                             quit={ () => {
                                     send("Leave", ""); 
-                                    socket.close(1000, "playerLeft");
+                                    revertStatus();
                                 }
                             }
                 />);

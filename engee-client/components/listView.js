@@ -71,7 +71,7 @@ export function PlayerList({playerList, lid, readyAlt, notReadyAlt}) {
             </TableHead>
 
         <TableBody>
-        {playerList.length > 0 ? body() : loading()}
+        {playerList !== undefined && playerList.length > 0 ? body() : loading()}
         </TableBody>
         </Table>
     );
