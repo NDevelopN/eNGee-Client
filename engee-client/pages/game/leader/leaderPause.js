@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 
+import { PUT } from '@/lib/networkFunctions';
 import GameManager from '@/components/gameManager';
 import { ConfirmDialog } from '@/components/dialogs';
 
@@ -23,9 +24,12 @@ export default function LeaderPause({info, status, send, url}) {
     }
 
     function rulesUpdate(info) {
-        let text = JSON.stringify(info);
-        send("Rules", text);
-        setInRules(false);
+        let endpoint = url + "/games/" + info.gid;
+        let msg = JSON.stringify(info);
+
+        PUT(msg, endpoint, (e) => {
+            setInRules(false);
+        });
     }
 
     function endGame() {
