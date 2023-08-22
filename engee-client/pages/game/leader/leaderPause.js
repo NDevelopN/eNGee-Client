@@ -55,7 +55,6 @@ export default function LeaderPause({info, status, send, url}) {
                     text={confirmationText}
                     confirm={(e) => {
                         submit(); 
-                        send("End", "")
                     }}
                 />
             );
