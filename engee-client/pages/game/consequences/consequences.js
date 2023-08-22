@@ -14,10 +14,10 @@ import {ConfirmDialog} from '@/components/dialogs';
 const States = {
     LOBBY: 0,
     PROMPTS: 1,
-    POSTPROMPTS: 2,
-    STORIES: 3,
-    POSTSTORIES: 4,
-    ERROR: 5,
+    STORIES: 2,
+    ERROR: 3,
+    POSTPROMPTS: 4,
+    POSTSTORIES: 5,
 }
 
 let issue = false;
@@ -81,7 +81,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
 
     useEffect(() => {
         if (!issue) {
-            if (conState > States.ERROR) {
+            if (conState > States.POSTSTORIES) {
                 issue = true;
                 toRef.current = setTimeout(() =>  {
                     if (issue) {
@@ -91,7 +91,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
                 }, 2000);
             }
         } else {
-            if (conState <= States.ERROR || paused) {
+            if (conState <= States.POSTSTORIES || paused) {
                 issue = false;
             }
         }
