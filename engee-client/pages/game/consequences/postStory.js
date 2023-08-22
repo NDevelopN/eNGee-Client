@@ -10,7 +10,8 @@ export default function PostStory({plrList, lid, quit}) {
 
     return (
         <div>
-            <PlayerList playerList={plrList} lid={lid} altNotReady={"Reading"}/>
+            <h3> Post Story </h3>
+            <PlayerList playerList={plrList} lid={lid} notReadyAlt={"Reading"}/>
             <span>
                 <button onClick={()=>setDialog(true)}>Leave</button>
             </span>

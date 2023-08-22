@@ -10,7 +10,8 @@ export default function PostPrompts({plrList, lid, quit}) {
 
     return (
         <div>
-            <PlayerList playerList={plrList} lid={lid} altReady={"Submitted"} altNotReady={"Writing"}/>
+            <h3> Post Prompts </h3>
+            <PlayerList playerList={plrList} lid={lid} readyAlt={"Submitted"} notReadyAlt={"Writing"}/>
             <span>
                 <button onClick={()=>setDialog(true)}>Leave</button>
             </span>
