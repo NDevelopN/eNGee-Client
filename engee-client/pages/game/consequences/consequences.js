@@ -20,7 +20,9 @@ const States = {
     ERROR: 5,
 }
 
-function Consequences({round, getMsg, send, quit, plrList, lid}) {
+let issue = false;
+
+function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
 
     let [dialog, setDialog] = useState(false);
 
@@ -29,46 +31,47 @@ function Consequences({round, getMsg, send, quit, plrList, lid}) {
     let [story, setStory] = useState([]);
     let [err, setErr] = useState("");
 
-    let issue = false;
-
     const ivRef = useRef(null);
     const toRef = useRef(null);
-    const doOnce = useRef(0);
+    const first = useRef(true);
 
-    useEffect(getCookies, []);
+
+    useEffect(() => {
+        if (!paused) {
+            getCookies();
+        }
+    }, [paused]);
 
     function getCookies() {
 
-        let state = ReadCookie("state");
+        let state = Number(ReadCookie("state"));
         if (state !== undefined) {
-            setConState(state);
+            updateState(state);
         } else {
             setErr("No state in cookies");
         }
 
         let p = ReadCookie("prompts");
         if (p !== undefined && p !== "") {
-            setPrompts(p);
+            setPrompts(JSON.parse(p));
         }
 
         let s = ReadCookie("story");
         if (s !== undefined && s !== "") {
-            setStory(s);
+            setStory(JSON.parse(s));
         }
     } 
 
 
     useEffect(() => {
+        if (first.current) {
+            setCookie("state", "");
+            setCookie("prompts", "");
+            setCookie("story", "");
+            first.current = false;
+        }
+
         ivRef.current = setInterval(processInput, 100);
-
-        toRef.current = setTimeout(() =>  {
-            if (issue) {
-                setConState(States.ERROR); 
-                setErr("Timeout on invalid state");
-            }
-        }, 2000);
-
-
 
         return () => {
             clearInterval(ivRef.current);
@@ -76,8 +79,33 @@ function Consequences({round, getMsg, send, quit, plrList, lid}) {
         }
     }, []);
 
+    useEffect(() => {
+        if (!issue) {
+            if (conState > States.ERROR) {
+                issue = true;
+                toRef.current = setTimeout(() =>  {
+                    if (issue) {
+                        setErr("Timeout on invalid state: " + conState);
+                        setConState(States.ERROR); 
+                    }
+                }, 2000);
+            }
+        } else {
+            if (conState <= States.ERROR || paused) {
+                issue = false;
+            }
+        }
+    }, [conState]);
+
+    
+
     function updateState(state) {
         setConState(state);
+        if (state === undefined) {
+            return
+
+        }
+
         setCookie("state", state);
         issue = false;
     }
@@ -95,7 +123,7 @@ function Consequences({round, getMsg, send, quit, plrList, lid}) {
                 updateState(Number(message.content));
             } else {
                 updateState(States.ERROR);
-                setErr("Invalid state message: " + message.content);
+                setErr("Invalid state message: " + JSON.stringify(message));
             }
             break;
         case "ConTimer":
@@ -103,28 +131,28 @@ function Consequences({round, getMsg, send, quit, plrList, lid}) {
         case "Prompts":
             if (message.content === "" || message.content === undefined) {
                 updateState(States.ERROR);
-                setErr("Invalid prompts message: " + message.content);
+                setErr("Invalid prompts message: " + JSON.stringify(message));
                 break;
             }
 
             let p = JSON.parse(message.content);
             setPrompts(p);
-            setCookie("prompts", p);
+            setCookie("prompts", JSON.stringify(p));
             break;
         case "Story":
             if (message.content === "" || message.content === undefined) {
                 updateState(States.ERROR);
-                setErr("Invalid story message: " + message.content);
+                setErr("Invalid story message: " + JSON.stringify(message));
                 break;
             }
 
             let s = JSON.parse(message.content);
             setStory(s);
-            setCookie("story", s);
+            setCookie("story", JSON.stringify(s));
             break;
         default:
             updateState(States.ERROR);
-            setErr("Invalid message type: " + message.type);
+            setErr("Invalid message type: " + JSON.stringify(message));
             break;
         }
     }
@@ -144,13 +172,12 @@ function Consequences({round, getMsg, send, quit, plrList, lid}) {
     } 
 
     function leave() {
+        setCookie("state", "");
+        setCookie("prompts", "");
+        setCookie("story", "");
         send("Leave", "");
         quit();
     }
-
-    useEffect(() => {
-        console.log("State: " + conState);
-    }, [conState]);
 
     function LeaveDialog() {
         return (
@@ -164,32 +191,43 @@ function Consequences({round, getMsg, send, quit, plrList, lid}) {
         );
     }
 
-    switch (conState) {
-        case States.PROMPTS:
-            return (
-                <>
-                <Prompts prompts={prompts} reply={reply} quit={() => setDialog(true)}/>
-                <LeaveDialog/>
-                </>
-            );
-        case States.POSTPROMPTS:
-            return <PostPrompts plrList={plrList} lid={lid} quit={leave}/>;
-        case States.STORIES:
-            return (
-                <>
-                <Story story={story} send={finishStory} quit={() => setDialog(true)}/>
-                <LeaveDialog/>
-                </>
-            );
-        case States.POSTSTORIES:
-            return <PostStory plrList={plrList} lid={lid} quit={leave}/>;
-        case States.ERROR:
-            console.error(err);
-            return <h3>Something went wrong.</h3>;
-        default:
+    if (paused) {
+        return (
+            <></>
+        )
+    }
+
+    return (
+        <>
+        {(() => {
+            switch (conState) {
+            case States.PROMPTS:
+                return (
+                    <>
+                    <Prompts prompts={prompts} reply={reply} quit={() => setDialog(true)}/>
+                    <LeaveDialog/>
+                    </>
+                );
+            case States.POSTPROMPTS:
+                return <PostPrompts plrList={plrList} lid={lid} quit={leave}/>;
+            case States.STORIES:
+                return (
+                    <>
+                    <Story story={story} send={finishStory} quit={() => setDialog(true)}/>
+                    <LeaveDialog/>
+                    </>
+                );
+            case States.POSTSTORIES:
+                return <PostStory plrList={plrList} lid={lid} quit={leave}/>;
+            case States.ERROR:
+                console.error(err);
+                return <h3>Something went wrong.</h3>;
+            }
+
             issue = true;
             return (<h3>Loading...</h3>);
-    }
+        })()}
+        </>
+    )
 }
-
 export default Consequences = memo(Consequences);

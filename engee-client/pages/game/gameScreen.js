@@ -207,7 +207,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     function GameRender() {
         switch (gameInfo.type.toLowerCase()) {
             case "consequences":
-                return (<Consequences round={round} getMsg={DQ} send={send} 
+                return (<Consequences round={round} paused={paused} getMsg={DQ} send={send} 
                             plrList={plrList} lid={gameInfo.Leader}
                             quit={ () => {
                                     send("Leave", ""); 
@@ -221,7 +221,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     function Leader() {
         return (
             <div>
-            <LeaderView uid={user.uid} status={status} paused={paused} send={send} url={url}/>
+            <LeaderView uid={user.uid} status={status} send={send}/>
             <GS/>
             </div>
         );
@@ -233,7 +233,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 <div className={popUp.modal}>
                 {isLeader 
                 ? 
-                <LeaderPause paused={paused} info={gameInfo} status={status} send={send} url={url}/>
+                <LeaderPause info={gameInfo} status={status} send={send} url={url}/>
                 :
                 <div className={popUp.modal}>
                     <h2>Paused</h2>
