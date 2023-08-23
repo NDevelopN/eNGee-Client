@@ -10,6 +10,7 @@ import PostStory from '@/pages/game/consequences/postStory';
 import Popup from 'reactjs-popup';
 
 import {ConfirmDialog} from '@/components/dialogs';
+import Timer from '@/components/timer';
 
 const States = {
     LOBBY: 0,
@@ -30,11 +31,11 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
     let [prompts, setPrompts] = useState([]);
     let [story, setStory] = useState([]);
     let [err, setErr] = useState("");
+    let [timer, setTimer] = useState();
 
     const ivRef = useRef(null);
     const toRef = useRef(null);
     const first = useRef(true);
-
 
     useEffect(() => {
         if (!paused) {
@@ -100,6 +101,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
     
 
     function updateState(state) {
+        setTimer("");
         setConState(state);
         if (state === undefined) {
             return
@@ -127,6 +129,8 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
             }
             break;
         case "ConTimer":
+            console.log("Con Timer received: " + message.content)
+            setTimer(message.content);
             break;
         case "Prompts":
             if (message.content === "" || message.content === undefined) {
@@ -199,6 +203,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
 
     return (
         <>
+        <Timer time={timer}/>
         {(() => {
             switch (conState) {
             case States.PROMPTS:
