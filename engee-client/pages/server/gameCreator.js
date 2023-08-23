@@ -6,12 +6,10 @@ import GameManager from '@/components/gameManager';
 
 export default function GameCreator({uid, setGame, revertStatus, setActive, url}) {
 
-    let [types, setTypes] = useState(["consequences"]);
-    
     let info = {
         gid: "",
         name: "",
-        type: types[0],
+        type: "",
         status: "Lobby",
         old_status: "",
         leader: uid,
@@ -33,6 +31,6 @@ export default function GameCreator({uid, setGame, revertStatus, setActive, url}
     }
 
     return (
-        <GameManager info={info} send={send} types={types} revertStatus={revertStatus}/>
+        <GameManager info={info} send={send} revertStatus={revertStatus} url={url}/>
     );
 }

@@ -3,13 +3,16 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
+import { GET } from '@/lib/networkFunctions';
+
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function GameManager({info, send, types, revertStatus}) {
+export default function GameManager({info, send, revertStatus, url}) {
     let [gameName, setGameName] = useState("");
-    let [gameType, setGameType] = useState(types[0]);
+    let [gameType, setGameType] = useState("");
     let [minPlrs, setMinPlrs] = useState(1);
     let [maxPlrs, setMaxPlrs] = useState(1);
+    let [typeList, setTypeList] = useState([]);
     //Allow for extensability
     let [additional, setAdditional] = useState("");
 
@@ -17,13 +20,25 @@ export default function GameManager({info, send, types, revertStatus}) {
     let [message, setMessage] = useState();
     
     useEffect(() => {
+        getGameTypes()
+
         setGameName(info.name);
         setGameType(info.type)
         setMinPlrs(info.min_plrs)
         setMaxPlrs(info.max_plrs)
         setAdditional(info.additional) 
-
     }, []);
+
+    function getGameTypes() {
+        GET(url + '/types', (e) => {
+            if (e) {
+                setTypeList(["", ...e]);
+            } else {
+                console.error("No available game types.");
+                setTypeList([]);
+            }
+        });
+    }
 
     function handleChange(event) {
         switch (event.target.name) {
@@ -145,7 +160,7 @@ export default function GameManager({info, send, types, revertStatus}) {
                         </TableCell>
                         <TableCell>
                             <select name="type" value={gameType} onChange={handleChange} >
-                                {types.map((type, index) => (
+                                {typeList.map((type, index) => (
                                     <option key={index} value={type}>{type}</option>
                                 ))}
                             </select>

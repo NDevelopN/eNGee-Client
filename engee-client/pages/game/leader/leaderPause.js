@@ -14,11 +14,6 @@ export default function LeaderPause({info, status, send, url}) {
 
     useEffect(getTypes, [])
 
-    function getTypes() {
-        //TODO: make request to server for list of available game types
-        setTypes(["consequences"]);
-    }
-
     function unpause() {
         send("Pause", "");
     }
@@ -65,8 +60,7 @@ export default function LeaderPause({info, status, send, url}) {
 
     if (inRules) {
         return (
-            <GameManager info={info} send={rulesUpdate} types={types} 
-                revertStatus={()=>setInRules(false)}/>
+            <GameManager info={info} send={rulesUpdate} revertStatus={()=>setInRules(false)} url={url}/>
         );
     }
 
