@@ -7,12 +7,9 @@ import { ConfirmDialog } from '@/components/dialogs';
 let submit = null;
 
 export default function LeaderPause({info, status, send, url}) {
-    let [types, setTypes] = useState(["consequences"]); //TODO]
     let [inRules, setInRules] = useState(false);
     let [dialog, setDialog] = useState(false);
     let [confirmationText, setConfirmationText] = useState("");
-
-    useEffect(getTypes, [])
 
     function unpause() {
         send("Pause", "");
