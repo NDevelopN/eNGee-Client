@@ -74,6 +74,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
         user.Status = "Left";
         user.gid = "";
         setUser(user);
+        revertStatus();
     }
 
     function send(type, data) {
@@ -130,7 +131,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
             case "Player":
                 let nUser = JSON.parse(data.content);
                 if (nUser.gid === "" || nUser.status === "Leaving") {
-                    revertStatus();
+                    socket.close();
                     break;
                 }
 
@@ -176,7 +177,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 break;
             case "End":
                 alert("The Game has been deleted.");
-                revertStatus();
+                socket.close();
                 break;
             default:
                 //If the standard options are not covered, pass it on to the gameSpecific logic
@@ -211,7 +212,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                             plrList={plrList} lid={gameInfo.Leader}
                             quit={ () => {
                                     send("Leave", ""); 
-                                    revertStatus();
+                                    socket.close();
                                 }
                             }
                 />);
