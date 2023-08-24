@@ -2,11 +2,9 @@ import { memo } from  'react';
 import style from '@/styles/timer.module.css'
 
 function Timer({time})  {
-    console.log(time)
-
-    time = Number(time)
-    if (time === NaN) {
-        return <></>
+    time = Number(time);
+    if (isNaN(time) || time === undefined) {
+        return <></>;
     }
 
     let msg
@@ -20,7 +18,7 @@ function Timer({time})  {
         <div className={style.circle}>
             <p className={style.text}>{msg}</p>
         </div>
-    )
+    );
 }
 
 export default Timer = memo(Timer);
