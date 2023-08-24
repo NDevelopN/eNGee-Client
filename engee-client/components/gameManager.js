@@ -7,6 +7,8 @@ import { GET } from '@/lib/networkFunctions';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
+import ConRules from '@/pages/game/consequences/rules';
+
 export default function GameManager({info, send, revertStatus, url}) {
     let [gameName, setGameName] = useState("");
     let [gameType, setGameType] = useState("");
@@ -18,6 +20,8 @@ export default function GameManager({info, send, revertStatus, url}) {
 
     let [dialog, setDialog] = useState(false);
     let [message, setMessage] = useState();
+
+    let [pop, setPop] = useState(false);
     
     useEffect(() => {
         getGameTypes()
@@ -28,6 +32,10 @@ export default function GameManager({info, send, revertStatus, url}) {
         setMaxPlrs(info.max_plrs)
         setAdditional(info.additional) 
     }, []);
+
+    useEffect(() => {
+        console.log("Game type set: " + gameType);
+    }, [gameType])
 
     function getGameTypes() {
         GET(url + '/types', (e) => {
@@ -96,7 +104,7 @@ export default function GameManager({info, send, revertStatus, url}) {
             min_plrs: minPlrs,
             max_plrs: maxPlrs,
             cur_plrs: info.cur_plrs,
-            additional_rules: info.additional_rules,
+            additional_rules: additional,
         };
 
         if (JSON.stringify(msg) === JSON.stringify(info)) {
@@ -123,20 +131,24 @@ export default function GameManager({info, send, revertStatus, url}) {
         }
     }
 
+    function GameType({}) {
+        switch (gameType) {
+            case "consequences": 
+                return <ConRules rules={additional} setRules={setAdditional} pop={pop} setPop={setPop}/>;
+        }
+
+        console.log("No gametype specific rules.")
+        return <></>;
+    }
+
     return (
     <div>
         <Pop/>
         <form onSubmit={(e)=>{
             e.preventDefault(); 
-            handleSubmit();
         }}>
+        {!pop ? <div>
             <Table padding='none'>
-                <TableHead>
-                    <TableRow>
-
-                    </TableRow>
-                </TableHead>
-
                 <TableBody>
                     <TableRow>
                         <TableCell>
@@ -198,9 +210,12 @@ export default function GameManager({info, send, revertStatus, url}) {
                     </TableRow>
                 </TableBody>
             </Table>
-
-            <input type="submit" value="submit"/>
+            </div> : <></> }
+            <GameType/>
+            {!pop ? <div>
+            <input type="submit" value="submit" onClick={handleSubmit}/>
             <input type="button" value="close" onClick={revertStatus}/>
+            </div> : <></>}
         </form>
     </div>
     );
