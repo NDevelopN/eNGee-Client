@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, memo } from 'react';
+import { createPortal } from 'react-dom';
 
 import ReadCookie from '@/lib/readCookie';
 
@@ -101,7 +102,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
     
 
     function updateState(state) {
-        setTimer("");
+        setTimer();
         setConState(state);
         if (state === undefined) {
             return
@@ -130,7 +131,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
             break;
         case "ConTimer":
             console.log("Con Timer received: " + message.content)
-            setTimer(message.content);
+            setTimer(Number(message.content));
             break;
         case "Prompts":
             if (message.content === "" || message.content === undefined) {
@@ -203,7 +204,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
 
     return (
         <>
-        <Timer time={timer}/>
+        {createPortal(<Timer time={timer}/>, document.body)}
         {(() => {
             switch (conState) {
             case States.PROMPTS:
