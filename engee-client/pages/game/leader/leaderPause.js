@@ -45,7 +45,7 @@ export default function LeaderPause({info, status, send, url}) {
             return (
                 <ConfirmDialog
                     text={confirmationText}
-                    confirm={(e) => {
+                    confirm={() => {
                         submit(); 
                     }}
                 />

@@ -76,7 +76,7 @@ export default function Home() {
             });
         } else if (user.name === "") {
 
-            DELETE(url + "/users/" + user.uid, (e) => {
+            DELETE(url + "/users/" + user.uid, () => {
                 document.cookie = "uid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
                 callback();
@@ -86,7 +86,7 @@ export default function Home() {
             setStatus(["Naming"]);
             setUser(user)
         } else {
-            PUT(JSON.stringify(user), url + "/users/" + user.uid, (e) => {
+            PUT(JSON.stringify(user), url + "/users/" + user.uid, () => {
                 setUser(user)
 
                 document.cookie = "uid=" + user.uid + ";path='/'";
@@ -97,9 +97,9 @@ export default function Home() {
     }
 
     async function setGame(gid, callback) {
-        setActive(false)
-        let user = User
-        user.gid = gid
+        setActive(false);
+        let user = User;
+        user.gid = gid;
 
         updateUser(user, () => {
             document.cookie = "gid=" + gid + ";path='/'";
@@ -120,17 +120,18 @@ export default function Home() {
         s.push(nStat);
         setStatus(s);
 
-        setActive(true)
+        setActive(true);
     }
 
     function revertStatus() {
-        setActive(false)
+        setActive(false);
         let s = [...Status];
         if (s.length > 1) {
             s.pop();
             setStatus(s);
         }
-        setActive(true)
+
+        setActive(true);
     }
 
     function ContentSwitch() {

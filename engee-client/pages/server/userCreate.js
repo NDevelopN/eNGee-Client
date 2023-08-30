@@ -28,7 +28,7 @@ export default function UserCreate({pUser, updateUser, revertStatus, setActive})
         e.preventDefault();
 
         if (UserName == undefined || UserName == "") {
-            return
+            return;
         }
         
         setDialog(true);
@@ -53,8 +53,7 @@ export default function UserCreate({pUser, updateUser, revertStatus, setActive})
                 gid: pUser.gid,
                 name: UserName,
                 status: pUser.status
-
-            }
+            };
 
             updateUser(user, () => {
                 if (revert) {

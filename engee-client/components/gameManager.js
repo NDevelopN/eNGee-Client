@@ -24,18 +24,18 @@ export default function GameManager({info, send, revertStatus, url}) {
     let [pop, setPop] = useState(false);
     
     useEffect(() => {
-        getGameTypes()
+        getGameTypes();
 
         setGameName(info.name);
-        setGameType(info.type)
-        setMinPlrs(info.min_plrs)
-        setMaxPlrs(info.max_plrs)
-        setAdditional(info.additional) 
+        setGameType(info.type);
+        setMinPlrs(info.min_plrs);
+        setMaxPlrs(info.max_plrs);
+        setAdditional(info.additional); 
     }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         console.log("Game type set: " + gameType);
-    }, [gameType])
+    }, [gameType]);
 
     function getGameTypes() {
         GET(url + '/types', (e) => {
@@ -112,8 +112,8 @@ export default function GameManager({info, send, revertStatus, url}) {
             return;
         }
 
-        setMessage(msg)
-        setDialog(true)
+        setMessage(msg);
+        setDialog(true);
     }
 
 
@@ -125,9 +125,9 @@ export default function GameManager({info, send, revertStatus, url}) {
                     confirm={(e) => {send(message); setDialog(false)}}
                     close={()=>setDialog(false)}
                 />
-            </Popup>
+            </Popup>;
         } else {
-            return <></>
+            return <></>;
         }
     }
 
@@ -137,7 +137,6 @@ export default function GameManager({info, send, revertStatus, url}) {
                 return <ConRules rules={additional} setRules={setAdditional} pop={pop} setPop={setPop}/>;
         }
 
-        console.log("No gametype specific rules.")
         return <></>;
     }
 

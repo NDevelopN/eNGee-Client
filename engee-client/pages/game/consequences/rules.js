@@ -12,15 +12,15 @@ export default function ConRules({rules, setRules, pop, setPop}) {
 
     useEffect(() => {
         if (rules !== undefined) {
-            console.log(JSON.stringify(rules))
             let addrules = JSON.parse(rules);
-            setRounds(addrules.rounds)
-            setShuffle(addrules.shuffle)
-            setTimer1(addrules.timer1)
-            setTimer2(addrules.timer2)
-            setPrompts(addrules.prompts)
+
+            setRounds(addrules.rounds);
+            setShuffle(addrules.shuffle);
+            setTimer1(addrules.timer1);
+            setTimer2(addrules.timer2);
+            setPrompts(addrules.prompts);
         }
-    }, [rules])
+    }, [rules]);
 
     function handleChange(event) {
         switch (event.target.name) { case "rounds":

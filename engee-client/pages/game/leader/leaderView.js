@@ -26,7 +26,7 @@ export default function LeaderView({status, send}) {
             return (<Popup open={dialog} onClose={()=>setDialog(false)}>
                 <ConfirmDialog
                     text={confirmationText}
-                    confirm={(e) => {
+                    confirm={() => {
                         submit(); 
                         setDialog(false);
                     }}

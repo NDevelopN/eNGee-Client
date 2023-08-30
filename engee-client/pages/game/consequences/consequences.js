@@ -20,7 +20,7 @@ const States = {
     ERROR: 3,
     POSTPROMPTS: 4,
     POSTSTORIES: 5,
-}
+};
 
 let issue = false;
 
@@ -105,8 +105,7 @@ function Consequences({paused, getMsg, send, quit, plrList, lid}) {
         setTimer();
         setConState(state);
         if (state === undefined) {
-            return
-
+            return;
         }
 
         setCookie("state", state);
@@ -130,7 +129,6 @@ function Consequences({paused, getMsg, send, quit, plrList, lid}) {
             }
             break;
         case "ConTimer":
-            console.log("Con Timer received: " + message.content)
             setTimer(Number(message.content));
             break;
         case "Prompts":
@@ -197,9 +195,7 @@ function Consequences({paused, getMsg, send, quit, plrList, lid}) {
     }
 
     if (paused) {
-        return (
-            <></>
-        )
+        return <></>;
     }
 
     return (
@@ -234,6 +230,7 @@ function Consequences({paused, getMsg, send, quit, plrList, lid}) {
             return (<h3>Loading...</h3>);
         })()}
         </>
-    )
+    );
 }
+
 export default Consequences = memo(Consequences);

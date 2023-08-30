@@ -59,7 +59,6 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
         };
 
         sock.send(JSON.stringify(message));
- 
     }
     
     function close(event) {
@@ -195,9 +194,9 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     }
 
     function setRules(rules) {
-        var gm = gameInfo
-        gm.rules = rules
-        setGameInfo(gm)
+        var gm = gameInfo;
+        gm.rules = rules;
+        setGameInfo(gm);
     }
 
     function playerToggleReady() {

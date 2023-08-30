@@ -3,7 +3,7 @@ import {useState, useEffect, memo} from 'react';
 import {Table, TableBody, TableRow, TableCell} from '@mui/material'; 
 import { ConfirmDialog } from '@/components/dialogs';
 
-let tPrompts = [] 
+let tPrompts = [];
 
 function CustomPrompts({prompts, setPrompts, setPop}) {
 
@@ -18,13 +18,13 @@ function CustomPrompts({prompts, setPrompts, setPop}) {
     function addPrompt() {
         setPrompts([...prompts, "New Prompt"]);
         tPrompts = ([...tPrompts, "New Prompt"]);
-        setPCount(tPrompts.length)
+        setPCount(tPrompts.length);
     }
 
     function removePrompt() {
-        setPrompts([...prompts.slice(0, -1)])
-        tPrompts =([...tPrompts.slice(0, -1)])
-        setPCount(tPrompts.length)
+        setPrompts([...prompts.slice(0, -1)]);
+        tPrompts =([...tPrompts.slice(0, -1)]);
+        setPCount(tPrompts.length);
     }
 
     function clearPrompts() {
@@ -33,15 +33,16 @@ function CustomPrompts({prompts, setPrompts, setPop}) {
 
     function Confirm() {
         if (pCount == 1) {
-            alert ("Cannot submit only one prompt.")
+            alert ("Cannot submit only one prompt.");
             setDialog(false);
             return <></>;
         }
+
         return <ConfirmDialog
             text={"Are you sure you want to save these " + pCount + " prompts?"}
             confirm={() => { setPrompts(tPrompts); setPop(false);}}
             close={() => setDialog(false)}
-        />
+        />;
     }
 
     return (

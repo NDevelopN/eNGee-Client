@@ -12,5 +12,5 @@ export default function ReadCookie(field) {
         }
     }
 
-    return ""
+    return "";
 }

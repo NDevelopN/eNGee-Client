@@ -111,22 +111,11 @@ export async function DELETE(endpoint, callback) {
 export async function SOCK(endpoint, receive, close, callback) {
     let socket = new WebSocket(endpoint);
 
-    socket.onopen = (e) => callback(socket);
+    socket.onopen = () => callback(socket);
     socket.onmessage = receive;
     socket.onclose = close;
     socket.onerror = (e) => {
         console.error("Websocket issue: " + e.data);
-    };
-
-    /*
-    (e) => {
-        if (e.wasClean) {
-            console.log("[close] Connection closed cleanly, code=" + e.code + " reason=" + e.reason);
-        } else {
-            console.log("[close] Connection died");
-        }
         close();
     };
-    */
-
 }

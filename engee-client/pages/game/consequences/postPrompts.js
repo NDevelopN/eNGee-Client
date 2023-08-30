@@ -1,12 +1,12 @@
 import {useState} from 'react';
 import { createPortal } from 'react-dom';
 
-import {PlayerList} from '@/components/listView'
-import { ConfirmDialog } from '@/components/dialogs'
+import {PlayerList} from '@/components/listView';
+import { ConfirmDialog } from '@/components/dialogs';
 
 export default function PostPrompts({plrList, lid, quit}) {
 
-    let [dialog, setDialog] = useState(false)
+    let [dialog, setDialog] = useState(false);
 
     return (
         <div>
@@ -25,9 +25,5 @@ export default function PostPrompts({plrList, lid, quit}) {
                 document.body)
             : <></>}
         </div>
-
-    )
-
-
-
+    );
 }

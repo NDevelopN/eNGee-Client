@@ -22,16 +22,16 @@ function Prompts({prompts, reply, quit}) {
             console.log("Reply[" + i + "]: " + replies[i]);
             if (replies[i] === undefined  || replies[i] === "") {
                 alert("Please enter a reply for " + prompts[i]);
-                return
+                return;
             }
         }
 
-        reply(replies)
+        reply(replies);
     }
 
     function handleChange(e, key) {
         let tReply = [...replies];
-        tReply[key] = e.target.value
+        tReply[key] = e.target.value;
         setReplies(tReply);
     }
 

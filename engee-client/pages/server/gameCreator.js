@@ -1,6 +1,4 @@
-import {useState, useEffect} from 'react';
-
-import {GET, POST} from '@/lib/networkFunctions';
+import {POST} from '@/lib/networkFunctions';
 
 import GameManager from '@/components/gameManager';
 

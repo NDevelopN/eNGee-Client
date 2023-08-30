@@ -3,7 +3,7 @@ import {GET} from '@/lib/networkFunctions';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-const listInterval = 1000
+const listInterval = 1000;
 
 export default function GameBrowser({updateStatus, setGame, setActive, url}) {
     let [GameList, setGameList] = useState([]);
@@ -16,7 +16,7 @@ export default function GameBrowser({updateStatus, setGame, setActive, url}) {
     }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
     function join(gid) {
-        setGame(gid, (e) => setActive(true));
+        setGame(gid, () => setActive(true));
     }
 
     function createGame() {

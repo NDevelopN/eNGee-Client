@@ -9,13 +9,13 @@ export default class CQ {
 
     enqueue(element) {
         if (this.blocking){
-            return false
+            return false;
         }
 
         this.elements[this.tail] = element;
         this.tail++;
         if (this.tail > this.size) {
-            this.tail = 0
+            this.tail = 0;
         }
 
         if (this.tail == this.head) {
@@ -40,7 +40,6 @@ export default class CQ {
 
         this.full = false;
        
-
         return item;
     }
 
@@ -58,7 +57,7 @@ export default class CQ {
 
     get isEmpty() {
         if (this.blocking) {
-            return this.size
+            return this.size;
         } else {
             return this.length === 0;
         }
