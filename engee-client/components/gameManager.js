@@ -5,7 +5,7 @@ import { ConfirmDialog } from '@/components/dialogs';
 
 import { GET } from '@/lib/networkFunctions';
 
-import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
+import {Table, TableBody, TableRow, TableCell} from '@mui/material';
 
 import ConRules from '@/pages/game/consequences/rules';
 

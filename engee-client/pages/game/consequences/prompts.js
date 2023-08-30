@@ -1,7 +1,5 @@
 import {useState, useEffect, useRef, memo} from 'react';
 
-import utilStyles from '@/styles/utils.module.css';
-
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
 function Prompts({prompts, reply, quit}) {

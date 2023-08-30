@@ -1,12 +1,7 @@
-import {useState, useEffect} from 'react';
-
 import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
 
 import styles from '../styles/layout.module.css';
 import utilStyles from '../styles/utils.module.css';
-
 
 export const siteTitle = "eNGee Server";
 

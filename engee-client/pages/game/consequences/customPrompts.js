@@ -1,6 +1,6 @@
 import {useState, useEffect, memo} from 'react';
 
-import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material'; 
+import {Table, TableBody, TableRow, TableCell} from '@mui/material'; 
 import { ConfirmDialog } from '@/components/dialogs';
 
 let tPrompts = [] 

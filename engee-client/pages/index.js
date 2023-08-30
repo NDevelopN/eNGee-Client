@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import Head from 'next/head';
 
 import Layout, {siteTitle} from '@/components/layout';
-import { GET, POST, PUT, DELETE } from '@/lib/networkFunctions';
+import {POST, PUT, DELETE } from '@/lib/networkFunctions';
 import ReadCookie from '@/lib/readCookie';
 
 import UserCreate from '@/pages/server/userCreate';

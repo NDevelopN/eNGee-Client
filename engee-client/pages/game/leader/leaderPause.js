@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 
 import { PUT } from '@/lib/networkFunctions';
 import GameManager from '@/components/gameManager';

@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect} from 'react';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material'; 
 import CustomPrompts from '@/pages/game/consequences/customPrompts';
