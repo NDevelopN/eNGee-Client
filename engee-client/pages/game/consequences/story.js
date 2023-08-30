@@ -1,4 +1,4 @@
-export default function Story({story, send, quit}) {
+export default function Story({story, send}) {
 
     function ready(e) {
         e.preventDefault();

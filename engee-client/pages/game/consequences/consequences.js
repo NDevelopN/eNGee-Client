@@ -24,7 +24,7 @@ const States = {
 
 let issue = false;
 
-function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
+function Consequences({paused, getMsg, send, quit, plrList, lid}) {
 
     let [dialog, setDialog] = useState(false);
 
