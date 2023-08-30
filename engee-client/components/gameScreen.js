@@ -5,10 +5,11 @@ import popUp from '@/styles/popup.module.css';
 
 import {GET, SOCK} from '@/lib/networkFunctions';
 import CQ from '@/lib/queue';
-import Consequences from '@/pages/game/consequences/consequences';
-import Lobby from '@/pages/game/lobby';
-import LeaderView from '@/pages/game/leader/leaderView';
-import LeaderPause from '@/pages/game/leader/leaderPause';
+
+import Consequences from '@/components/games/consequences/consequences';
+import Lobby from '@/components/lobby';
+import LeaderView from '@/components/leader/leaderView';
+import LeaderPause from '@/components/leader/leaderPause';
  
 let round = 0;
 

@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material'; 
-import CustomPrompts from '@/pages/game/consequences/customPrompts';
+import CustomPrompts from '@/components/games/consequences/customPrompts';
 
 export default function ConRules({rules, setRules, pop, setPop}) {
     let [rounds, setRounds] = useState(0);

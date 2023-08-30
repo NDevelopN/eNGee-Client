@@ -1,14 +1,14 @@
 import {useState, useEffect} from 'react';
 import Head from 'next/head';
 
-import Layout, {siteTitle} from '@/components/layout';
 import {POST, PUT, DELETE } from '@/lib/networkFunctions';
 import ReadCookie from '@/lib/readCookie';
 
-import UserCreate from '@/pages/server/userCreate';
-import GameBrowser from '@/pages/server/gameBrowser';
-import GameCreator from '@/pages/server/gameCreator';
-import GameScreen from '@/pages/game/gameScreen';
+import Layout, {siteTitle} from '@/components/layout';
+import UserCreate from '@/components/server/userCreate';
+import GameBrowser from '@/components/server/gameBrowser';
+import GameCreator from '@/components/server/gameCreator';
+import GameScreen from '@/components/gameScreen';
 
 export default function Home() {
     let [User, setUser] = useState({});

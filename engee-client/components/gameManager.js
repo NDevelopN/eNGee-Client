@@ -7,7 +7,7 @@ import { GET } from '@/lib/networkFunctions';
 
 import {Table, TableBody, TableRow, TableCell} from '@mui/material';
 
-import ConRules from '@/pages/game/consequences/rules';
+import ConRules from '@/components/games/consequences/rules';
 
 export default function GameManager({info, send, revertStatus, url}) {
     let [gameName, setGameName] = useState("");

@@ -3,10 +3,10 @@ import { createPortal } from 'react-dom';
 
 import ReadCookie from '@/lib/readCookie';
 
-import Prompts from '@/pages/game/consequences/prompts';
-import PostPrompts from '@/pages/game/consequences/postPrompts';
-import Story from '@/pages/game/consequences/story';
-import PostStory from '@/pages/game/consequences/postStory';
+import Prompts from '@/components/games/consequences/prompts';
+import PostPrompts from '@/components/games/consequences/postPrompts';
+import Story from '@/components/games/consequences/story';
+import PostStory from '@/components/games/consequences/postStory';
 
 import Popup from 'reactjs-popup';
 
