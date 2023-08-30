@@ -8,7 +8,6 @@ export default function ReadCookie(field) {
 
         if (line.substring(0, field.length) === field) {
             let value = line.substring(field.length+1, line.length);
-            console.log(field + ": " + value);
             return value;
         }
     }

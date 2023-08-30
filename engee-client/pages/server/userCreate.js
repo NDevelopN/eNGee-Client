@@ -3,23 +3,24 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
-import {POST} from '@/lib/networkFunctions';
+export default function UserCreate({pUser, updateUser, revertStatus, setActive}) {
 
-export default function UserCreate({id, name, login, goBack, logout, url}) {
-
-    let [UserName, setUserName] = useState(name);
+    let [UserName, setUserName] = useState(pUser.name);
     let [dialog, setDialog] = useState(false);
 
-    function joinServer() {
-        let message = {
-            pid: id, 
+    function logout() {
+        let user = {
+            uid: pUser.uid,
             gid: "",
-            name: UserName,
-            status: "Creating",
+            name: "",
+            status: "",
         };
 
-        POST(JSON.stringify(message), url + "/server/", (e) => {
-            login(e.pid, UserName)
+        document.cookie = "uid=;path='/'";
+        document.cookie = "username=;path='/'";
+
+        updateUser(user, () => {
+            setUserName("");
         });
     }
 
@@ -40,13 +41,31 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
     function handleSubmit() {
         if (UserName !== "") {
             //No need to post new update if name isn't changing
-            if (UserName === name) {
+            if (UserName === pUser.name) {
+                alert("User name has not been changed");
                 return;
             }
 
-            joinServer();
+            let revert = pUser.name === "";
+
+            let user = {
+                uid: pUser.uid,
+                gid: pUser.gid,
+                name: UserName,
+                status: pUser.status
+
+            }
+
+            updateUser(user, () => {
+                if (revert) {
+                    revertStatus();
+                } else {
+                    setActive(true);
+                }
+            });
+        } else {
+            alert("Please enter a user name");
         }
-        //TODO: Error saying it can't be empty
     }
 
     return (
@@ -57,9 +76,9 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
                 <input type="text" name="name" defaultValue={UserName} autoComplete='off' onChange={handleChange}/>
                 <input type="submit" value="submit"/>
             </label>
-            {id !== "" ? 
+            {pUser.uid !== "" ? 
             <div>
-                <button onClick={goBack}>Return</button>
+                <button onClick={revertStatus}>Return</button>
                 <button onClick={logout}>Logout</button>
                 </div>
             : null}
@@ -73,7 +92,5 @@ export default function UserCreate({id, name, login, goBack, logout, url}) {
             />
         </Popup>
         </div>
-
-
     );
 }

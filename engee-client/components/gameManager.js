@@ -3,45 +3,63 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
+import { GET } from '@/lib/networkFunctions';
+
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function GameManager({info, send, exit, types}) {
+import ConRules from '@/pages/game/consequences/rules';
+
+export default function GameManager({info, send, revertStatus, url}) {
     let [gameName, setGameName] = useState("");
-    let [gameType, setGameType] = useState(types[0]);
+    let [gameType, setGameType] = useState("");
     let [minPlrs, setMinPlrs] = useState(1);
     let [maxPlrs, setMaxPlrs] = useState(1);
+    let [typeList, setTypeList] = useState([]);
     //Allow for extensability
     let [additional, setAdditional] = useState("");
 
     let [dialog, setDialog] = useState(false);
     let [message, setMessage] = useState();
+
+    let [pop, setPop] = useState(false);
     
     useEffect(() => {
-        if (info != null) {
-            setGameName(info.name);
-            setGameType(info.type)
-            setMinPlrs(info.min_plrs)
-            setMaxPlrs(info.max_plrs)
-            setAdditional(info.additional) 
-        }
+        getGameTypes()
+
+        setGameName(info.name);
+        setGameType(info.type)
+        setMinPlrs(info.min_plrs)
+        setMaxPlrs(info.max_plrs)
+        setAdditional(info.additional) 
     }, []);
+
+    useEffect(() => {
+        console.log("Game type set: " + gameType);
+    }, [gameType])
+
+    function getGameTypes() {
+        GET(url + '/types', (e) => {
+            if (e) {
+                setTypeList(["", ...e]);
+            } else {
+                console.error("No available game types.");
+                setTypeList([]);
+            }
+        });
+    }
 
     function handleChange(event) {
         switch (event.target.name) {
             case "name": 
-                console.log("Setting name..." + event.target.value);
                 setGameName(event.target.value);
                 break;
             case "type":
-                console.log("Setting type..." + event.target.value);
                 setGameType(event.target.value);
                 break;
             case "minPlrs":
-                console.log("Setting minp..." + event.target.value);
                 setMinPlrs(parseInt(event.target.value, 10));
                 break;
             case "maxPlrs":
-                console.log("Setting maxp..." + event.target.value);
                 setMaxPlrs(parseInt(event.target.value, 10));
                 break;
             default:
@@ -51,7 +69,6 @@ export default function GameManager({info, send, exit, types}) {
     };
 
     function handleSubmit() {
-        console.log("__DEBUG__ \ngamename: " + gameName + "\ngametype: " + gameType + "\nmin: " + minPlrs + " max: " + maxPlrs)
         if (gameName === undefined || gameName === "") {
             alert("Please enter a game name");
             return;
@@ -77,41 +94,35 @@ export default function GameManager({info, send, exit, types}) {
             return;
         }
 
+        let msg = {
+            gid: info.gid,
+            name: gameName, 
+            type: gameType,
+            status: info.status,
+            old_status: info.old_status, 
+            leader: info.leader,
+            min_plrs: minPlrs,
+            max_plrs: maxPlrs,
+            cur_plrs: info.cur_plrs,
+            additional_rules: additional,
+        };
 
-        let msg;
-        if (info != null) {
-            msg = JSON.parse(JSON.stringify(info));
-
-            msg.name = gameName;
-            msg.type = gameType;
-            msg.min_plrs = minPlrs;
-            msg.max_plrs = maxPlrs;
-            msg.additional_rules = additional;
-
-            if (JSON.stringify(msg) === JSON.stringify(info)) {
-                alert("No changes were made.");
-                return
-            }
-        } else {
-            msg = {
-                name: gameName,
-                type: gameType,
-                min_plrs: minPlrs,
-                max_plrs: maxPlrs,
-                additional_rules: additional
-            }
+        if (JSON.stringify(msg) === JSON.stringify(info)) {
+            alert("No changes were made.");
+            return;
         }
-        
+
         setMessage(msg)
         setDialog(true)
     }
+
 
     function Pop() {
         if (dialog) {
             return <Popup open={dialog} onClose={()=>setDialog(false)}>
                 <ConfirmDialog
-                    text={"Are you sure you want to submit these new rules?"}
-                    confirm={(e) => {send("Rules", JSON.stringify(message)); setDialog(false)}}
+                    text={"Are you sure you want to submit these new settings?"}
+                    confirm={(e) => {send(message); setDialog(false)}}
                     close={()=>setDialog(false)}
                 />
             </Popup>
@@ -120,20 +131,24 @@ export default function GameManager({info, send, exit, types}) {
         }
     }
 
+    function GameType({}) {
+        switch (gameType) {
+            case "consequences": 
+                return <ConRules rules={additional} setRules={setAdditional} pop={pop} setPop={setPop}/>;
+        }
+
+        console.log("No gametype specific rules.")
+        return <></>;
+    }
+
     return (
     <div>
         <Pop/>
         <form onSubmit={(e)=>{
             e.preventDefault(); 
-            handleSubmit();
         }}>
+        {!pop ? <div>
             <Table padding='none'>
-                <TableHead>
-                    <TableRow>
-
-                    </TableRow>
-                </TableHead>
-
                 <TableBody>
                     <TableRow>
                         <TableCell>
@@ -157,7 +172,7 @@ export default function GameManager({info, send, exit, types}) {
                         </TableCell>
                         <TableCell>
                             <select name="type" value={gameType} onChange={handleChange} >
-                                {types.map((type, index) => (
+                                {typeList.map((type, index) => (
                                     <option key={index} value={type}>{type}</option>
                                 ))}
                             </select>
@@ -195,9 +210,12 @@ export default function GameManager({info, send, exit, types}) {
                     </TableRow>
                 </TableBody>
             </Table>
-
-            <input type="submit" value="submit"/>
-            <input type="button" value="close" onClick={exit}/>
+            </div> : <></> }
+            <GameType/>
+            {!pop ? <div>
+            <input type="submit" value="submit" onClick={handleSubmit}/>
+            <input type="button" value="close" onClick={revertStatus}/>
+            </div> : <></>}
         </form>
     </div>
     );

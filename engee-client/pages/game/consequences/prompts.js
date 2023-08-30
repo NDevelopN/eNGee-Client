@@ -1,19 +1,27 @@
-import {useState} from 'react';
+import {useState, useEffect, useRef, memo} from 'react';
 
 import utilStyles from '@/styles/utils.module.css';
 
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
-export default function Prompts({prompts, reply, quit}) {
+function Prompts({prompts, reply, quit}) {
 
-    let [sent, setSent] = useState(false)
-    let replies = [];
+    let [replies, setReplies] = useState([]);
+    
+    let rRef = useRef(false);
+
+    useEffect(()=> {
+        if (!rRef.current) {
+            setReplies(Array(prompts.length).map(()=>""));
+            rRef.current = true;
+        } 
+    }, []);
 
     function handleSubmit(e) {
         e.preventDefault();
-        
+
         for (let i = 0; i < prompts.length; i++) {
-            console.log(replies[i])
+            console.log("Reply[" + i + "]: " + replies[i]);
             if (replies[i] === undefined  || replies[i] === "") {
                 alert("Please enter a reply for " + prompts[i]);
                 return
@@ -21,16 +29,12 @@ export default function Prompts({prompts, reply, quit}) {
         }
 
         reply(replies)
-        setSent(true)
     }
 
     function handleChange(e, key) {
-        replies[key] = e.target.value
-    }
-
-    //TODO make changes to bring back lobby
-    if (sent) {
-        return (<h2>Message sent, waiting for other players</h2>);
+        let tReply = [...replies];
+        tReply[key] = e.target.value
+        setReplies(tReply);
     }
 
     return (
@@ -64,3 +68,5 @@ export default function Prompts({prompts, reply, quit}) {
         </>
     );
 }
+
+export default Prompts = memo(Prompts);
