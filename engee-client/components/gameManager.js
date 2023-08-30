@@ -31,7 +31,7 @@ export default function GameManager({info, send, revertStatus, url}) {
         setMinPlrs(info.min_plrs)
         setMaxPlrs(info.max_plrs)
         setAdditional(info.additional) 
-    }, []);
+    }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         console.log("Game type set: " + gameType);

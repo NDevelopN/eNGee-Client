@@ -20,7 +20,7 @@ export default function ConRules({rules, setRules, pop, setPop}) {
             setTimer2(addrules.timer2)
             setPrompts(addrules.prompts)
         }
-    }, [])
+    }, [rules])
 
     function handleChange(event) {
         switch (event.target.name) { case "rounds":

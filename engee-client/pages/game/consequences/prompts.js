@@ -15,7 +15,7 @@ function Prompts({prompts, reply, quit}) {
             setReplies(Array(prompts.length).map(()=>""));
             rRef.current = true;
         } 
-    }, []);
+    }, [prompts]);
 
     function handleSubmit(e) {
         e.preventDefault();

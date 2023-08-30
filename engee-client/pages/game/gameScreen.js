@@ -34,7 +34,7 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
                 socket.close();
             }
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     function connect() {
         if (uE) {

@@ -13,7 +13,7 @@ export default function GameBrowser({updateStatus, setGame, setActive, url}) {
         return () => {
             clearInterval(timer);
         }
-    }, []);
+    }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
     function join(gid) {
         setGame(gid, (e) => setActive(true));

@@ -13,7 +13,7 @@ function CustomPrompts({prompts, setPrompts, setPop}) {
     useEffect(() => {
         tPrompts = prompts;
         setPCount(prompts.length);
-    });
+    }, [prompts]);
 
     function addPrompt() {
         setPrompts([...prompts, "New Prompt"]);

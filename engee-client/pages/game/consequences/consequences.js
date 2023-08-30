@@ -42,7 +42,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
         if (!paused) {
             getCookies();
         }
-    }, [paused]);
+    }, [paused]); // eslint-disable-line react-hooks/exhaustive-deps
 
     function getCookies() {
 
@@ -79,7 +79,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
             clearInterval(ivRef.current);
             clearTimeout(toRef.current);
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (!issue) {
@@ -97,7 +97,7 @@ function Consequences({round, paused, getMsg, send, quit, plrList, lid}) {
                 issue = false;
             }
         }
-    }, [conState]);
+    }, [conState]); // eslint-disable-line react-hooks/exhaustive-deps
 
     
 
