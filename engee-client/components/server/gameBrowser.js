@@ -5,7 +5,7 @@ import {Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 
 const listInterval = 1000;
 
-export default function GameBrowser({updateStatus, setGame, setActive, url}) {
+export default function GameBrowser({updateStatus, setGame, url}) {
     let [GameList, setGameList] = useState([]);
 
     useEffect(() => {

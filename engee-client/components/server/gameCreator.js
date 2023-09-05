@@ -2,7 +2,7 @@ import {POST} from '@/lib/networkFunctions';
 
 import GameManager from '@/components/gameManager';
 
-export default function GameCreator({uid, setGame, revertStatus, setActive, url}) {
+export default function GameCreator({uid, setGame, revertStatus, url}) {
 
     let info = {
         gid: "",

@@ -108,14 +108,16 @@ export async function DELETE(endpoint, callback) {
  * Accepts an endpoint and creates a websocket connection
  * Callback allows the client function to manage connection 
  */
-export async function SOCK(endpoint, receive, close, callback) {
+export async function SOCK(endpoint, callback, close) {
     let socket = new WebSocket(endpoint);
-
-    socket.onopen = () => callback(socket);
-    socket.onmessage = receive;
     socket.onclose = close;
     socket.onerror = (e) => {
         console.error("Websocket issue: " + e.data);
         close();
+    }
+
+    socket.onopen = () => {
+        console.log("[open] Websocket connection established.");
+        callback(socket);
     };
 }

@@ -3,7 +3,7 @@ import Popup from 'reactjs-popup';
 
 import { ConfirmDialog } from '@/components/dialogs';
 
-export default function UserCreate({pUser, updateUser, revertStatus, setActive}) {
+export default function UserCreate({pUser, updateUser, revertStatus, setStatus, setActive}) {
 
     let [UserName, setUserName] = useState(pUser.name);
     let [dialog, setDialog] = useState(false);
@@ -18,9 +18,9 @@ export default function UserCreate({pUser, updateUser, revertStatus, setActive})
 
         document.cookie = "uid=;path='/'";
         document.cookie = "username=;path='/'";
-
         updateUser(user, () => {
             setUserName("");
+            setStatus(["Naming"]);
         });
     }
 

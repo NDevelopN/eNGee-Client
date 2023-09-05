@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import Head from 'next/head';
 
-import {POST, PUT, DELETE } from '@/lib/networkFunctions';
+import {POST, PUT, DELETE, SOCK} from '@/lib/networkFunctions';
 import ReadCookie from '@/lib/readCookie';
 
 import Layout, {siteTitle} from '@/components/layout';
@@ -14,6 +14,7 @@ export default function Home() {
     let [User, setUser] = useState({});
     let [Status, setStatus] = useState([]);
     let [active, setActive] = useState(false);
+    let [socket, setSocket] = useState({});
 
     useEffect(() => {
         let uid = ReadCookie("uid");
@@ -36,6 +37,26 @@ export default function Home() {
             uStatus = "";
         }
 
+        if (uid != "") {
+            if (gid != "") {
+                setStatus(["Browsing","InGame"])
+            }
+            else {
+                setStatus(["Browsing"])
+            }
+        } else {
+            gid = "";
+            uName = "";
+            uStatus = "";
+
+            document.cookie = "gid=;path='/'";
+            document.cookie = "username=;path='/'";
+            document.cookie = "userstatus=;path='/'";
+            
+            
+            setStatus(["Naming"])
+        }
+
         let user = {
             uid: uid,
             gid: gid,
@@ -45,17 +66,9 @@ export default function Home() {
 
         setUser(user);
 
-        if (gid != "") {
-            setStatus(["Browsing","InGame"])
-        } else if (uid != "") {
-            setStatus(["Browsing"])
-        } else {
-            setStatus(["Naming"])
-        }
-
         setActive(true);
         
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     let CONFIG = require(`@/config.json`);
     let url = CONFIG.url
@@ -72,6 +85,7 @@ export default function Home() {
 
                 document.cookie = "uid=" + user.uid + ";path='/'";
                 document.cookie = "username=" + user.name + ";path='/'";
+                document.cookie = "userstatus=" + user.status + ";path='/'";
                 callback();
             });
         } else if (user.name === "") {
@@ -100,26 +114,55 @@ export default function Home() {
         setActive(false);
         let user = User;
         user.gid = gid;
+        document.cookie = "gid=" + gid + ";path='/'";
 
         updateUser(user, () => {
-            document.cookie = "gid=" + gid + ";path='/'";
-
-            let stat = Status[Status.length - 1];
-            if (stat === "Browsing" || stat === "Creating") {
-                setStatus(["Browsing", "InGame"]);
-            } else {
-                setStatus(["Browsing"]);
+            if (gid === "") {
+                return;
             }
+
+            let endpoint = "ws" + url.substring(4) + "/games/" + User.uid;
+            SOCK(endpoint, socketOpen, socketClose);
+
             setActive(true);
         });
-   }
+    }
+
+    function socketOpen(sock) {
+        if (sock !== null) {
+            setSocket(sock);
+            setStatus(["Browsing", "InGame"]);
+        }
+    }
+
+    function leaveGame() {
+        socketClose(null);
+    }
+
+    function socketClose(event) {
+        if (event === null ) {
+            console.log("[close] Client error")
+        }
+        else if(event !== undefined && event.wasClean) {
+            console.log("[close] Connection closed cleanly, code= " + event.code + ", reason= " + event.reason);
+        } else  {
+            console.log("[close] Connection died.");
+        }
+
+        let user = User;
+        user.Status = "Left";
+        user.gid = "";
+        updateUser(user, () => {
+            document.cookie = "gid=;path='/'";
+            revertStatus();
+        });
+    }
 
     function updateStatus(nStat) {
         setActive(false)
         let s = [...Status] 
         s.push(nStat);
         setStatus(s);
-
         setActive(true);
     }
 
@@ -138,19 +181,22 @@ export default function Home() {
         switch (Status[Status.length-1]) {
         case "Naming":
             return (
-                <UserCreate pUser={User} updateUser={updateUser} revertStatus={revertStatus} url={url}/>
+                <UserCreate pUser={User} updateUser={updateUser} revertStatus={revertStatus} setStatus={setStatus}/>
             );
         case "Browsing":
             return (
-                <GameBrowser updateStatus={updateStatus} setGame={setGame} setActive={setActive} url={url}/>
+                <GameBrowser updateStatus={updateStatus} setGame={setGame} url={url}/>
             );
         case "InGame":
+            if (socket === undefined) {
+                return <h2> Socket undefined</h2>
+            }
             return (
-                <GameScreen user={User} setUser={setUser} revertStatus={revertStatus} url={url}/>
+                <GameScreen user={User} setUser={setUser} leaveGame={leaveGame} revertStatus={revertStatus} url={url} socket={socket} setSocket={setSocket}/>
             );
         case "Creating":
             return (
-                <GameCreator uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} setActive={setActive} url={url}/>
+                <GameCreator uid={User.uid} info={null} setGame={setGame} revertStatus={revertStatus} url={url}/>
             );
         default:
             return null;

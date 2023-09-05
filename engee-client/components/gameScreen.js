@@ -1,9 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { createPortal } from 'react-dom';
 
 import popUp from '@/styles/popup.module.css';
 
-import {GET, SOCK} from '@/lib/networkFunctions';
 import CQ from '@/lib/queue';
 
 import Consequences from '@/components/games/consequences/consequences';
@@ -16,9 +15,7 @@ let round = 0;
 let gameMessages = new CQ(20);
 let plrList = [];
 
-export default function GameScreen({user, setUser, revertStatus, url}) {
-    let [socket, setSocket] = useState();
-
+export default function GameScreen({user, url, socket, setSocket, leaveGame}) {
     let [gameInfo, setGameInfo] = useState();
     let [pStatus, setPStatus] = useState("");
     let [isLeader, setIsLeader] = useState(false);
@@ -26,56 +23,31 @@ export default function GameScreen({user, setUser, revertStatus, url}) {
     let [status, setStatus] = useState("Loading");
     let [paused, setPaused] = useState(false);
 
-    let uE = true;
-    useEffect(() => {
-        connect();
+    let conRef = useRef(true);
 
-        return () => {
-            if (socket !== undefined) {
-                socket.close();
-            }
+    useEffect(() => {
+        if (socket === undefined) {
+            leaveGame();
+            return;
+        }
+
+        if (conRef.current) {
+            setTimeout(() => {
+                let message = {
+                    type: "Join",
+                    uid: user.uid,
+                    gid: user.gid,
+                };
+
+                socket.onmessage = receive;
+                socket.send(JSON.stringify(message));
+                setSocket(socket);
+            }, 1000);
+
+            conRef.current = false;
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    function connect() {
-        if (uE) {
-            uE = false;
-            return;
-        }
-        let endpoint = "ws" + url.substring(4) + "/games/" + user.uid;
-
-        SOCK(endpoint, receive, close, (sock) => {
-            let socket = sock;
-            open(sock);
-            setSocket(socket);
-        });
-    }
-
-    function open(sock) {
-        let message = {
-            type: "Status",
-            uid: user.uid,
-            gid: user.gid,
-            content: "Not Ready",
-        };
-
-        sock.send(JSON.stringify(message));
-    }
-    
-    function close(event) {
-        if (event !== undefined && event.wasClean) {
-            console.log("[close] Connection closed cleanly, code=" + event.code + 
-                                " reason=" + event.reason);
-        } else {
-            console.log("[close] Connection died");
-        }
-
-        document.cookie = "gid=;path='/'";
-        user.Status = "Left";
-        user.gid = "";
-        setUser(user);
-        revertStatus();
-    }
 
     function send(type, data) {
         let message = {
