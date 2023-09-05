@@ -96,7 +96,7 @@ export default function Home() {
         }
     }
 
-    async function setGame(gid, callback) {
+    async function setGame(gid) {
         setActive(false);
         let user = User;
         user.gid = gid;
@@ -110,7 +110,7 @@ export default function Home() {
             } else {
                 setStatus(["Browsing"]);
             }
-            callback();
+            setActive(true);
         });
    }
 

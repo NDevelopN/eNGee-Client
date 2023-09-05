@@ -22,9 +22,7 @@ export default function GameCreator({uid, setGame, revertStatus, setActive, url}
         let msg = JSON.stringify(info);
 
         POST(msg, endpoint, (e) => {
-            setGame(e.gid, () => {
-                setActive(true);
-            });
+            setGame(e.gid);
         });
     }
 

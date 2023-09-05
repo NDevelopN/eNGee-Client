@@ -15,10 +15,6 @@ export default function GameBrowser({updateStatus, setGame, setActive, url}) {
         }
     }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
-    function join(gid) {
-        setGame(gid, () => setActive(true));
-    }
-
     function createGame() {
         updateStatus("Creating");
     }
@@ -52,7 +48,7 @@ export default function GameBrowser({updateStatus, setGame, setActive, url}) {
                         <TableCell>{game.type}</TableCell>
                         <TableCell>{game.status}</TableCell>
                         <TableCell>{game.cur_plrs}/{game.max_plrs}</TableCell>
-                        <TableCell><button onClick={()=>join(game.gid)}>Join</button></TableCell>
+                        <TableCell><button onClick={()=>setGame(game.gid)}>Join</button></TableCell>
                     </TableRow>
                 ))}
             </TableBody>
