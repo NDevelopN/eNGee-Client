@@ -1,18 +1,16 @@
 #! /bin/bash
 
-echo "Enter the IP of the server"
-read ip
-
-echo "Enter the port of the server"
-read port
-
+ip="93.107.46.227"
+port="8090"
 
 time=$(date)
 
-mkdir "./logs"
-mkdir "./logs/$time"
+mkdir -p "./logs/$time"
 
 cd ./engee-client
+
+npm install
+npm audit fix
 
 url="http:\/\/$ip:$port"
 
