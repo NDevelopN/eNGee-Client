@@ -7,9 +7,9 @@ echo "Enter the port of the server"
 read port
 
 
-
 time=$(date)
 
+mkdir "./logs"
 mkdir "./logs/$time"
 
 cd ./engee-client
