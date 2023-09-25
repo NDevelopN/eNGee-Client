@@ -1,7 +1,9 @@
 #! /bin/bash
 
-ip="93.107.46.227"
-port="8090"
+
+config=$(cat config.json | jq '.client')
+ip=$(echo $config | jq '.host')
+port=$(echo $config | jq '.port')
 
 time=$(date)
 
