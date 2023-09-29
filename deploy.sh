@@ -1,5 +1,6 @@
 #! /bin/bash
 
+loc=$(pwd)
 mode=0
 
 if [ $# -ne 0 ] 
@@ -21,9 +22,9 @@ then
 
     time=$(date)
 
-    mkdir -p "./logs/$time"
+    mkdir -p "$loc/logs/$time"
 
-    cd ./engee-client
+    cd $loc/engee-client
 
     npm install
     npm audit fix
@@ -32,8 +33,8 @@ then
 
     sed -i "s/\"url\":.*/\"url\": \"$url\"/g" ./config.json
 
-    buildLog="../logs/$time/build.log"
-    runLog="../logs/$time/run.log"
+    buildLog="$loc/logs/$time/build.log"
+    runLog="$loc/logs/$time/run.log"
 
     echo "Building..."
     npm run build >> "$buildLog" 
