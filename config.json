@@ -1,10 +1,10 @@
 {
     "server": {
-        "host": "93.107.46.227",
+        "host": "localhost",
         "port": "8090"
     },
     "client": {
-        "host": "93.107.46.227",
+        "host": "localhost",
         "port": "3000"
     }
 }
