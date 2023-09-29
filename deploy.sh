@@ -1,31 +1,49 @@
 #! /bin/bash
 
+mode=0
 
-config=$(cat config.json | jq '.client')
-ip=$(echo $config | jq '.host')
-port=$(echo $config | jq '.port')
+if [ $# -ne 0 ] 
+then 
+    mode=$1
+fi
 
-time=$(date)
+if (( $mode > 2 ))
+then
+    echo "Given mode: $mode not valid."
+    exit
+fi
 
-mkdir -p "./logs/$time"
+if (( $mode < 2 ))
+then
+    config=$(cat config.json | jq '.client')
+    ip=$(echo $config | jq '.host')
+    port=$(echo $config | jq '.port')
 
-cd ./engee-client
+    time=$(date)
 
-npm install
-npm audit fix
+    mkdir -p "./logs/$time"
 
-url="http:\/\/$ip:$port"
+    cd ./engee-client
 
-sed -i "s/\"url\":.*/\"url\": \"$url\"/g" ./config.json
+    npm install
+    npm audit fix
 
-buildLog="../logs/$time/build.log"
-runLog="../logs/$time/run.log"
+    url="http:\/\/$ip:$port"
 
-echo "Building..."
-npm run build >> "$buildLog" 
-echo "Done."
+    sed -i "s/\"url\":.*/\"url\": \"$url\"/g" ./config.json
 
-echo "Running Client..."
-npm run start >> "$runLog"
-echo "Client stopped."
+    buildLog="../logs/$time/build.log"
+    runLog="../logs/$time/run.log"
+
+    echo "Building..."
+    npm run build >> "$buildLog" 
+    echo "Done."
+fi
+
+if [ $mode -ne 1 ]
+then
+    echo "Running Client..."
+    npm run start >> "$runLog"
+    echo "Client stopped."
+fi
 
