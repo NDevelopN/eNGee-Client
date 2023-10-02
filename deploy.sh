@@ -16,8 +16,8 @@ fi
 
 if (( $mode < 2 ))
 then
-    config=$(cat config.json | jq '.client')
-    ip=$(echo $config | jq '.host')
+    config=$(cat config.json | jq '.server')
+    ip=$(echo $config | jq -r '.host')
     port=$(echo $config | jq '.port')
 
     time=$(date)
