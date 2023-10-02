@@ -16,14 +16,14 @@ fi
 
 if (( $mode < 2 ))
 then
-    if [ -z "${SERVER_HOST}" ]
+    ip=$SERVER_HOST
+    port=$SERVER_OUTER
+
+    if [ -z "${ip}" ] | [ -z "${port}" ]
     then  
         config=$(cat config.json | jq '.server')
         ip=$(echo $config | jq -r '.host')
         port=$(echo $config | jq '.port')
-    else
-        ip=$SERVER_HOST
-        port=$SERVER_OUTER
     fi
 
     time=$(date)
