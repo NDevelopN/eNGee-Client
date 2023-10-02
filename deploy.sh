@@ -23,7 +23,7 @@ then
         port=$(echo $config | jq '.port')
     else
         ip=$SERVER_HOST
-        port=$SERVER_PORT
+        port=$SERVER_OUTER
     fi
 
     time=$(date)
