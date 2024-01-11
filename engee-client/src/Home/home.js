@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import User from '../User';
 import Browser from '../Browser';
+import Room from '../Room';
 
 const url = "http://localhost:8090";
 
@@ -25,7 +26,7 @@ function Home() {
             }
         }
 
-        if (Mode === 1) {
+        if (Mode === 1 || Mode === 2) {
             if (RoomInfo.rid !== "" && RoomInfo.rid !== undefined) {
                 setMode(3);
             }
@@ -39,7 +40,7 @@ function Home() {
             case 1:
                 return <Browser uid={UserInfo.uid} url={url} createRoom={()=>setMode(2)} setRoomInfo={setRoomInfo}/>
             case 2:
-                return <h3>This is where the room creation goes...</h3>
+                return <Room url={url} setRoom={setRoomInfo} leave={()=>setMode(1)}/>
             case 3:
                 return <h3>This is where the room lobby goes....</h3>
             default:
