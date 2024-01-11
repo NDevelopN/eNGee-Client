@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
 
 import User from '../User';
+import Browser from '../Browser';
 
 const url = "http://localhost:8090";
 
 function Home() {
     let [Mode, setMode] = useState(0);
     let [UserInfo, setUserInfo] = useState({'name': "", 'uid': ""});
+    let [RoomInfo, setRoomInfo] = useState({'name': "", 'rid': "", 'type': ""});
 
-    useEffect(updateMode, [UserInfo]);
+    useEffect(updateMode, [UserInfo, RoomInfo]);
 
     //TODO define Modes and transitions
     function updateMode() {
+        if (UserInfo.uid === "" || UserInfo.uid === undefined) {
+            setMode(0);
+            return;
+        }
+
         if (Mode === 0) {
             if (UserInfo.uid !== "" && UserInfo.uid !== undefined) {
                 setMode(1);
@@ -19,8 +26,8 @@ function Home() {
         }
 
         if (Mode === 1) {
-            if (UserInfo.uid === "" || UserInfo.uid === undefined) {
-                setMode(0);
+            if (RoomInfo.rid !== "" && RoomInfo.rid !== undefined) {
+                setMode(3);
             }
         }
     }
@@ -30,7 +37,11 @@ function Home() {
             case 0:
                 return <h3>Please set your name.</h3>;
             case 1:
-                return <h3>Welcome, {UserInfo.name}!</h3>;
+                return <Browser uid={UserInfo.uid} url={url} createRoom={()=>setMode(2)} setRoomInfo={setRoomInfo}/>
+            case 2:
+                return <h3>This is where the room creation goes...</h3>
+            case 3:
+                return <h3>This is where the room lobby goes....</h3>
             default:
                 return <h3>Invalid Mode</h3>;
         }
