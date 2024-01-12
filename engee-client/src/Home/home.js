@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import User from '../User';
 import Browser from '../Browser';
 import Room from '../Room';
+import GameScreen from '../GameScreen';
 
 import { httpRequest } from '../net';
 
@@ -38,14 +39,23 @@ function Home() {
         if (Mode === 0) {
             if (UserInfo.uid !== "" && UserInfo.uid !== undefined) {
                 setMode(1);
-            }
+            }return;
         }
 
         if (Mode === 1 || Mode === 2) {
             if (RoomInfo.rid !== "" && RoomInfo.rid !== undefined) {
                 setMode(3);
+                return;
             }
         }
+
+        if (Mode === 3) {
+            if (RoomInfo.rid === "" || RoomInfo.rid === undefined) {
+                setMode(1);
+                return;
+            }
+        }
+
    }
 
     function ModeScreen() {
@@ -57,7 +67,7 @@ function Home() {
             case 2:
                 return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}/>
             case 3:
-                return <h3>This is where the room lobby goes....</h3>
+                return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={() => setRoomInfo(emptyRoom)}/>
             default:
                 return <h3>Invalid Mode</h3>;
         }
