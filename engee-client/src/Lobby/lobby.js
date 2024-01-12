@@ -3,25 +3,16 @@ import { httpRequest } from '../net.js';
 
 import * as mui from '@mui/material';
 
-const listInterval = 500;
+const listInterval = 2500;
 
-export default function Lobby({url, userInfo, roomInfo, setRoomInfo, startGame, leave}) {
-    let [Players, setPlayers] = useState([{}, {}]);
+export default function Lobby({url, userInfo, roomInfo, leave}) {
+    let [Players, setPlayers] = useState([]);
 
     const interval = useRef(null);
-
-    useEffect(() => {
-        roomInfoUpdate();
-        startGameIfReady();
-    }, []);
+    
+    useEffect(roomInfoUpdate, []);
 
     function roomInfoUpdate() {
-
-        if (interval.current === null) {
-            let endpoint = url + "/users/" + userInfo.uid + "/room"
-            httpRequest("PUT", roomInfo.rid, endpoint, () => { });
-        }
-
         interval.current = setInterval(() => getRoomUpdate(), listInterval);
 
         function getRoomUpdate() {
@@ -30,26 +21,11 @@ export default function Lobby({url, userInfo, roomInfo, setRoomInfo, startGame, 
             httpRequest("GET", "", endpoint, (plrs) => {
                 setPlayers(plrs);
             });
-
-            endpoint = url + "/rooms/" + roomInfo.rid
-
-            httpRequest("GET", "", endpoint, (roomInfo) => {
-                console.log("Get Room INFO : " + roomInfo)
-                if (roomInfo !== undefined && roomInfo !== "") {
-                    setRoomInfo(roomInfo)
-                }
-            });
         }
 
         return (() => {
             clearInterval(interval.current);
         });
-    }
-
-    function startGameIfReady() {
-        if (roomInfo.status === "Game") {
-            startGame(roomInfo.address)
-        }
     }
 
     function PlayerName({name}) {
@@ -74,12 +50,6 @@ export default function Lobby({url, userInfo, roomInfo, setRoomInfo, startGame, 
             </label>
         </div>
         
-        {roomInfo.addr !== "" 
-            ? 
-            <button onClick={() => startGame(roomInfo.addr)}>Start</button> 
-            : 
-            null
-        }
 
         <mui.Table padding='none'>
             <mui.TableHead>
@@ -93,7 +63,7 @@ export default function Lobby({url, userInfo, roomInfo, setRoomInfo, startGame, 
                 {Players.map(player=> (
                     <mui.TableRow key={player.uid}>
                         <mui.TableCell><PlayerName name={player.name}/></mui.TableCell>
-                        <mui.TableCell>This is where status will go</mui.TableCell>
+                        <mui.TableCell>{player.status}</mui.TableCell>
                     </mui.TableRow>
                 ))}
             </mui.TableBody>
