@@ -28,7 +28,7 @@ function Room({url, joinRoom, leave}) {
             'name': RoomName,
             'gamemode': RoomGameMode,
             'status': "",
-            'address': "",
+            'addr': "",
         };
 
         httpRequest("POST", JSON.stringify(room), endpoint, (rid) => {
