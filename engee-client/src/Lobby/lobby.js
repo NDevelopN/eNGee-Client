@@ -28,13 +28,14 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
         });
     }
 
-    function PlayerName({name}) {
-        if (userInfo.name === name) {
-            return <b>{name}</b>;
-        }
-        else {
-            return <p>{name}</p>;
-        }
+    function PlayerRow({player}) {
+        let isCurrentPlayer = player.uid === userInfo.uid
+        return (
+            <mui.TableRow key={player.uid}>
+                <mui.TableCell>{isCurrentPlayer ? <b>{player.name}</b> : <p>{player.name}</p>}</mui.TableCell>
+                <mui.TableCell>{isCurrentPlayer ? <b>{player.status}</b> : <p>{player.status}</p>}</mui.TableCell>
+            </mui.TableRow>
+        );
     }
 
     return (
@@ -61,11 +62,8 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
 
             <mui.TableBody>
                 {Players.map(player=> (
-                    <mui.TableRow key={player.uid}>
-                        <mui.TableCell><PlayerName name={player.name}/></mui.TableCell>
-                        <mui.TableCell>{player.status}</mui.TableCell>
-                    </mui.TableRow>
-                ))}
+                    <PlayerRow player={player}/>
+                                    ))}
             </mui.TableBody>
         </mui.Table>
 
