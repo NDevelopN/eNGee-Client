@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { httpRequest } from '../net';
 
-function Room({url, setRoom, leave}) {
+function Room({url, joinRoom, leave}) {
     let [RoomName, setRoomName] = useState("");
     let [RoomGameMode, setRoomGameMode] = useState("");
 
@@ -33,7 +33,7 @@ function Room({url, setRoom, leave}) {
 
         httpRequest("POST", JSON.stringify(room), endpoint, (rid) => {
             room.rid = rid;
-            setRoom(room);
+            joinRoom(room);
         });
     }
 

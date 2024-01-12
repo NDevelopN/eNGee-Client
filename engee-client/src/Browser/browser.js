@@ -5,7 +5,7 @@ import * as mui from '@mui/material';
 
 const listInterval = 2500;
 
-function Browser({uid, url, createRoom, setRoomInfo}) {
+function Browser({url, createRoom, joinRoom}) {
     let [RoomList, setRoomList] = useState([{}]);
 
     useEffect(roomListUpdate, []);
@@ -25,15 +25,6 @@ function Browser({uid, url, createRoom, setRoomInfo}) {
                 setRoomList(rooms);
             });
         }
-    }
-
-
-    function joinRoom(room) {
-        let endpoint = url +"/users/" + uid + "/room";
-
-        httpRequest("PUT", room.rid, endpoint, () => {
-            setRoomInfo(room);
-        });
     }
 
     return (
