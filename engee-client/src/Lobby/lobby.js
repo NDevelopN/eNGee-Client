@@ -38,6 +38,14 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
         );
     }
 
+    function exitLobby() {
+        let endpoint = url + "/users/" + userInfo.uid + "/leave";
+        
+        httpRequest("PUT", roomInfo.rid, endpoint, () => {
+            leave();
+        });
+    }
+
     return (
         <>
         <div>
@@ -67,7 +75,7 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
             </mui.TableBody>
         </mui.Table>
 
-        <button onClick={leave}>Leave Room</button>
+        <button onClick={exitLobby}>Leave Room</button>
         </>
     );
 }
