@@ -55,8 +55,15 @@ function Home() {
                 return;
             }
         }
+    }
 
-   }
+    function leaveRoom() {
+        let endpoint = url + "/users/" + UserInfo.uid + "/leave";
+        
+        httpRequest("PUT", RoomInfo.rid, endpoint, () => {
+            setMode(1);
+        });
+    }
 
     function ModeScreen() {
         switch(Mode) {
@@ -67,7 +74,7 @@ function Home() {
             case 2:
                 return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}/>
             case 3:
-                return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={() => setRoomInfo(emptyRoom)}/>
+                return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={leaveRoom}/>
             default:
                 return <h3>Invalid Mode</h3>;
         }
