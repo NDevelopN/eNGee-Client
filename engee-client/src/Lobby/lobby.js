@@ -10,12 +10,12 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
 
     const interval = useRef(null);
     
-    useEffect(roomInfoUpdate, []);
+    useEffect(lobbyUpdate, []);
 
-    function roomInfoUpdate() {
-        interval.current = setInterval(() => getRoomUpdate(), listInterval);
+    function lobbyUpdate() {
+        interval.current = setInterval(getPlayerList(), listInterval);
 
-        function getRoomUpdate() {
+        function getPlayerList() {
             let endpoint = url + "/rooms/" + roomInfo.rid + "/users";
 
             httpRequest("GET", "", endpoint, (plrs) => {
