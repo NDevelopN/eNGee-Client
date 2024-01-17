@@ -31,7 +31,8 @@ function Home() {
 
     //TODO define Modes and transitions
     function updateMode() {
-        if (UserInfo.uid === "" || UserInfo.uid === undefined) {
+        if (Mode !== 0 && (UserInfo.uid === "" || UserInfo.uid === undefined)) {
+            setRoomInfo(emptyRoom);
             setMode(0);
             return;
         }
