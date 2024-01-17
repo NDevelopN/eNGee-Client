@@ -39,7 +39,8 @@ function Home() {
         if (Mode === 0) {
             if (UserInfo.uid !== "" && UserInfo.uid !== undefined) {
                 setMode(1);
-            }return;
+            }
+            return;
         }
 
         if (Mode === 1 || Mode === 2) {
@@ -61,6 +62,7 @@ function Home() {
         let endpoint = url + "/users/" + UserInfo.uid + "/leave";
         
         httpRequest("PUT", RoomInfo.rid, endpoint, () => {
+            setRoomInfo(emptyRoom);
             setMode(1);
         });
     }
