@@ -35,3 +35,21 @@ export async function httpRequest(method, message, endpoint, callback) {
         console.error(error);
     });
 }
+
+
+export function wsConnect(endpoint, onOpen, onClose, onMessage) {
+    let socket = new WebSocket(endpoint);
+
+    socket.onclose = onClose;
+
+    socket.onerror = (event) => {
+        console.error("Websocket issue:  " + event.data);
+        socket.onclose();
+    }
+
+    socket.onopen = onOpen;
+
+    socket.onmessage = onMessage;
+
+    return socket;
+}
