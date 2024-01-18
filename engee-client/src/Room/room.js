@@ -13,9 +13,14 @@ function Room({url, joinRoom, leave}) {
         let endpoint = url + "/gameModes";
 
         httpRequest("GET", "", endpoint, (modeList) => {
-            setGameModes(modeList);
-            if (RoomGameMode === "" || RoomGameMode === undefined) {
-                setRoomGameMode(modeList[0]);
+            console.log(modeList)
+            if (modeList === null || modeList === undefined) {
+                setGameModes([]);
+            } else {
+                setGameModes(modeList);
+                if (RoomGameMode === "" || RoomGameMode === undefined) {
+                    setRoomGameMode(modeList[0]);
+                }
             }
         });
     }
