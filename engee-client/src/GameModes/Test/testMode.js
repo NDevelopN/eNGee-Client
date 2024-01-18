@@ -7,20 +7,15 @@ function TestMode({wsEndpoint, userInfo, leave}) {
     let [gameState, setGameState] = useState(0);
     let [gameInfo, setGameInfo] = useState();
 
-    let first = useRef(true);
-    let connection = useRef(null);
+    const connection = useRef(null);
 
     useEffect(connect, [wsEndpoint]);
 
     function connect() {
-        if (first.current) {
-            first.current = false;
-            return;
-        }
-
-        connection.current = wsConnect(wsEndpoint, onOpen, onClose, onMessage);
-
-        return disconnect;
+        if (connection.current === null && connection.current === undefined) {
+            connection.current = wsConnect(wsEndpoint, onOpen, onClose, onMessage);
+            return disconnect;
+        } 
     }
     
     function disconnect() {
