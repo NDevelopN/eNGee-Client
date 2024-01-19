@@ -3,24 +3,33 @@ import { wsConnect } from '../../net.js';
 
 import TestInput from './testInput.js'
 
+const connectDelay = 1000;
+
 function TestMode({wsEndpoint, userInfo, leave}) {
     let [gameState, setGameState] = useState(0);
     let [gameInfo, setGameInfo] = useState();
 
     const connection = useRef(null);
 
-    useEffect(connect, [wsEndpoint]);
+    useEffect(() => {
+        setTimeout(connect, connectDelay);
+        return disconnect;
+    }, [wsEndpoint]);
 
     function connect() {
-        if (connection.current === null && connection.current === undefined) {
-            connection.current = wsConnect(wsEndpoint, onOpen, onClose, onMessage);
-            return disconnect;
+        if (connection.current !== null && connection.current !== undefined) {
+            return
         } 
+        
+        connection.current = wsConnect(wsEndpoint, onOpen, onClose, onMessage);
+        return disconnect;
     }
     
     function disconnect() {
         console.log("Disconnecting");
-        connection.current.close();
+        if (connection.current !== null && connection.current !== undefined) {
+            connection.current.close();
+        }
     }
 
     function onOpen() {
@@ -33,6 +42,8 @@ function TestMode({wsEndpoint, userInfo, leave}) {
         if (connection.current !== null && connection.current !== undefined) {
             console.log("Connection closed");
         }
+        
+        connection.current = null;
         setGameState(-1);
     }
 
