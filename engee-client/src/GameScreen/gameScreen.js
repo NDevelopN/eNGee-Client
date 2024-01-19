@@ -8,7 +8,7 @@ const addrInterval = 1000;
 function GameScreen ({url, userInfo, roomInfo, leave}) {
 
     let [GameMode, setGameMode] = useState(null);
-    let [addr, setAddr] = useState(roomInfo.addr);
+    let [addr, setAddr] = useState("");
 
     const first = useRef(true);
     const interval = useRef(null);
@@ -23,6 +23,8 @@ function GameScreen ({url, userInfo, roomInfo, leave}) {
         }
         
         let endpoint = url + "/rooms/" + roomInfo.rid;
+        
+        GetRoomAddr()
 
         interval.current = setInterval(GetRoomAddr, addrInterval);
 
@@ -61,6 +63,9 @@ function GameScreen ({url, userInfo, roomInfo, leave}) {
                 setGameMode(lazy(()=> import('../GameModes/Test')));
                 break;
 
+            case "consequences":
+                setGameMode(lazy(()=> import('../GameModes/Consequences')));
+                break;
             default:
                 setGameMode(null);
                 alert("The game mode " + roomInfo.gamemode + " is not supported.");
