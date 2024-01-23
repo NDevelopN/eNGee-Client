@@ -5,7 +5,7 @@ import * as mui from '@mui/material';
 
 const listInterval = 2500;
 
-export default function Lobby({url, userInfo, roomInfo, leave}) {
+export default function Lobby({url, userInfo, roomInfo, leave, setWarning, setConfirmation, setOnConfirm}) {
     let [Players, setPlayers] = useState([]);
 
     const interval = useRef(null);
@@ -38,6 +38,11 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
         );
     }
 
+    function leaveRoom() {
+        setConfirmation("Are you sure you want to leave?");
+        setOnConfirm(leave);
+    }
+
     return (
         <>
         <div>
@@ -67,7 +72,7 @@ export default function Lobby({url, userInfo, roomInfo, leave}) {
             </mui.TableBody>
         </mui.Table>
 
-        <button onClick={leave}>Leave Room</button>
+        <button onClick={leaveRoom}>Leave Room</button>
         </>
     );
 }

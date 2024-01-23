@@ -5,7 +5,7 @@ import { httpRequest } from '../net';
 
 const addrInterval = 1000;
 
-function GameScreen ({url, userInfo, roomInfo, leave}) {
+function GameScreen ({url, userInfo, roomInfo, leave, setWarning, setConfirmation, setOnConfirm}) {
 
     let [GameMode, setGameMode] = useState(null);
     let [addr, setAddr] = useState("");
@@ -71,8 +71,13 @@ function GameScreen ({url, userInfo, roomInfo, leave}) {
 
     return (
     <>
-        {GameMode!== null ? <GameMode wsEndpoint={addr} userInfo={userInfo} leave={leave}/> : null}
-        <Lobby url={url} userInfo={userInfo} roomInfo={roomInfo} leave={leave}/>
+        {GameMode!== null 
+            ? <GameMode wsEndpoint={addr} userInfo={userInfo} leave={leave}
+                setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setOnConfirm}/>
+            : null}
+
+        <Lobby url={url} userInfo={userInfo} roomInfo={roomInfo} leave={leave}
+            setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setOnConfirm}/>
     </>
     );
 }

@@ -91,7 +91,8 @@ function Home() {
                 return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}
                         setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             case 3:
-                return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={leaveRoom}/>
+                return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={leaveRoom}
+                        setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             default:
                 return <h3>Invalid Mode</h3>;
         }
