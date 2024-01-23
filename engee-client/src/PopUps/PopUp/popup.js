@@ -3,8 +3,14 @@ import * as mui from '@mui/material';
 function PopUp({title, message, options}) {
     return (
         <mui.Table>
+            <mui.TableHead>
+                <mui.TableRow>
+                    <mui.TableCell><h3>{title}</h3></mui.TableCell>
+                </mui.TableRow>
+            </mui.TableHead>
+            <mui.TableBody>
             <mui.TableRow key="message">
-                <p>{message}</p>
+                <mui.TableCell>{message}</mui.TableCell>
             </mui.TableRow>
 
             <mui.TableRow key="options">
@@ -14,6 +20,7 @@ function PopUp({title, message, options}) {
                 </mui.TableCell>
             ))}
             </mui.TableRow>
+            </mui.TableBody>
 
         </mui.Table>
     );
