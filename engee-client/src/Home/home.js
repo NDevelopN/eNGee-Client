@@ -18,7 +18,7 @@ const emptyRoom = {
     'type': "",
 }
 
-function Home() {
+function Home({id}) {
     let [Mode, setMode] = useState(0);
     let [UserInfo, setUserInfo] = useState({'name': "", 'uid': ""});
     let [RoomInfo, setRoomInfo] = useState(emptyRoom);
@@ -102,6 +102,8 @@ function Home() {
         console.log("warning")
         return ( 
             <Modal
+                className="modal"
+                appElement={document.getElementById('app')}
                 isOpen={warning !== "" && warning !== undefined}
                 contentLabel="Warning"
             >
@@ -116,7 +118,9 @@ function Home() {
     function ConfirmationModal() {
         console.log("Confirmation")
         return (
-            <Modal
+            <Modal 
+                className="modal"
+                appElement={document.getElementById('app')}
                 isOpen={confirmation !== "" && confirmation !== undefined}
                 onRequestClose={() => setConfirmation("")}
                 contentLabel="Confirmation"
@@ -137,13 +141,13 @@ function Home() {
     }
 
     return (
-        <>
+        <div id={id}>
             <WarningModal/>
             <ConfirmationModal/>
             <User url={url} User={UserInfo} setUser={setUserInfo}
                 setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             <ModeScreen/>
-        </>
+        </div>
     );
 }
 
