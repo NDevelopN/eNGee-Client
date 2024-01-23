@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Modal from 'react-modal';
 
 import User from '../User';
 import Browser from '../Browser';
 import Room from '../Room';
 import GameScreen from '../GameScreen';
+
+import Warning from '../PopUps/Warning';
+import Confirm from '../PopUps/Confirm';
 
 import { httpRequest } from '../net';
 
@@ -19,6 +23,15 @@ function Home() {
     let [Mode, setMode] = useState(0);
     let [UserInfo, setUserInfo] = useState({'name': "", 'uid': ""});
     let [RoomInfo, setRoomInfo] = useState(emptyRoom);
+
+    let [warning, setWarning] = useState("");
+    let [confirmation, setConfirmation] = useState("");
+
+    let afterConfirmation = useRef(() => {console.log("afterConfirmation")});
+
+    function setAfterConfirmation(onConfirmation) {
+        afterConfirmation.current = onConfirmation;
+    }
 
     useEffect(updateMode, [UserInfo, RoomInfo]);
 
@@ -83,9 +96,47 @@ function Home() {
         }
     }
 
+    function WarningModal() {
+        console.log("warning")
+        return ( 
+            <Modal
+                isOpen={warning !== "" && warning !== undefined}
+                contentLabel="Warning"
+            >
+                <Warning
+                    message={warning}
+                    onClose={() => setWarning("")}
+                />
+            </Modal>
+        );
+    }
+
+    function ConfirmationModal() {
+        console.log("Confirmation")
+        return (
+            <Modal
+                isOpen={confirmation !== "" && confirmation !== undefined}
+                onRequestClose={() => setConfirmation("")}
+                contentLabel="Confirmation"
+            >
+                <Confirm
+                    message={confirmation}
+                    onConfirm={() => {
+                        setConfirmation(""); 
+                        afterConfirmation.current();
+                    }}
+                    onClose={() => setConfirmation("")}
+                />
+            </Modal>
+        );
+    }
+
+
     return (
         <>
-            <User url={url} User={UserInfo} setUser={setUserInfo}/>
+            <WarningModal/>
+            <ConfirmationModal/>
+            <User url={url} User={UserInfo} setUser={setUserInfo}/> 
             <ModeScreen/>
         </>
     );
