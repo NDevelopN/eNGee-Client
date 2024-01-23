@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { httpRequest } from '../net';
 
-function Room({url, joinRoom, leave}) {
+function Room({url, joinRoom, leave, setWarning, setConfirmation, setOnConfirm}) {
     let [RoomName, setRoomName] = useState("");
     let [RoomGameMode, setRoomGameMode] = useState("");
 
@@ -46,11 +46,12 @@ function Room({url, joinRoom, leave}) {
         event.preventDefault();
 
         if (RoomName === "") {
-            //TODO popup
+            setWarning("Room name is required");
             return;
         }
 
-        createRoom();
+        setConfirmation("Are you happy with these settings?");
+        setOnConfirm(createRoom);
     }
 
     function handleChange(event) {
@@ -65,6 +66,11 @@ function Room({url, joinRoom, leave}) {
                 console.error("Invalid event: " + event.target.name);
                 break;
         }
+    }
+
+    function leaveScreen() {
+        setConfirmation("Are you sure you want to leave? All settings will be lost.");
+        setOnConfirm(leave);
     }
 
     return (
@@ -85,7 +91,7 @@ function Room({url, joinRoom, leave}) {
                 <input type="submit" value="submit" onClick={handleSubmit}/>
             </form>
             <>
-                <button onClick={leave}>Return</button>
+                <button onClick={leaveScreen}>Return</button>
             </>
         </>
     );
