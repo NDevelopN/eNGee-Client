@@ -1,8 +1,6 @@
 import * as mui from '@mui/material';
 
 function Shuffled({prompts, shuffled, sendContinue}) {
-    console.log("shuffled: " + JSON.stringify(shuffled))
-
     return (
     <>
     <mui.Table padding='none'>

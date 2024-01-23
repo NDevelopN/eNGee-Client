@@ -6,7 +6,7 @@ import { wsConnect } from '../../net.js';
 import Prompts from './prompts.js'
 import Shuffled from './shuffled.js'
 
-function Consequences({wsEndpoint, leave}) {
+function Consequences({wsEndpoint, leave, setWarning, setConfirmation, setOnConfirm}) {
     let [gameState, setGameState] = useState(0);
     let [prompts, setPrompts] = useState([""]);
     let [shuffled, setShuffled] = useState([""]);
@@ -90,12 +90,13 @@ function Consequences({wsEndpoint, leave}) {
     }
 
     function sendReplies(replies) {
-        console.log("Replies: " + replies) 
-        send("Reply", JSON.stringify(replies));
+        setConfirmation("Are you sure you want to submit these replies?");
+        setOnConfirm(() => send("Reply", JSON.stringify(replies)));
     }
 
     function sendContinue() {
-        send("Continue", ".");
+        setConfirmation("Are you ready to continue? You won't be able to return.");
+        setOnConfirm(() => send("Continue", "."));
     }
 
     function NoConnection() {
@@ -116,7 +117,7 @@ function Consequences({wsEndpoint, leave}) {
         case 0:
             return <h3>Waiting for server</h3>;
         case 1:
-            return <Prompts prompts={prompts} sendReplies={sendReplies}/>;
+            return <Prompts prompts={prompts} sendReplies={sendReplies} setWarning={setWarning}/>;
         case 2:
             return <Shuffled prompts={prompts} shuffled={shuffled} sendContinue={sendContinue}/>;
         default:
