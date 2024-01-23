@@ -5,7 +5,6 @@ import User from '../User';
 import Browser from '../Browser';
 import Room from '../Room';
 import GameScreen from '../GameScreen';
-
 import Warning from '../PopUps/Warning';
 import Confirm from '../PopUps/Confirm';
 
@@ -86,7 +85,8 @@ function Home() {
             case 0:
                 return <h3>Please set your name.</h3>;
             case 1:
-                return <Browser url={url} createRoom={()=>setMode(2)} joinRoom={JoinRoom}/>
+                return <Browser url={url} createRoom={()=>setMode(2)} joinRoom={JoinRoom}
+                        setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             case 2:
                 return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}/>
             case 3:
@@ -133,7 +133,6 @@ function Home() {
             </Modal>
         );
     }
-
 
     return (
         <>

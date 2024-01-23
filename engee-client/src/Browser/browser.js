@@ -5,7 +5,7 @@ import * as mui from '@mui/material';
 
 const listInterval = 2500;
 
-function Browser({url, createRoom, joinRoom}) {
+function Browser({url, createRoom, joinRoom, setWarning, setConfirmation, setOnConfirm}) {
     let [RoomList, setRoomList] = useState([{}]);
 
     useEffect(roomListUpdate, []);
@@ -27,6 +27,11 @@ function Browser({url, createRoom, joinRoom}) {
         }
     }
 
+    function join(room) {
+        setConfirmation("Join game: '" + room.name + " (" + room.type + ")'?");
+        setOnConfirm(() => joinRoom(room));
+    }
+
     return (
         <>
         <mui.Table padding='none'>
@@ -44,7 +49,7 @@ function Browser({url, createRoom, joinRoom}) {
                         <mui.TableCell>{room.name}</mui.TableCell>
                         <mui.TableCell>{room.type}</mui.TableCell>
                         <mui.TableCell>{room.status}</mui.TableCell>
-                        <mui.TableCell><button onClick={()=> joinRoom(room)}>Join Room</button></mui.TableCell>
+                        <mui.TableCell><button onClick={()=> join(room)}>Join Room</button></mui.TableCell>
                     </mui.TableRow>
                 ))}
             </mui.TableBody>
