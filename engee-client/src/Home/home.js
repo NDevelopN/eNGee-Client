@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 
+import ModeScreen from './modeScreen.js'
+
 import User from '../User';
-import Browser from '../Browser';
-import Room from '../Room';
-import GameScreen from '../GameScreen';
 import Warning from '../PopUps/Warning';
 import Confirm from '../PopUps/Confirm';
 
@@ -80,24 +79,6 @@ function Home({id}) {
         });
     }
 
-    function ModeScreen() {
-        switch(Mode) {
-            case 0:
-                return <h3>Please set your name.</h3>;
-            case 1:
-                return <Browser url={url} createRoom={()=>setMode(2)} joinRoom={JoinRoom}
-                        setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
-            case 2:
-                return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}
-                        setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
-            case 3:
-                return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={leaveRoom}
-                        setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
-            default:
-                return <h3>Invalid Mode</h3>;
-        }
-    }
-
     function WarningModal() {
         return ( 
             <Modal
@@ -144,7 +125,8 @@ function Home({id}) {
             <ConfirmationModal/>
             <User url={url} User={UserInfo} setUser={setUserInfo}
                 setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
-            <ModeScreen/>
+            <ModeScreen Mode={Mode} url={url} setMode={setMode} JoinRoom={JoinRoom} leaveRoom={leaveRoom} UserInfo={UserInfo} RoomInfo={RoomInfo}
+                setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
         </div>
     );
 }
