@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { httpRequest } from '../net.js';
 
-export default function User({url, User, setUser}) {
+export default function User({url, User, setUser, setWarning, setConfirmation, setOnConfirm}) {
     let [UserName, setUserName] = useState("");
 
     function createUser() {
@@ -11,6 +11,12 @@ export default function User({url, User, setUser}) {
 
             setUser({'name': UserName, 'uid': uid});
         });
+    }
+
+    function confirmLogout() {
+        console.log("Confirm logout")
+        setConfirmation("Are you sure you want to log out?");
+        setOnConfirm(logout);
     }
 
     function logout() {
@@ -23,11 +29,6 @@ export default function User({url, User, setUser}) {
     }
 
     function updateUser() {
-        if (User.name === UserName) {
-            //TODO pop up
-            return;
-        }
-
         let endpoint = url + "/users/" + User.uid + "/name";
         httpRequest("PUT", UserName, endpoint, () => {
             setUser({'name': UserName, 'uid': User.uid});
@@ -38,9 +39,21 @@ export default function User({url, User, setUser}) {
         event.preventDefault();
 
         if (UserName === "") {
+            setWarning("Provided user name is empty.")
+            return;
+        }
+        
+        if (User.name === UserName) {
+            setWarning("Provided user name has not changed from last time.")
             return;
         }
 
+        setConfirmation("Would you like to submit '" + UserName + "'?");
+        setOnConfirm(confirm);
+    }
+
+    function confirm() {
+        console.log("Confirm")
         if  (User.uid !== "" && User.uid !== undefined) {
             updateUser();
         } else {
@@ -62,7 +75,7 @@ export default function User({url, User, setUser}) {
             </label>
             {User.uid !== "" && User.uid !== undefined?
             <>
-                <button onClick={logout}>Logout</button>
+                <button type="button" onClick={confirmLogout}>Logout</button>
             </>
             : null}
         </form>
