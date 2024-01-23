@@ -14,7 +14,6 @@ export default function User({url, User, setUser, setWarning, setConfirmation, s
     }
 
     function confirmLogout() {
-        console.log("Confirm logout")
         setConfirmation("Are you sure you want to log out?");
         setOnConfirm(logout);
     }
@@ -53,7 +52,6 @@ export default function User({url, User, setUser, setWarning, setConfirmation, s
     }
 
     function confirm() {
-        console.log("Confirm")
         if  (User.uid !== "" && User.uid !== undefined) {
             updateUser();
         } else {

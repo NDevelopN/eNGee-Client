@@ -26,7 +26,7 @@ function Home({id}) {
     let [warning, setWarning] = useState("");
     let [confirmation, setConfirmation] = useState("");
 
-    let afterConfirmation = useRef(() => {console.log("afterConfirmation")});
+    let afterConfirmation = useRef(() => {});
 
     function setAfterConfirmation(onConfirmation) {
         afterConfirmation.current = onConfirmation;
@@ -99,7 +99,6 @@ function Home({id}) {
     }
 
     function WarningModal() {
-        console.log("warning")
         return ( 
             <Modal
                 className="modal"
@@ -116,7 +115,6 @@ function Home({id}) {
     }
 
     function ConfirmationModal() {
-        console.log("Confirmation")
         return (
             <Modal 
                 className="modal"
