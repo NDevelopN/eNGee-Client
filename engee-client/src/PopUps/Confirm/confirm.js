@@ -1,6 +1,6 @@
 import PopUp from '../PopUp';
 
-function Confirm({title, message, onConfirm, onClose}) {
+function Confirm({message, onConfirm, onClose}) {
     let options = [
         {
             "text": "Confirm",
@@ -12,7 +12,7 @@ function Confirm({title, message, onConfirm, onClose}) {
         },
     ];
 
-    return <PopUp title={title} message={message} options={options}/>;
+    return <PopUp title={"Confirmation"} message={message} options={options}/>;
 }
 
 export default Confirm;
