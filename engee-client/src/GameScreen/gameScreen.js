@@ -62,10 +62,6 @@ function GameScreen ({url, userInfo, roomInfo, leave}) {
             case "test":
                 setGameMode(lazy(()=> import('../GameModes/Test')));
                 break;
-
-            case "consequences":
-                setGameMode(lazy(()=> import('../GameModes/Consequences')));
-                break;
             default:
                 setGameMode(null);
                 alert("The game mode " + roomInfo.gamemode + " is not supported.");
