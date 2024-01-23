@@ -88,7 +88,8 @@ function Home() {
                 return <Browser url={url} createRoom={()=>setMode(2)} joinRoom={JoinRoom}
                         setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             case 2:
-                return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}/>
+                return <Room url={url} joinRoom={JoinRoom} leave={()=>setMode(1)}
+                        setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             case 3:
                 return <GameScreen url={url} userInfo={UserInfo} roomInfo={RoomInfo} leave={leaveRoom}/>
             default:
