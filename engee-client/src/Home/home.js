@@ -125,7 +125,10 @@ function Home() {
                         setConfirmation(""); 
                         afterConfirmation.current();
                     }}
-                    onClose={() => setConfirmation("")}
+                    onClose={() => {
+                        setConfirmation("");
+                        setAfterConfirmation(null); 
+                    }}
                 />
             </Modal>
         );
@@ -136,7 +139,8 @@ function Home() {
         <>
             <WarningModal/>
             <ConfirmationModal/>
-            <User url={url} User={UserInfo} setUser={setUserInfo}/> 
+            <User url={url} User={UserInfo} setUser={setUserInfo}
+                setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
             <ModeScreen/>
         </>
     );
