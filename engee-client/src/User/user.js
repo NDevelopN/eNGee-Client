@@ -1,8 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { httpRequest } from '../net.js';
+
+const heartbeatInterval = 3000;
 
 export default function User({url, User, setUser, setWarning, setConfirmation, setOnConfirm}) {
     let [UserName, setUserName] = useState("");
+
+    const interval = useRef(null);
+
+    useEffect(startUserHeartbeat, [User.uid]);
+
+    function startUserHeartbeat() {
+        if (User.uid === undefined || User.uid === "" || User.uid === null) {
+            return;
+        }
+        let endpoint = url + "/users/" + User.uid
+
+        setInterval.current = setInterval(sendHeartbeat, heartbeatInterval);
+
+        function sendHeartbeat() {
+            httpRequest("POST", "", endpoint, () => {});
+        }
+
+        return (() => {
+            clearInterval(interval.current)
+        });
+    }
+
 
     function createUser() {
         let endpoint = url + "/users";
