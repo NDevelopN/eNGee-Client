@@ -13,7 +13,7 @@ export default function Lobby({url, userInfo, roomInfo, leave, setWarning, setCo
     useEffect(lobbyUpdate, []);
 
     function lobbyUpdate() {
-        interval.current = setInterval(getPlayerList(), listInterval);
+        interval.current = setInterval(getPlayerList, listInterval);
 
         function getPlayerList() {
             let endpoint = url + "/rooms/" + roomInfo.rid + "/users";
