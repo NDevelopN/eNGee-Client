@@ -44,7 +44,9 @@ function GameScreen ({url, userInfo, roomInfo, leave, setWarning, setConfirmatio
             }
 
             httpRequest("GET", "", endpoint, (rInfo) => {
-                let wsAddress = "ws://" + rInfo.addr + "/games/" + roomInfo.rid + "/players/" + userInfo.uid;
+                let addr = rInfo.addr.replace("http", "ws") 
+
+                let wsAddress = addr + "/games/" + roomInfo.rid + "/players/" + userInfo.uid;
                 setAddr(wsAddress);
             });
         }
