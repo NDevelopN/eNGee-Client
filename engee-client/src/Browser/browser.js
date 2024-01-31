@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { httpRequest } from '../net';
 
-import * as mui from '@mui/material';
+import { Paper, Table, TableHead, TableRow, TableCell, TableBody, Button } from '@mui/material';
 
 const listInterval = 2500;
 
@@ -33,29 +33,36 @@ function Browser({url, createRoom, joinRoom, setWarning, setConfirmation, setOnC
     }
 
     return (
-        <>
-        <mui.Table padding='none'>
-            <mui.TableHead>
-                <mui.TableRow>
-                    <mui.TableCell><b>Room Name</b></mui.TableCell>
-                    <mui.TableCell><b>Game Type</b></mui.TableCell>
-                    <mui.TableCell><b>Room Status</b></mui.TableCell>
-                </mui.TableRow>
-            </mui.TableHead>
+        <Paper sx={{margin:'10px 20%', padding:'10px'}}>
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell><b>Room Name</b></TableCell>
+                    <TableCell><b>Game Type</b></TableCell>
+                    <TableCell><b>Room Status</b></TableCell>
+                </TableRow>
+            </TableHead>
 
-            <mui.TableBody>
+            <TableBody>
                 {RoomList.map(room=> (
-                    <mui.TableRow key={room.rid}>
-                        <mui.TableCell>{room.name}</mui.TableCell>
-                        <mui.TableCell>{room.type}</mui.TableCell>
-                        <mui.TableCell>{room.status}</mui.TableCell>
-                        <mui.TableCell><button onClick={()=> join(room)}>Join Room</button></mui.TableCell>
-                    </mui.TableRow>
+                    <TableRow key={room.rid} onClick={() => join(room)}>
+                        <TableCell>{room.name}</TableCell>
+                        <TableCell>{room.type}</TableCell>
+                        <TableCell>{room.status}</TableCell>
+                    </TableRow>
                 ))}
-            </mui.TableBody>
-        </mui.Table>
-        <button onClick={createRoom}>Create New Room</button>
-        </>
+
+            </TableBody>
+        </Table>
+
+        <Button 
+            sx={{margin:'10px 35%', 'width':'30%'}}
+            variant='contained' 
+            onClick={createRoom}
+        >
+            Create New Room
+        </Button>
+        </Paper>
     );
 }
 

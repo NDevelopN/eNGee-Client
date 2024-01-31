@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { httpRequest } from '../net.js';
 
-import * as mui from '@mui/material';
+import { Card, Table, TableHead, TableRow, TableCell, TableBody, Button} from '@mui/material';
 
 const listInterval = 2500;
 
@@ -31,10 +31,21 @@ export default function Lobby({url, userInfo, roomInfo, leave, setWarning, setCo
     function PlayerRow({player}) {
         let isCurrentPlayer = player.uid === userInfo.uid
         return (
-            <mui.TableRow key={player.uid}>
-                <mui.TableCell>{isCurrentPlayer ? <b>{player.name}</b> : <p>{player.name}</p>}</mui.TableCell>
-                <mui.TableCell>{isCurrentPlayer ? <b>{player.status}</b> : <p>{player.status}</p>}</mui.TableCell>
-            </mui.TableRow>
+            <TableRow key={player.uid}>
+                <TableCell padding='none'>
+                    {isCurrentPlayer ? 
+                        <b>{player.name}</b> 
+                    : 
+                        <p>{player.name}</p>
+                    }
+                </TableCell>
+                <TableCell padding='none'>
+                    {isCurrentPlayer ? 
+                        <b>{player.status}</b> 
+                    : 
+                        <p>{player.status}</p>}
+                </TableCell>
+            </TableRow>
         );
     }
 
@@ -44,35 +55,29 @@ export default function Lobby({url, userInfo, roomInfo, leave, setWarning, setCo
     }
 
     return (
-        <>
-        <div>
-            <label>
-                Room Name
-                <p><b>{roomInfo.name}</b></p>
-            </label>
-            <label>
-                Game Mode 
-                <p><b>{roomInfo.gamemode}</b></p>
-            </label>
-        </div>
-        
+        <Card sx={{margin:'10%', padding:'5%'}}> 
+            <h3 align='center'>Room: {roomInfo.name} ({roomInfo.gameMode})</h3>
+            <Table padding='none'>
+                <TableHead>
+                    <TableRow key='head'>
+                        <TableCell padding='none'><b>Player</b></TableCell>
+                        <TableCell padding='none'><b>Status</b></TableCell>
+                    </TableRow>
+                </TableHead>
 
-        <mui.Table padding='none'>
-            <mui.TableHead>
-                <mui.TableRow>
-                    <mui.TableCell><b>Player</b></mui.TableCell>
-                    <mui.TableCell><b>Status</b></mui.TableCell>
-                </mui.TableRow>
-            </mui.TableHead>
-
-            <mui.TableBody>
-                {Players.map(player=> (
-                    <PlayerRow player={player}/>
-                                    ))}
-            </mui.TableBody>
-        </mui.Table>
-
-        <button onClick={leaveRoom}>Leave Room</button>
-        </>
+                <TableBody>
+                    {Players.map(player=> (
+                        <PlayerRow player={player}/>
+                    ))}
+                </TableBody>
+            </Table>
+            <Button 
+                sx={{width:'50%', margin:'10px 25%'}}
+                variant='outlined' 
+                onClick={leaveRoom}
+            >
+                Leave Room
+            </Button>
+        </Card>
     );
 }

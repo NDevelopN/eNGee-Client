@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, lazy } from 'react';
 import Lobby from '../Lobby';
 import { httpRequest } from '../net';
+import { Container, ListItem } from '@mui/material';
 
 
 const addrInterval = 1000;
@@ -75,15 +76,31 @@ function GameScreen ({url, userInfo, roomInfo, leave, setWarning, setConfirmatio
     }
 
     return (
-    <>
-        {GameMode!== null 
-            ? <GameMode wsEndpoint={addr} userInfo={userInfo} leave={leave}
-                setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setOnConfirm}/>
-            : null}
+    <ListItem>
+        <Container maxWidth='md'>
+        {GameMode !== null  && GameMode !== undefined && GameMode !== ""
+            ? <GameMode 
+                wsEndpoint={addr} 
+                userInfo={userInfo} 
+                leave={leave}
+                setWarning={setWarning} 
+                setConfirmation={setConfirmation} 
+                setOnConfirm={setOnConfirm}/>
+            : <h3>No Game mode selected.</h3>}
+        </Container>
 
-        <Lobby url={url} userInfo={userInfo} roomInfo={roomInfo} leave={leave}
-            setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setOnConfirm}/>
-    </>
+        <Container maxWidth='sm'>
+            <Lobby 
+                url={url} 
+                userInfo={userInfo} 
+                roomInfo={roomInfo} 
+                leave={leave}
+                setWarning={setWarning} 
+                setConfirmation={setConfirmation} 
+                setOnConfirm={setOnConfirm}
+            />
+        </Container>
+    </ListItem>
     );
 }
 

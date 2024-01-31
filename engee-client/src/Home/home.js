@@ -9,6 +9,8 @@ import Confirm from '../PopUps/Confirm';
 
 import { httpRequest } from '../net';
 
+import { Paper } from '@mui/material';
+
 const url = "http://localhost:8090";
 
 const emptyRoom = {
@@ -120,14 +122,29 @@ function Home({id}) {
     }
 
     return (
-        <div id={id}>
-            <WarningModal/>
-            <ConfirmationModal/>
-            <User url={url} User={UserInfo} setUser={setUserInfo}
-                setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
-            <ModeScreen Mode={Mode} url={url} setMode={setMode} JoinRoom={JoinRoom} leaveRoom={leaveRoom} UserInfo={UserInfo} RoomInfo={RoomInfo}
-                setWarning={setWarning} setConfirmation={setConfirmation} setOnConfirm={setAfterConfirmation}/>
-        </div>
+            <Paper sx={{margin: '20px', padding:'10px', justifyContent:'center'}}>
+                <WarningModal/>
+                <ConfirmationModal/>
+                <User 
+                    url={url} 
+                    User={UserInfo} 
+                    setUser={setUserInfo}
+                    setWarning={setWarning} 
+                    setConfirmation={setConfirmation} 
+                    setOnConfirm={setAfterConfirmation}
+                />
+                <ModeScreen 
+                    Mode={Mode} 
+                    url={url} 
+                    setMode={setMode} 
+                    JoinRoom={JoinRoom} 
+                    leaveRoom={leaveRoom} 
+                    UserInfo={UserInfo} 
+                    RoomInfo={RoomInfo}
+                    setWarning={setWarning} 
+                    setConfirmation={setConfirmation} 
+                    setOnConfirm={setAfterConfirmation}/>
+            </Paper>
     );
 }
 

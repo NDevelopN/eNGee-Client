@@ -1,28 +1,24 @@
-import * as mui from '@mui/material';
-
+import { FormGroup, Paper, ButtonGroup, Button } from '@mui/material';
 function PopUp({title, message, options}) {
     return (
-        <mui.Table>
-            <mui.TableHead>
-                <mui.TableRow>
-                    <mui.TableCell><h3>{title}</h3></mui.TableCell>
-                </mui.TableRow>
-            </mui.TableHead>
-            <mui.TableBody>
-            <mui.TableRow key="message">
-                <mui.TableCell>{message}</mui.TableCell>
-            </mui.TableRow>
-
-            <mui.TableRow key="options">
-            {options.map(option => (
-                <mui.TableCell key={option.text}>
-                    <button id={option.text} onClick={option.onClick}>{option.text}</button>
-                </mui.TableCell>
-            ))}
-            </mui.TableRow>
-            </mui.TableBody>
-
-        </mui.Table>
+        <FormGroup sx={{margin:'10% 30%'}}>
+            <Paper sx={{justifyItems:'center', padding:'1% 5%'}}>
+            <h3 align='center'>{title}</h3>
+            <p align='center'>{message}</p>
+            <ButtonGroup fullWidth={true}>
+                {options.map(option => (
+                    <Button
+                        key={option.text}
+                        variant='contained' 
+                        onClick={option.onClick}
+                    >
+                        {option.text}
+ 
+                    </Button>
+                ))}
+            </ButtonGroup>
+            </Paper>
+        </FormGroup>
     );
 }
 
