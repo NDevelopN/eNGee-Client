@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { httpRequest } from '../net';
 
+import { Paper, FormGroup, TextField, Select, MenuItem, Button  } from '@mui/material';
+
 function Room({url, joinRoom, leave, setWarning, setConfirmation, setOnConfirm}) {
     let [RoomName, setRoomName] = useState("");
     let [RoomGameMode, setRoomGameMode] = useState("");
@@ -74,26 +76,49 @@ function Room({url, joinRoom, leave, setWarning, setConfirmation, setOnConfirm})
     }
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Change room name:
-                    <input type="text" name="name" defaultValue={RoomName} autoComplete='off' onChange={handleChange}/>
-                </label>
-                <label>
-                    Change room game mode:
-                    <select name="mode" defaultValue={RoomGameMode} onChange={handleChange}>
-                        {gameModes.map((mode, index) => (
-                            <option key={index} value={mode}>{mode}</option>
-                        ))}
-                    </select>
-                </label>
-                <input type="submit" value="submit" onClick={handleSubmit}/>
-            </form>
-            <>
-                <button onClick={leaveScreen}>Return</button>
-            </>
-        </>
+        <Paper sx={{margin:'10px 30%', padding:'25px'}}>
+        <FormGroup >
+            <TextField 
+                id="roomName" 
+                name="name"
+                type='text' 
+                size='small' 
+                variant='outlined' 
+                label="Room Name" 
+                autoComplete='off' 
+                value={RoomName}
+                onChange={handleChange}
+            />
+            <Select 
+                name="gameMode" 
+                id="gameMode" 
+                label="Room Game Mode"
+                value={RoomGameMode} 
+                onChange={handleChange}
+            >
+                {gameModes.map((mode, index) => (
+                    <MenuItem 
+                        id={mode + index} 
+                        value={mode}
+                    >
+                        {mode}
+                    </MenuItem>
+                ))}
+            </Select>
+            <Button 
+                variant='contained'
+                onClick={handleSubmit}
+            >
+                Submit
+            </Button>
+            <Button 
+                variant='outlined' 
+                onClick={leaveScreen}
+            >
+                Cancel
+            </Button>
+        </FormGroup>
+        </Paper>
     );
 }
 

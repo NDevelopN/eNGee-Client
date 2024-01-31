@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { httpRequest } from '../net.js';
 
+import UserMenu from './userMenu.js';
+
+import { Paper, Container } from '@mui/material';
+
 const heartbeatInterval = 3000;
 
-export default function User({url, User, setUser, setWarning, setConfirmation, setOnConfirm}) {
+function User({url, User, setUser, setWarning, setConfirmation, setOnConfirm}) {
     let [UserName, setUserName] = useState("");
+    let [changing, setChanging] = useState(true);
 
     const interval = useRef(null);
 
@@ -28,12 +33,12 @@ export default function User({url, User, setUser, setWarning, setConfirmation, s
     }
 
 
-    function createUser() {
+    function createUser(userName) {
         let endpoint = url + "/users";
-        httpRequest("POST", UserName, endpoint, (response) => {
+        httpRequest("POST", userName, endpoint, (response) => {
             let uid = response
 
-            setUser({'name': UserName, 'uid': uid});
+            setUser({'name': userName, 'uid': uid});
         });
     }
 
@@ -48,59 +53,61 @@ export default function User({url, User, setUser, setWarning, setConfirmation, s
             setUser({'name': "", 'uid': ""});
 
             setUserName("");
-        });
-    }
+        }); }
 
-    function updateUser() {
+    function updateUser(userName) {
         let endpoint = url + "/users/" + User.uid + "/name";
-        httpRequest("PUT", UserName, endpoint, () => {
-            setUser({'name': UserName, 'uid': User.uid});
+        httpRequest("PUT", userName, endpoint, () => {
+            setUser({'name': userName, 'uid': User.uid});
         });
     }
 
-    function handleSubmit(event) {
-        event.preventDefault();
-
-        if (UserName === "") {
+    function submit(userName) {
+        if (userName === "") {
             setWarning("Provided user name is empty.")
             return;
         }
         
-        if (User.name === UserName) {
+        if (User.name === userName) {
             setWarning("Provided user name has not changed from last time.")
             return;
         }
 
-        setConfirmation("Would you like to submit '" + UserName + "'?");
-        setOnConfirm(confirm);
+        setConfirmation("Would you like to submit '" + userName + "'?");
+        setOnConfirm(() => confirm(userName));
     }
 
-    function confirm() {
+    function confirm(userName) {
+        setChanging(false);
         if  (User.uid !== "" && User.uid !== undefined) {
-            updateUser();
+            updateUser(userName);
         } else {
-            createUser();
+            createUser(userName);
         }
     }
 
-    function handleChange(event) {
-        setUserName(event.target.value);
-    }
-
     return (
-        <>
-        <form onSubmit={handleSubmit}>
-            <label>
-                Change your name:
-                <input type="text" name="name" value={UserName} autoComplete='off' onChange={handleChange}/>
-                <input type="submit" value="submit"/>
-            </label>
-            {User.uid !== "" && User.uid !== undefined?
-            <>
-                <button type="button" onClick={confirmLogout}>Logout</button>
-            </>
-            : null}
-        </form>
-        </>
-    );
+    <Paper sx={{width:'50%', padding:'5px', margin:'1% 25%'}}>
+        {!changing
+        ? 
+        <Container 
+                maxWidth='sm'
+                onClick={()=>setChanging(true)}
+            >
+                <h2 align='center'>
+                    {User.name}
+                </h2>
+        </Container>
+        :
+        <UserMenu 
+            userInfo={User} 
+            submit={submit} 
+            exit={() => setChanging(false)} 
+            confirmLogout={confirmLogout}
+        />
+     }
+        </Paper>
+    )
 }
+
+export default User;

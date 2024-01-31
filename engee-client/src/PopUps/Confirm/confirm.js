@@ -12,7 +12,13 @@ function Confirm({message, onConfirm, onClose}) {
         },
     ];
 
-    return <PopUp title={"Confirmation"} message={message} options={options}/>;
+    return (
+    <PopUp 
+        title={"Confirmation"} 
+        message={message} 
+        options={options}
+    />
+    );
 }
 
 export default Confirm;

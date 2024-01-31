@@ -8,7 +8,14 @@ function Warning({message, onClose}) {
         },
     ];
 
-    return <PopUp title={"Warning"} message={message} options={options} onClose={onClose}/>;
+    return (
+    <PopUp 
+        title={"Warning"} 
+        message={message} 
+        options={options} 
+        onClose={onClose}
+    />
+    );
 }
 
 export default Warning;

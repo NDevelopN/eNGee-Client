@@ -3,6 +3,8 @@ import { wsConnect } from '../../net.js';
 
 import TestInput from './testInput.js'
 
+import { Paper, ButtonGroup, Button } from '@mui/material';
+
 const connectDelay = 1000;
 
 function TestMode({wsEndpoint, userInfo, leave}) {
@@ -87,13 +89,18 @@ function TestMode({wsEndpoint, userInfo, leave}) {
 
     function NoConnection() {
         return (
-            <>
-            <h4>Not connected to the game. Something may be wrong.</h4>
-            <div>
-                <button onClick={reconnect}>Reconnect</button>
-                <button onClick={leave}>Abort</button>
-            </div>
-            </>
+            <Paper sx={{padding:'10px 20%'}}>
+                <h4 padding='none' align='center'>Not connected to the game.</h4>
+                <h4 padding='none' align='center'> Something may be wrong.</h4>
+                <ButtonGroup fullWidth={true}>
+                    <Button 
+                        variant='contained'
+                        onClick={reconnect}
+                    >
+                        Reconnect
+                    </Button>
+                </ButtonGroup>
+            </Paper>
         );
     }
 
@@ -106,10 +113,15 @@ function TestMode({wsEndpoint, userInfo, leave}) {
             return <h3>Connecting...</h3>;
         default:
             return (
-            <>
+            <Paper sx={{}}>
                 <h3>TestMode: Unsupported Game State.</h3>
-                <button onClick={leave}>Leave</button>
-            </>
+                <Button 
+                    variant='contained' 
+                    onClick={leave}
+                >
+                    Leave
+                </Button>
+            </Paper>
             );            
     }
 }

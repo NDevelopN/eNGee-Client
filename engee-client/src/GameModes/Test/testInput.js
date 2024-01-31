@@ -1,5 +1,7 @@
 import { useState }  from 'react';
 
+import { Paper, FormGroup, TextField, Button} from '@mui/material';
+
 function TestInput({send}) {
     let [reply, setReply] = useState("");
 
@@ -18,13 +20,26 @@ function TestInput({send}) {
     }
 
     return (
-    <form onSubmit={handleSubmit}>
-        <label>
-            Send a dumb reply:
-            <input type="text" name="name" defaultValue={reply} autoComplete='off' onChange={handleChange}/>
-        </label>
-        <input type="submit" value="submit" onClick={handleSubmit}/>
-    </form>
+    <Paper variant='outlined'>
+        <FormGroup>
+            <TextField 
+                name="name" 
+                type='text' 
+                size='small' 
+                variant='outlined' 
+                label="Enter test message" 
+                autoComplete='off' 
+                onChange={handleChange}
+            />
+            <Button 
+                name="submit" 
+                variant='contained' 
+                onClick={handleSubmit}
+            >
+                Submit
+            </Button>
+        </FormGroup>
+    </Paper>
     );
 }
 
