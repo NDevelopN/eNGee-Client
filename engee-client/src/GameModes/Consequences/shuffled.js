@@ -1,27 +1,63 @@
-import * as mui from '@mui/material';
+import { Paper, Box, Button } from '@mui/material';
 
-function Shuffled({prompts, shuffled, sendContinue}) {
+const adjectives = [
+    "wonderful",
+    "daring",
+    "tragic",
+    "horrifying",
+    "wacky",
+    "insipring",
+    "cautionary",
+    "epic",
+    "forgotten",
+    "sinister",
+    "funny",
+    "mysterious",
+    "ancient",
+    "disgusting",
+];
+
+function Shuffled({shuffled, sendContinue}) {
+    function Story() {
+        let adj = Math.floor(Math.random() * adjectives.length);
+
+        return  (
+        <div>
+            <h3 align='center'>
+                The {adjectives[adj]} tale of {shuffled[0]} and {shuffled[1]}.
+            </h3>
+            <p align='center'>
+                {shuffled[0]} met {shuffled[1]} at {shuffled[2]}.
+                <br/>
+                {shuffled[0]} {shuffled[3]}.
+                <br/>
+                {shuffled[1]} {shuffled[4]}.
+                <br/>
+                {shuffled[5]}.
+            </p>
+        </div>
+        );
+    }
+
     return (
-    <>
-    <mui.Table padding='none'>
-        <mui.TableHead>
-            <mui.TableRow>
-                <mui.TableCell><b>Prompt</b></mui.TableCell>
-                <mui.TableCell><b>Reply</b></mui.TableCell>
-            </mui.TableRow>
-        </mui.TableHead>
-
-        <mui.TableBody>
-            {prompts.map((prompt, index) => (
-                <mui.TableRow key ={index}>
-                    <mui.TableCell>{prompt}</mui.TableCell>
-                    <mui.TableCell>{shuffled[index]}</mui.TableCell>
-                </mui.TableRow>
-            ))}
-        </mui.TableBody>
-    </mui.Table>
-    <button onClick={sendContinue}>Continue</button>
-    </>
+    <Paper>
+        <Box
+            display='flex' 
+            justifyContent='center' 
+            alignItems='center'
+            sx={{padding:'none', margin:'none'}}
+        > 
+        <Story/>
+        </Box>
+         
+        <Button
+            variant='contained'
+            onClick={sendContinue}
+            sx={{width:'40%', margin:'10px 30%'}}
+        >
+            Continue 
+        </Button>
+    </Paper>
     );
 }
 

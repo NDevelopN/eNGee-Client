@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 
-
 import { wsConnect } from '../../net.js';
-
+import NoConnection from '../NoConnection';
 import Prompts from './prompts.js'
 import Shuffled from './shuffled.js'
+
+import { Paper, ButtonGroup, Button } from '@mui/material';
 
 function Consequences({wsEndpoint, leave, setWarning, setConfirmation, setOnConfirm}) {
     let [gameState, setGameState] = useState(0);
@@ -99,21 +100,9 @@ function Consequences({wsEndpoint, leave, setWarning, setConfirmation, setOnConf
         setOnConfirm(() => send("Continue", "."));
     }
 
-    function NoConnection() {
-        return (
-            <>
-            <h4>Not connected to the game. Something may be wrong.</h4>
-            <div>
-                <button onClick={reconnect}>Reconnect</button>
-                <button onClick={leave}>Abort</button>
-            </div>
-            </>
-        );
-    }
-
     switch (gameState) {
         case -1:
-            return <NoConnection/>;
+            return <NoConnection reconnect={reconnect}/>;
         case 0:
             return <h3>Waiting for server</h3>;
         case 1:
@@ -131,5 +120,3 @@ function Consequences({wsEndpoint, leave, setWarning, setConfirmation, setOnConf
 }
 
 export default Consequences;
-
-

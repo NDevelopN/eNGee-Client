@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import * as mui from '@mui/material';
+import { FormGroup, Paper, List, ListItem, TextField, Button } from '@mui/material';
 
 function Prompts({prompts, sendReplies, setWarning}) {
     let [replies, setReplies] = useState([]);
@@ -13,7 +13,6 @@ function Prompts({prompts, sendReplies, setWarning}) {
     }
 
     function handleSubmit(event) {
-        console.log("Submitting in prompts")
         event.preventDefault();
         if (replies.length === prompts.length) {
             for (let i = 0; i < replies.length; i++) {
@@ -28,32 +27,38 @@ function Prompts({prompts, sendReplies, setWarning}) {
         } else {
             console.error("Reply set is larger that prompts");
         }
-
     }
 
     return (
-    <>
-    <form onSubmit={handleSubmit}>
-    <mui.Table padding='none'>
-        <mui.TableHead>
-            <mui.TableRow>
-                <mui.TableCell><b>Prompt</b></mui.TableCell>
-                <mui.TableCell><b>Reply</b></mui.TableCell>
-            </mui.TableRow>
-        </mui.TableHead>
-
-        <mui.TableBody>
-            {prompts.map((prompt, index) => (
-                <mui.TableRow key ={index}>
-                    <mui.TableCell>{prompt}</mui.TableCell>
-                    <mui.TableCell><input type="text" name={index} defaultValue={replies[index]} autoComplete='off' onChange={handleChange}/></mui.TableCell>
-                </mui.TableRow>
-            ))}
-        </mui.TableBody>
-    </mui.Table>
-    <input type="submit" value="submit" onClick={handleSubmit}/>
-    </form>
-    </>
+        <FormGroup>
+        <Paper>
+            <List sx={{margin:'20px'}}>
+                {prompts.map((prompt, index) => (
+                    <ListItem key={index}>
+                    <TextField 
+                        alignItems='center'
+                        justifyContent='center'
+                        fullWidth={true}
+                        name={index} 
+                        type='text'     
+                        label={prompt}
+                        autoComplete='off'
+                        onChange={handleChange}
+                    />
+                    </ListItem>
+                ))}
+                <ListItem>
+                <Button
+                    fullWidth={true}    
+                    variant='contained'
+                    onClick={handleSubmit}
+                >
+                    Submit
+                </Button>
+                </ListItem> 
+            </List>
+        </Paper>
+        </FormGroup>
     );
 }
 
