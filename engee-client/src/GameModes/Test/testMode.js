@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { wsConnect } from '../../net.js';
 
 import TestInput from './testInput.js'
+import NoConnection from '../NoConnection';
 
-import { Paper, ButtonGroup, Button } from '@mui/material';
+import { Paper, Button } from '@mui/material';
 
 const connectDelay = 1000;
 
@@ -87,26 +88,10 @@ function TestMode({wsEndpoint, userInfo, leave}) {
         connect();
     }
 
-    function NoConnection() {
-        return (
-            <Paper sx={{padding:'10px 20%'}}>
-                <h4 padding='none' align='center'>Not connected to the game.</h4>
-                <h4 padding='none' align='center'> Something may be wrong.</h4>
-                <ButtonGroup fullWidth={true}>
-                    <Button 
-                        variant='contained'
-                        onClick={reconnect}
-                    >
-                        Reconnect
-                    </Button>
-                </ButtonGroup>
-            </Paper>
-        );
-    }
 
     switch (gameState) {
         case -1:
-            return <NoConnection/>;
+            return <NoConnection reconnect={reconnect}/>;
         case 0:
             return <TestInput send={send}/>;
         case 1: 
