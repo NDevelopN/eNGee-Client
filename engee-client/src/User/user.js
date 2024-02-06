@@ -8,7 +8,6 @@ import { Paper, Container } from '@mui/material';
 const heartbeatInterval = 3000;
 
 function User({url, User, setUser, setWarning, setConfirmation, setOnConfirm}) {
-    let [UserName, setUserName] = useState("");
     let [changing, setChanging] = useState(true);
 
     const interval = useRef(null);
@@ -51,9 +50,8 @@ function User({url, User, setUser, setWarning, setConfirmation, setOnConfirm}) {
         let endpoint = url + "/users/" + User.uid;
         httpRequest("DELETE", "", endpoint, () => {
             setUser({'name': "", 'uid': ""});
-
-            setUserName("");
-        }); }
+        }); 
+    }
 
     function updateUser(userName) {
         let endpoint = url + "/users/" + User.uid + "/name";
