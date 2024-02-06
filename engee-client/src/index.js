@@ -4,10 +4,12 @@ import './index.css';
 import Home from './Home';
 import reportWebVitals from './reportWebVitals';
 
+import * as cfg from './config.json';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Home id={'app'}/>
+    <Home id={'app'} cfg={cfg}/>
   </React.StrictMode>
 );
 

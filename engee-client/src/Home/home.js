@@ -11,15 +11,13 @@ import { httpRequest } from '../net';
 
 import { Paper } from '@mui/material';
 
-const url = "http://localhost:8090";
-
 const emptyRoom = {
     'name': "",
     'rid': "",
     'type': "",
 }
 
-function Home({id}) {
+function Home({id, cfg}) {
     let [Mode, setMode] = useState(0);
     let [UserInfo, setUserInfo] = useState({'name': "", 'uid': ""});
     let [RoomInfo, setRoomInfo] = useState(emptyRoom);
@@ -28,6 +26,8 @@ function Home({id}) {
     let [confirmation, setConfirmation] = useState("");
 
     let afterConfirmation = useRef(() => {});
+
+    let url = "http://" + cfg.server.host + ":" + cfg.server.port;
 
     function setAfterConfirmation(onConfirmation) {
         afterConfirmation.current = onConfirmation;
