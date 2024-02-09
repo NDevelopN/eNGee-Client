@@ -6,7 +6,7 @@ loc=$(pwd)
 ip=$SERVER_HOST
 port=$SERVER_OUTER
 
-if [ -z "${ip}" ] | [ -z "${port}"]
+if [ -z "${ip}" ] | [ -z "${port}" ]
 then
     config=$(cat config.json | jq '.server')
     ip=$(echo $config | jq -r '.host')
